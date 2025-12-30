@@ -32,9 +32,10 @@ object RepositoryModule {
     fun provideWaterMeterRepository(
         waterMeterDao: WaterMeterDao,
         waterBillDao: WaterBillDao,
-        functionsService: com.balancetech.sitemanagement.data.service.FirebaseFunctionsService
+        functionsService: com.balancetech.sitemanagement.data.service.FirebaseFunctionsService,
+        remoteDataSource: RemoteDataSource
     ): WaterMeterRepository {
-        return WaterMeterRepository(waterMeterDao, waterBillDao, functionsService)
+        return WaterMeterRepository(waterMeterDao, waterBillDao, functionsService, remoteDataSource)
     }
 
     @Provides
@@ -48,8 +49,11 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideExtraPaymentRepository(extraPaymentDao: ExtraPaymentDao): ExtraPaymentRepository {
-        return ExtraPaymentRepository(extraPaymentDao)
+    fun provideExtraPaymentRepository(
+        extraPaymentDao: ExtraPaymentDao,
+        remoteDataSource: RemoteDataSource
+    ): ExtraPaymentRepository {
+        return ExtraPaymentRepository(extraPaymentDao, remoteDataSource)
     }
 
     @Provides

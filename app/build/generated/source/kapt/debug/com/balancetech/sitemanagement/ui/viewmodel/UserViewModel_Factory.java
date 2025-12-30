@@ -1,6 +1,7 @@
 package com.balancetech.sitemanagement.ui.viewmodel;
 
 import com.balancetech.sitemanagement.data.datasource.LocalDataSource;
+import com.balancetech.sitemanagement.data.datasource.RemoteDataSource;
 import com.balancetech.sitemanagement.data.repository.UserRepository;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
@@ -27,24 +28,29 @@ public final class UserViewModel_Factory implements Factory<UserViewModel> {
 
   private final Provider<LocalDataSource> localDataSourceProvider;
 
+  private final Provider<RemoteDataSource> remoteDataSourceProvider;
+
   public UserViewModel_Factory(Provider<UserRepository> userRepositoryProvider,
-      Provider<LocalDataSource> localDataSourceProvider) {
+      Provider<LocalDataSource> localDataSourceProvider,
+      Provider<RemoteDataSource> remoteDataSourceProvider) {
     this.userRepositoryProvider = userRepositoryProvider;
     this.localDataSourceProvider = localDataSourceProvider;
+    this.remoteDataSourceProvider = remoteDataSourceProvider;
   }
 
   @Override
   public UserViewModel get() {
-    return newInstance(userRepositoryProvider.get(), localDataSourceProvider.get());
+    return newInstance(userRepositoryProvider.get(), localDataSourceProvider.get(), remoteDataSourceProvider.get());
   }
 
   public static UserViewModel_Factory create(Provider<UserRepository> userRepositoryProvider,
-      Provider<LocalDataSource> localDataSourceProvider) {
-    return new UserViewModel_Factory(userRepositoryProvider, localDataSourceProvider);
+      Provider<LocalDataSource> localDataSourceProvider,
+      Provider<RemoteDataSource> remoteDataSourceProvider) {
+    return new UserViewModel_Factory(userRepositoryProvider, localDataSourceProvider, remoteDataSourceProvider);
   }
 
   public static UserViewModel newInstance(UserRepository userRepository,
-      LocalDataSource localDataSource) {
-    return new UserViewModel(userRepository, localDataSource);
+      LocalDataSource localDataSource, RemoteDataSource remoteDataSource) {
+    return new UserViewModel(userRepository, localDataSource, remoteDataSource);
   }
 }

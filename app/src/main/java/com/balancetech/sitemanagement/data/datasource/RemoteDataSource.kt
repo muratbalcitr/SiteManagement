@@ -52,6 +52,12 @@ interface RemoteDataSource {
     // Unit operations
     suspend fun getUnitsByApartment(apartmentId: String): List<UnitEntity>
     suspend fun getUnitById(id: String): UnitEntity?
+    suspend fun createUnit(unit: UnitEntity): Result<UnitEntity>
+    suspend fun updateUnit(unit: UnitEntity): Result<UnitEntity>
+    
+    // Extra Payment operations
+    suspend fun createExtraPayment(extraPayment: ExtraPayment): Result<ExtraPayment>
+    suspend fun updateExtraPayment(extraPayment: ExtraPayment): Result<ExtraPayment>
     
     // Sync operations
     suspend fun syncAllData(): Result<kotlin.Unit>

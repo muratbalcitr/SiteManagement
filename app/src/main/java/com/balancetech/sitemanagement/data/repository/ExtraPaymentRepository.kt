@@ -1,13 +1,21 @@
 package com.balancetech.sitemanagement.data.repository
 
 import com.balancetech.sitemanagement.data.dao.ExtraPaymentDao
+import com.balancetech.sitemanagement.data.datasource.RemoteDataSource
 import com.balancetech.sitemanagement.data.entity.ExtraPayment
 import com.balancetech.sitemanagement.data.model.ExtraPaymentType
 import com.balancetech.sitemanagement.data.model.PaymentStatus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import java.util.UUID
+import javax.inject.Inject
 
-class ExtraPaymentRepository(private val extraPaymentDao: ExtraPaymentDao) {
+class ExtraPaymentRepository @Inject constructor(
+    private val extraPaymentDao: ExtraPaymentDao,
+    private val remoteDataSource: RemoteDataSource
+) {
     fun getExtraPaymentsByUnit(unitId: String): Flow<List<ExtraPayment>> =
         extraPaymentDao.getExtraPaymentsByUnit(unitId)
 
@@ -40,12 +48,33 @@ class ExtraPaymentRepository(private val extraPaymentDao: ExtraPaymentDao) {
             currentInstallment = 1,
             dueDate = dueDate
         )
+        // Save to local first (offline-first)
         extraPaymentDao.insertExtraPayment(extraPayment)
+        
+        // Then sync to Firebase
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                remoteDataSource.createExtraPayment(extraPayment)
+            } catch (e: Exception) {
+                // Error logged but not thrown - offline-first strategy
+            }
+        }
+        
         return Result.success(extraPayment)
     }
 
     suspend fun updateExtraPayment(extraPayment: ExtraPayment) {
+        // Update local first
         extraPaymentDao.updateExtraPayment(extraPayment)
+        
+        // Then sync to Firebase
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                remoteDataSource.updateExtraPayment(extraPayment)
+            } catch (e: Exception) {
+                // Error logged but not thrown
+            }
+        }
     }
 
     suspend fun recordPayment(extraPaymentId: String, paymentAmount: Double): Result<ExtraPayment> {
@@ -62,7 +91,18 @@ class ExtraPaymentRepository(private val extraPaymentDao: ExtraPaymentDao) {
                 status = newStatus,
                 updatedAt = System.currentTimeMillis()
             )
+            // Update local first
             extraPaymentDao.updateExtraPayment(updatedExtraPayment)
+            
+            // Then sync to Firebase
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    remoteDataSource.updateExtraPayment(updatedExtraPayment)
+                } catch (e: Exception) {
+                    // Error logged but not thrown
+                }
+            }
+            
             Result.success(updatedExtraPayment)
         } else {
             Result.failure(Exception("Extra payment not found"))

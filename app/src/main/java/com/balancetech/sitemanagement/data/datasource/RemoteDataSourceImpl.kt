@@ -22,6 +22,7 @@ class RemoteDataSourceImpl @Inject constructor(
     private val waterBillsCollection = firestore.collection("water_bills")
     private val notificationsCollection = firestore.collection("notifications")
     private val unitsCollection = firestore.collection("units")
+    private val extraPaymentsCollection = firestore.collection("extra_payments")
 
     // User operations
     override suspend fun getUserByEmail(email: String): User? {
@@ -357,6 +358,43 @@ class RemoteDataSourceImpl @Inject constructor(
             unitsCollection.document(id).get().await().toObject(UnitEntity::class.java)
         } catch (e: Exception) {
             null
+        }
+    }
+
+    override suspend fun createUnit(unit: UnitEntity): Result<UnitEntity> {
+        return try {
+            unitsCollection.document(unit.id).set(unit).await()
+            Result.success(unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateUnit(unit: UnitEntity): Result<UnitEntity> {
+        return try {
+            unitsCollection.document(unit.id).set(unit).await()
+            Result.success(unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // Extra Payment operations
+    override suspend fun createExtraPayment(extraPayment: ExtraPayment): Result<ExtraPayment> {
+        return try {
+            extraPaymentsCollection.document(extraPayment.id).set(extraPayment).await()
+            Result.success(extraPayment)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateExtraPayment(extraPayment: ExtraPayment): Result<ExtraPayment> {
+        return try {
+            extraPaymentsCollection.document(extraPayment.id).set(extraPayment).await()
+            Result.success(extraPayment)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 

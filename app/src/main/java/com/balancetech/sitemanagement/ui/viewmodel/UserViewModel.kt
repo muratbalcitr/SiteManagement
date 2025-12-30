@@ -6,11 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.asLiveData
 import com.balancetech.sitemanagement.data.datasource.LocalDataSource
+import com.balancetech.sitemanagement.data.datasource.RemoteDataSource
 import com.balancetech.sitemanagement.data.entity.Unit as UnitEntity
 import com.balancetech.sitemanagement.data.entity.User
 import com.balancetech.sitemanagement.data.model.UserRole
 import com.balancetech.sitemanagement.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val localDataSource: LocalDataSource
+    private val localDataSource: LocalDataSource,
+    private val remoteDataSource: RemoteDataSource
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<UserUiState>(UserUiState.Idle)
     val uiState: LiveData<UserUiState> = _uiState.asLiveData()
@@ -143,21 +147,19 @@ class UserViewModel @Inject constructor(
                         // Kullanıcı zaten var mı kontrol et
                         val existingUser = localDataSource.getUserByEmail(email)
                         if (existingUser == null) {
-                            // Yeni kullanıcı oluştur
-                            val newUser = User(
-                                id = java.util.UUID.randomUUID().toString(),
+                            // UserRepository.createUser kullanarak hem local'e hem Firebase'e kaydet
+                            val result = userRepository.createUser(
                                 email = email,
                                 password = "", // Şifre sonra ayarlanabilir
                                 name = unit.ownerName,
                                 phone = unit.ownerPhone,
                                 role = UserRole.RESIDENT,
                                 apartmentId = unit.apartmentId,
-                                unitId = unit.id,
-                                createdAt = System.currentTimeMillis(),
-                                isActive = true
+                                unitId = unit.id
                             )
-                            localDataSource.insertUser(newUser)
-                            createdUserCount++
+                            if (result.isSuccess) {
+                                createdUserCount++
+                            }
                         }
                     }
                 }

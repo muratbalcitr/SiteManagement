@@ -2,6 +2,7 @@ package com.balancetech.sitemanagement.data.repository
 
 import com.balancetech.sitemanagement.data.dao.WaterMeterDao
 import com.balancetech.sitemanagement.data.dao.WaterBillDao
+import com.balancetech.sitemanagement.data.datasource.RemoteDataSource
 import com.balancetech.sitemanagement.data.entity.WaterMeter
 import com.balancetech.sitemanagement.data.entity.WaterBill
 import com.balancetech.sitemanagement.data.model.PaymentStatus
@@ -12,11 +13,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
 import java.util.Calendar
 import java.util.UUID
+import javax.inject.Inject
 
-class WaterMeterRepository(
+class WaterMeterRepository @Inject constructor(
     private val waterMeterDao: WaterMeterDao,
     private val waterBillDao: WaterBillDao,
-    private val functionsService: FirebaseFunctionsService
+    private val functionsService: FirebaseFunctionsService,
+    private val remoteDataSource: RemoteDataSource
 ) {
     fun getAllWaterMeters(): Flow<List<WaterMeter>> = waterMeterDao.getAllWaterMeters()
 
@@ -47,7 +50,18 @@ class WaterMeterRepository(
                 unitPrice = unitPrice
             )
         }
+        // Save to local first
         waterMeterDao.insertWaterMeter(waterMeter)
+        
+        // Then sync to Firebase
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                remoteDataSource.createOrUpdateWaterMeter(waterMeter)
+            } catch (e: Exception) {
+                // Error logged but not thrown - offline-first strategy
+            }
+        }
+        
         return Result.success(waterMeter)
     }
 
@@ -123,7 +137,18 @@ class WaterMeterRepository(
                 paidAmount = newPaidAmount,
                 status = newStatus
             )
+            // Update local first
             waterBillDao.updateWaterBill(updatedBill)
+            
+            // Then sync to Firebase
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    remoteDataSource.updateWaterBill(updatedBill)
+                } catch (e: Exception) {
+                    // Error logged but not thrown
+                }
+            }
+            
             Result.success(updatedBill)
         } else {
             Result.failure(Exception("Water bill not found"))

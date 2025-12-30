@@ -1,6 +1,7 @@
 package com.balancetech.sitemanagement.di;
 
 import com.balancetech.sitemanagement.data.dao.ExtraPaymentDao;
+import com.balancetech.sitemanagement.data.datasource.RemoteDataSource;
 import com.balancetech.sitemanagement.data.repository.ExtraPaymentRepository;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
@@ -26,23 +27,28 @@ import javax.inject.Provider;
 public final class RepositoryModule_ProvideExtraPaymentRepositoryFactory implements Factory<ExtraPaymentRepository> {
   private final Provider<ExtraPaymentDao> extraPaymentDaoProvider;
 
+  private final Provider<RemoteDataSource> remoteDataSourceProvider;
+
   public RepositoryModule_ProvideExtraPaymentRepositoryFactory(
-      Provider<ExtraPaymentDao> extraPaymentDaoProvider) {
+      Provider<ExtraPaymentDao> extraPaymentDaoProvider,
+      Provider<RemoteDataSource> remoteDataSourceProvider) {
     this.extraPaymentDaoProvider = extraPaymentDaoProvider;
+    this.remoteDataSourceProvider = remoteDataSourceProvider;
   }
 
   @Override
   public ExtraPaymentRepository get() {
-    return provideExtraPaymentRepository(extraPaymentDaoProvider.get());
+    return provideExtraPaymentRepository(extraPaymentDaoProvider.get(), remoteDataSourceProvider.get());
   }
 
   public static RepositoryModule_ProvideExtraPaymentRepositoryFactory create(
-      Provider<ExtraPaymentDao> extraPaymentDaoProvider) {
-    return new RepositoryModule_ProvideExtraPaymentRepositoryFactory(extraPaymentDaoProvider);
+      Provider<ExtraPaymentDao> extraPaymentDaoProvider,
+      Provider<RemoteDataSource> remoteDataSourceProvider) {
+    return new RepositoryModule_ProvideExtraPaymentRepositoryFactory(extraPaymentDaoProvider, remoteDataSourceProvider);
   }
 
   public static ExtraPaymentRepository provideExtraPaymentRepository(
-      ExtraPaymentDao extraPaymentDao) {
-    return Preconditions.checkNotNullFromProvides(RepositoryModule.INSTANCE.provideExtraPaymentRepository(extraPaymentDao));
+      ExtraPaymentDao extraPaymentDao, RemoteDataSource remoteDataSource) {
+    return Preconditions.checkNotNullFromProvides(RepositoryModule.INSTANCE.provideExtraPaymentRepository(extraPaymentDao, remoteDataSource));
   }
 }
