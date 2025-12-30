@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">320726427003-e0aqpr5d1lv7blec310q959f658egsne.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">320726427003</string>
+    <string name="google_api_key" translatable="false">AIzaSyABnhswcE3Mw8mu6BgrhsDVdPK6-k2saas</string>
+    <string name="google_app_id" translatable="false">1:320726427003:android:0ba29d25d00276bb3ac9de</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyABnhswcE3Mw8mu6BgrhsDVdPK6-k2saas</string>
+    <string name="google_storage_bucket" translatable="false">balancetech-app.firebasestorage.app</string>
+    <string name="project_id" translatable="false">balancetech-app</string>
+</resources>

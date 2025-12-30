@@ -1,0 +1,8 @@
+Blok,Daire Numarası,Kat,Alan (m²),Arsa Payı,Sahip Tipi,Sahip Adı,Sahip Telefonu
+A,1,1,100.0,0.0278,OWNER,Ahmet Yılmaz,5551234567
+A,2,1,100.0,0.0278,TENANT,Mehmet Demir,5559876543
+A,3,1,100.0,0.0278,OWNER,Ayşe Kaya,5551112233
+B,1,1,120.0,0.0333,OWNER,Fatma Öz,5554445566
+B,2,1,120.0,0.0333,TENANT,Ali Veli,5557778899
+B,3,1,120.0,0.0333,OWNER,Zeynep Şahin,5550001122
+

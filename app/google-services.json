@@ -1,0 +1,162 @@
+{
+  "project_info": {
+    "project_number": "320726427003",
+    "project_id": "balancetech-app",
+    "storage_bucket": "balancetech-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:320726427003:android:44b0a8ad262ee45b3ac9de",
+        "android_client_info": {
+          "package_name": "com.balancetech.baby"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "320726427003-4mcmplj6vuuja8iln2h6bvrddbp9lu93.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.balancetech.baby",
+            "certificate_hash": "ad074323414a0aa47e176e746bf3f684a5b2b037"
+          }
+        },
+        {
+          "client_id": "320726427003-e0aqpr5d1lv7blec310q959f658egsne.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABnhswcE3Mw8mu6BgrhsDVdPK6-k2saas"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "320726427003-e0aqpr5d1lv7blec310q959f658egsne.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "320726427003-hq6lt2ndcrmbkiabatauocec6d4i0q9k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.balancetech.karetahta.KareTahta"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:320726427003:android:abb68bf501bf061d3ac9de",
+        "android_client_info": {
+          "package_name": "com.balancetech.electricitytracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "320726427003-e0aqpr5d1lv7blec310q959f658egsne.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABnhswcE3Mw8mu6BgrhsDVdPK6-k2saas"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "320726427003-e0aqpr5d1lv7blec310q959f658egsne.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "320726427003-hq6lt2ndcrmbkiabatauocec6d4i0q9k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.balancetech.karetahta.KareTahta"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:320726427003:android:2b1ad25fcf558dbb3ac9de",
+        "android_client_info": {
+          "package_name": "com.balancetech.karetahta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "320726427003-e0aqpr5d1lv7blec310q959f658egsne.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABnhswcE3Mw8mu6BgrhsDVdPK6-k2saas"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "320726427003-e0aqpr5d1lv7blec310q959f658egsne.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "320726427003-hq6lt2ndcrmbkiabatauocec6d4i0q9k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.balancetech.karetahta.KareTahta"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:320726427003:android:0ba29d25d00276bb3ac9de",
+        "android_client_info": {
+          "package_name": "com.balancetech.sitemanagement"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "320726427003-e0aqpr5d1lv7blec310q959f658egsne.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABnhswcE3Mw8mu6BgrhsDVdPK6-k2saas"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "320726427003-e0aqpr5d1lv7blec310q959f658egsne.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "320726427003-hq6lt2ndcrmbkiabatauocec6d4i0q9k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.balancetech.karetahta.KareTahta"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

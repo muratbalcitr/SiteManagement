@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_onPrimaryContainer">#0D47A1</color>
+    <color name="md_theme_light_primary">#1976D2</color>
+    <color name="md_theme_light_primaryContainer">#BBDEFB</color>
+    <string name="app_name">Küçükyalı Site Yönetimi</string>
+    <string name="default_web_client_id" translatable="false">320726427003-e0aqpr5d1lv7blec310q959f658egsne.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">320726427003</string>
+    <string name="google_api_key" translatable="false">AIzaSyABnhswcE3Mw8mu6BgrhsDVdPK6-k2saas</string>
+    <string name="google_app_id" translatable="false">1:320726427003:android:0ba29d25d00276bb3ac9de</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyABnhswcE3Mw8mu6BgrhsDVdPK6-k2saas</string>
+    <string name="google_storage_bucket" translatable="false">balancetech-app.firebasestorage.app</string>
+    <string name="project_id" translatable="false">balancetech-app</string>
+    <style name="Base.Theme.KucukyaliSiteYonetimi" parent="Theme.Material3.DayNight">
+        
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
+    </style>
+    <style name="Theme.KucukyaliSiteYonetimi" parent="Base.Theme.KucukyaliSiteYonetimi"/>
+</resources>
