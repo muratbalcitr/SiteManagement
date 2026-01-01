@@ -3232,6 +3232,7 @@ int id action_context_bar 0x7f08003b
 int id action_dashboardFragment_to_extraPaymentsFragment 0x7f08003c
 int id action_dashboardFragment_to_feesFragment 0x7f08003d
 int id action_dashboardFragment_to_paymentsFragment 0x7f08003e
+int id action_dashboardFragment_to_userDetailFragment 0x7f080286
 int id action_dashboardFragment_to_usersFragment 0x7f08003f
 int id action_dashboardFragment_to_waterMeterFragment 0x7f080040
 int id action_divider 0x7f080041
@@ -3625,6 +3626,9 @@ int id position 0x7f0801c0
 int id postLayout 0x7f0801c1
 int id pressed 0x7f0801c2
 int id previousReadingText 0x7f0801c3
+int id profileCard 0x7f080287
+int id profileEmailText 0x7f080288
+int id profileNameText 0x7f080289
 int id progressBar 0x7f0801c4
 int id progress_circular 0x7f0801c5
 int id progress_horizontal 0x7f0801c6

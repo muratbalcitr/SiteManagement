@@ -32,6 +32,15 @@ public final class FragmentDashboardBinding implements ViewBinding {
   public final MaterialCardView paymentsCard;
 
   @NonNull
+  public final MaterialCardView profileCard;
+
+  @NonNull
+  public final TextView profileEmailText;
+
+  @NonNull
+  public final TextView profileNameText;
+
+  @NonNull
   public final MaterialButton syncButton;
 
   @NonNull
@@ -51,14 +60,18 @@ public final class FragmentDashboardBinding implements ViewBinding {
 
   private FragmentDashboardBinding(@NonNull CoordinatorLayout rootView,
       @NonNull MaterialCardView extraPaymentsCard, @NonNull MaterialCardView feesCard,
-      @NonNull MaterialCardView paymentsCard, @NonNull MaterialButton syncButton,
-      @NonNull MaterialToolbar toolbar, @NonNull TextView totalCreditTextView,
-      @NonNull TextView totalDebtTextView, @NonNull MaterialCardView usersCard,
-      @NonNull MaterialCardView waterMeterCard) {
+      @NonNull MaterialCardView paymentsCard, @NonNull MaterialCardView profileCard,
+      @NonNull TextView profileEmailText, @NonNull TextView profileNameText,
+      @NonNull MaterialButton syncButton, @NonNull MaterialToolbar toolbar,
+      @NonNull TextView totalCreditTextView, @NonNull TextView totalDebtTextView,
+      @NonNull MaterialCardView usersCard, @NonNull MaterialCardView waterMeterCard) {
     this.rootView = rootView;
     this.extraPaymentsCard = extraPaymentsCard;
     this.feesCard = feesCard;
     this.paymentsCard = paymentsCard;
+    this.profileCard = profileCard;
+    this.profileEmailText = profileEmailText;
+    this.profileNameText = profileNameText;
     this.syncButton = syncButton;
     this.toolbar = toolbar;
     this.totalCreditTextView = totalCreditTextView;
@@ -112,6 +125,24 @@ public final class FragmentDashboardBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.profileCard;
+      MaterialCardView profileCard = ViewBindings.findChildViewById(rootView, id);
+      if (profileCard == null) {
+        break missingId;
+      }
+
+      id = R.id.profileEmailText;
+      TextView profileEmailText = ViewBindings.findChildViewById(rootView, id);
+      if (profileEmailText == null) {
+        break missingId;
+      }
+
+      id = R.id.profileNameText;
+      TextView profileNameText = ViewBindings.findChildViewById(rootView, id);
+      if (profileNameText == null) {
+        break missingId;
+      }
+
       id = R.id.syncButton;
       MaterialButton syncButton = ViewBindings.findChildViewById(rootView, id);
       if (syncButton == null) {
@@ -149,8 +180,8 @@ public final class FragmentDashboardBinding implements ViewBinding {
       }
 
       return new FragmentDashboardBinding((CoordinatorLayout) rootView, extraPaymentsCard, feesCard,
-          paymentsCard, syncButton, toolbar, totalCreditTextView, totalDebtTextView, usersCard,
-          waterMeterCard);
+          paymentsCard, profileCard, profileEmailText, profileNameText, syncButton, toolbar,
+          totalCreditTextView, totalDebtTextView, usersCard, waterMeterCard);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

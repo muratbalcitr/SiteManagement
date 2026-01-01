@@ -48,6 +48,9 @@
         <action
             android:id="@+id/action_dashboardFragment_to_usersFragment"
             app:destination="@id/usersFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_userDetailFragment"
+            app:destination="@id/userDetailFragment" />
     </fragment>
 
     <fragment

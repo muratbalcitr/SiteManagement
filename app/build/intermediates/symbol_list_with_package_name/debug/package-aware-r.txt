@@ -3233,6 +3233,7 @@ id action_context_bar
 id action_dashboardFragment_to_extraPaymentsFragment
 id action_dashboardFragment_to_feesFragment
 id action_dashboardFragment_to_paymentsFragment
+id action_dashboardFragment_to_userDetailFragment
 id action_dashboardFragment_to_usersFragment
 id action_dashboardFragment_to_waterMeterFragment
 id action_divider
@@ -3626,6 +3627,9 @@ id position
 id postLayout
 id pressed
 id previousReadingText
+id profileCard
+id profileEmailText
+id profileNameText
 id progressBar
 id progress_circular
 id progress_horizontal

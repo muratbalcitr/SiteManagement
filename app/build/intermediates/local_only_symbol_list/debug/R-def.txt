@@ -9,6 +9,7 @@ drawable outline_lock_24
 id action_dashboardFragment_to_extraPaymentsFragment
 id action_dashboardFragment_to_feesFragment
 id action_dashboardFragment_to_paymentsFragment
+id action_dashboardFragment_to_userDetailFragment
 id action_dashboardFragment_to_usersFragment
 id action_dashboardFragment_to_waterMeterFragment
 id action_loginFragment_to_dashboardFragment
@@ -92,6 +93,9 @@ id paymentsFragment
 id paymentsRecyclerView
 id phoneEditText
 id previousReadingText
+id profileCard
+id profileEmailText
+id profileNameText
 id progressBar
 id recordButton
 id recordReadingButton
