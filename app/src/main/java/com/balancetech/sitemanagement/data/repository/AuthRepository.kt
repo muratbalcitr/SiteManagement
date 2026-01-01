@@ -28,56 +28,87 @@ class AuthRepository @Inject constructor(
     val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
 
     /**
-     * Login with email and password using Firebase Authentication
+     * Login with email and password
+     * First tries local database, then Firebase Authentication
      */
     suspend fun login(email: String, password: String): Result<User> {
         return try {
-            // Authenticate with Firebase
-            val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            val firebaseUser = authResult.user
-            
-            if (firebaseUser == null) {
-                return Result.failure(Exception("Firebase authentication failed"))
-            }
-
-            // Get user from local database
+            // First, try to get user from local database
             var user = localDataSource.getUserByEmail(email)
             
-            // If user doesn't exist locally, try to get from remote
-            if (user == null) {
-                user = remoteDataSource.getUserByEmail(email)
-                // If found in remote, save to local
-                if (user != null) {
-                    localDataSource.insertUser(user)
+            // If user exists in local database, check password
+            if (user != null) {
+                // Check if user is active
+                if (!user.isActive) {
+                    return Result.failure(Exception("Bu kullanıcı devre dışı bırakılmış"))
+                }
+                
+                // Check if password matches (in production, compare hashed passwords)
+                // If user has no password set (empty), allow login with any password or empty password
+                if (user.password.isEmpty()) {
+                    // User was created without password, allow login
+                    _currentUser.value = user
+                    return Result.success(user)
+                } else if (user.password == password) {
+                    // Password matches
+                    _currentUser.value = user
+                    return Result.success(user)
+                } else {
+                    // Password doesn't match
+                    return Result.failure(Exception("Yanlış şifre"))
                 }
             }
-
-            // If still no user, create one from Firebase user info
-            if (user == null) {
-                val userName = firebaseUser.displayName ?: "Kullanıcı"
-                // Generate user ID from name (slug format) for Firestore
-                val allUsers = localDataSource.getAllActiveUsers().first()
-                val existingIds = allUsers.map { it.id }.toSet()
-                val userId = StringUtils.generateUserIdFromName(userName, existingIds)
+            
+            // If user doesn't exist locally, try Firebase Authentication
+            try {
+                val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
+                val firebaseUser = authResult.user
                 
-                user = User(
-                    id = userId, // Use slug as ID for Firestore
-                    email = firebaseUser.email ?: email,
-                    password = "", // Don't store password
-                    name = userName,
-                    phone = firebaseUser.phoneNumber,
-                    role = com.balancetech.sitemanagement.data.model.UserRole.RESIDENT,
-                    isActive = true
-                )
-                localDataSource.insertUser(user)
-                // Also save to remote
-                remoteDataSource.createUser(user)
-            }
+                if (firebaseUser == null) {
+                    return Result.failure(Exception("Firebase authentication failed"))
+                }
 
-            _currentUser.value = user
-            Result.success(user)
-        } catch (e: FirebaseAuthException) {
-            Result.failure(Exception(getAuthErrorMessage(e.errorCode)))
+                // Get user from local database (might have been synced)
+                user = localDataSource.getUserByEmail(email)
+                
+                // If user doesn't exist locally, try to get from remote
+                if (user == null) {
+                    user = remoteDataSource.getUserByEmail(email)
+                    // If found in remote, save to local
+                    if (user != null) {
+                        localDataSource.insertUser(user)
+                    }
+                }
+
+                // If still no user, create one from Firebase user info
+                if (user == null) {
+                    val userName = firebaseUser.displayName ?: "Kullanıcı"
+                    // Generate user ID from name (slug format) for Firestore
+                    val allUsers = localDataSource.getAllActiveUsers().first()
+                    val existingIds = allUsers.map { it.id }.toSet()
+                    val userId = StringUtils.generateUserIdFromName(userName, existingIds)
+                    
+                    user = User(
+                        id = userId, // Use slug as ID for Firestore
+                        email = firebaseUser.email ?: email,
+                        password = "", // Don't store password
+                        name = userName,
+                        phone = firebaseUser.phoneNumber,
+                        role = com.balancetech.sitemanagement.data.model.UserRole.RESIDENT,
+                        isActive = true
+                    )
+                    localDataSource.insertUser(user)
+                    // Also save to remote
+                    remoteDataSource.createUser(user)
+                }
+
+                _currentUser.value = user
+                Result.success(user)
+            } catch (firebaseAuthException: FirebaseAuthException) {
+                // Firebase authentication failed, but user might exist in local DB
+                // Return Firebase error
+                Result.failure(Exception(getAuthErrorMessage(firebaseAuthException.errorCode)))
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }
