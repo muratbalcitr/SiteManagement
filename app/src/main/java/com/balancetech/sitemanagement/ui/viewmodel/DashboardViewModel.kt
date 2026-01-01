@@ -37,33 +37,56 @@ class DashboardViewModel @Inject constructor(
     val currentUser = authRepository.currentUser
 
     // Total Debt (Toplam Borç) - Ödenmemiş tutarlar
-    val totalDebt: Flow<Double> = combine(
+    // If unitId is provided, only calculate for that unit
+    fun getTotalDebt(unitId: String? = null): Flow<Double> = combine(
         feeRepository.getAllFees(),
         extraPaymentRepository.getAllExtraPayments("apt-001"), // TODO: Get from current user
         waterMeterRepository.getAllWaterBills()
     ) { fees, extraPayments, waterBills ->
         var debt = 0.0
 
+        // Filter by unitId if provided (for residents)
+        val filteredFees = if (unitId != null) fees.filter { it.unitId == unitId } else fees
+        val filteredExtraPayments = if (unitId != null) {
+            extraPayments.filter { it.unitId == unitId }
+        } else {
+            extraPayments
+        }
+        val filteredWaterBills = if (unitId != null) {
+            waterBills.filter { it.unitId == unitId }
+        } else {
+            waterBills
+        }
+
         // Unpaid fees (aidatlar)
-        fees.filter { it.status != PaymentStatus.PAID }
+        filteredFees.filter { it.status != PaymentStatus.PAID }
             .forEach { debt += (it.amount - it.paidAmount) }
 
         // Unpaid extra payments (ek ödemeler)
-        extraPayments.filter { it.status != PaymentStatus.PAID }
+        filteredExtraPayments.filter { it.status != PaymentStatus.PAID }
             .forEach { debt += (it.amount - it.paidAmount) }
 
         // Unpaid water bills (su faturaları)
-        waterBills.filter { it.status != PaymentStatus.PAID }
+        filteredWaterBills.filter { it.status != PaymentStatus.PAID }
             .forEach { debt += (it.totalAmount - it.paidAmount) }
 
         debt
     }
 
+    val totalDebt: Flow<Double> = getTotalDebt()
+
     // Total Credit (Toplam Alacak) - Ödenen toplam tutar
-    val totalCredit: Flow<Double> = paymentRepository.getAllPayments()
+    fun getTotalCredit(unitId: String? = null): Flow<Double> = paymentRepository.getAllPayments()
         .map { payments ->
-            payments.sumOf { it.amount }
+            val filteredPayments = if (unitId != null) {
+                payments.filter { it.unitId == unitId }
+            } else {
+                payments
+            }
+            filteredPayments.sumOf { it.amount }
         }
+
+    val totalCredit: Flow<Double> = getTotalCredit()
 
     fun loadDashboardData(unitId: String) {
         viewModelScope.launch {

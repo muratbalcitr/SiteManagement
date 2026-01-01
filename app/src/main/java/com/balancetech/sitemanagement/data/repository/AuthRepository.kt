@@ -4,12 +4,14 @@ import com.balancetech.sitemanagement.data.dao.UserDao
 import com.balancetech.sitemanagement.data.datasource.LocalDataSource
 import com.balancetech.sitemanagement.data.datasource.RemoteDataSource
 import com.balancetech.sitemanagement.data.entity.User
+import com.balancetech.sitemanagement.util.StringUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
 import javax.inject.Inject
@@ -52,11 +54,17 @@ class AuthRepository @Inject constructor(
 
             // If still no user, create one from Firebase user info
             if (user == null) {
+                val userName = firebaseUser.displayName ?: "Kullanıcı"
+                // Generate user ID from name (slug format) for Firestore
+                val allUsers = localDataSource.getAllActiveUsers().first()
+                val existingIds = allUsers.map { it.id }.toSet()
+                val userId = StringUtils.generateUserIdFromName(userName, existingIds)
+                
                 user = User(
-                    id = firebaseUser.uid,
+                    id = userId, // Use slug as ID for Firestore
                     email = firebaseUser.email ?: email,
                     password = "", // Don't store password
-                    name = firebaseUser.displayName ?: "Kullanıcı",
+                    name = userName,
                     phone = firebaseUser.phoneNumber,
                     role = com.balancetech.sitemanagement.data.model.UserRole.RESIDENT,
                     isActive = true
@@ -106,9 +114,14 @@ class AuthRepository @Inject constructor(
                 .build()
             firebaseUser.updateProfile(profileUpdates).await()
 
+            // Generate user ID from name (slug format) for Firestore
+            val allUsers = localDataSource.getAllActiveUsers().first()
+            val existingIds = allUsers.map { it.id }.toSet()
+            val userId = StringUtils.generateUserIdFromName(name, existingIds)
+
             // Create user entity
             val user = User(
-                id = firebaseUser.uid,
+                id = userId, // Use slug as ID for Firestore
                 email = email,
                 password = "", // Don't store password
                 name = name,

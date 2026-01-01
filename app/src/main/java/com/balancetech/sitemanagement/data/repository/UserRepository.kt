@@ -4,9 +4,11 @@ import com.balancetech.sitemanagement.data.datasource.LocalDataSource
 import com.balancetech.sitemanagement.data.datasource.RemoteDataSource
 import com.balancetech.sitemanagement.data.entity.User
 import com.balancetech.sitemanagement.data.model.UserRole
+import com.balancetech.sitemanagement.util.StringUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
@@ -50,8 +52,13 @@ class UserRepository @Inject constructor(
             return Result.failure(Exception("Bu e-posta adresi zaten kullanılıyor"))
         }
 
+        // Generate user ID from name (slug format)
+        val allUsers = localDataSource.getAllActiveUsers().first()
+        val existingIds = allUsers.map { it.id }.toSet()
+        val userId = StringUtils.generateUserIdFromName(name, existingIds)
+
         val user = User(
-            id = UUID.randomUUID().toString(),
+            id = userId,
             email = email,
             password = password, // In production, hash this
             name = name,

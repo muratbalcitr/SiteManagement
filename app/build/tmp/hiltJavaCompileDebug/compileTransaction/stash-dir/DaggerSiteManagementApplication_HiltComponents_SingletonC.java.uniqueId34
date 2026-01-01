@@ -688,7 +688,7 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
           return (T) new UserDetailViewModel(singletonCImpl.provideFeeRepositoryProvider.get(), singletonCImpl.provideExtraPaymentRepositoryProvider.get(), singletonCImpl.provideWaterMeterRepositoryProvider.get(), singletonCImpl.providePaymentRepositoryProvider.get(), singletonCImpl.provideLocalDataSourceProvider.get());
 
           case 8: // com.balancetech.sitemanagement.ui.viewmodel.UserViewModel 
-          return (T) new UserViewModel(singletonCImpl.provideUserRepositoryProvider.get(), singletonCImpl.provideLocalDataSourceProvider.get());
+          return (T) new UserViewModel(singletonCImpl.provideUserRepositoryProvider.get(), singletonCImpl.provideLocalDataSourceProvider.get(), singletonCImpl.provideRemoteDataSourceProvider.get());
 
           case 9: // com.balancetech.sitemanagement.ui.viewmodel.WaterMeterViewModel 
           return (T) new WaterMeterViewModel(singletonCImpl.provideWaterMeterRepositoryProvider.get());
@@ -938,10 +938,10 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
           return (T) RepositoryModule_ProvidePaymentRepositoryFactory.providePaymentRepository(singletonCImpl.paymentDao(), singletonCImpl.provideFirebaseFunctionsServiceProvider.get());
 
           case 10: // com.balancetech.sitemanagement.data.repository.ExtraPaymentRepository 
-          return (T) RepositoryModule_ProvideExtraPaymentRepositoryFactory.provideExtraPaymentRepository(singletonCImpl.extraPaymentDao());
+          return (T) RepositoryModule_ProvideExtraPaymentRepositoryFactory.provideExtraPaymentRepository(singletonCImpl.extraPaymentDao(), singletonCImpl.provideRemoteDataSourceProvider.get());
 
           case 11: // com.balancetech.sitemanagement.data.repository.WaterMeterRepository 
-          return (T) RepositoryModule_ProvideWaterMeterRepositoryFactory.provideWaterMeterRepository(singletonCImpl.waterMeterDao(), singletonCImpl.waterBillDao(), singletonCImpl.provideFirebaseFunctionsServiceProvider.get());
+          return (T) RepositoryModule_ProvideWaterMeterRepositoryFactory.provideWaterMeterRepository(singletonCImpl.waterMeterDao(), singletonCImpl.waterBillDao(), singletonCImpl.provideFirebaseFunctionsServiceProvider.get(), singletonCImpl.provideRemoteDataSourceProvider.get());
 
           case 12: // com.balancetech.sitemanagement.data.repository.SyncRepository 
           return (T) RepositoryModule_ProvideSyncRepositoryFactory.provideSyncRepository(singletonCImpl.provideLocalDataSourceProvider.get(), singletonCImpl.provideRemoteDataSourceProvider.get());
