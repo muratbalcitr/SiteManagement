@@ -17,6 +17,7 @@ interface LocalDataSource {
     fun getAllActiveUsers(): Flow<List<User>>
     fun getUsersByRole(role: com.balancetech.sitemanagement.data.model.UserRole): Flow<List<User>>
     fun getUsersByUnit(unitId: String): Flow<List<User>>
+    suspend fun getUserIdsByUnitId(unitId: String): List<String>
     suspend fun updateUser(user: User)
     
     // Fee operations

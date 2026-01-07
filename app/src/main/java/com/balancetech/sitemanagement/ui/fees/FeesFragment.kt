@@ -104,7 +104,8 @@ class FeesFragment : Fragment() {
             },
             onPaymentClick = { fee ->
                 showPaymentDialog(fee.id, fee.amount - fee.paidAmount)
-            }
+            },
+            localDataSource = viewModel.localDataSource
         )
         
         monthAdapter = FeeMonthAdapter(
@@ -131,7 +132,24 @@ class FeesFragment : Fragment() {
         
         lifecycleScope.launch {
             val filteredFees = if (currentFilter != null) {
-                summary.fees.filter { it.status == currentFilter }
+                summary.fees.filter { fee ->
+                    when (currentFilter) {
+                        PaymentStatus.UNPAID -> {
+                            // Ödemeyenler: Status UNPAID veya paidAmount < amount
+                            fee.status == PaymentStatus.UNPAID && fee.paidAmount < fee.amount
+                        }
+                        PaymentStatus.PARTIALLY_PAID -> {
+                            // Kısmi ödeyenler: Status PARTIALLY_PAID veya (paidAmount > 0 && paidAmount < amount)
+                            fee.status == PaymentStatus.PARTIALLY_PAID || 
+                            (fee.paidAmount > 0 && fee.paidAmount < fee.amount && fee.status != PaymentStatus.PAID)
+                        }
+                        PaymentStatus.PAID -> {
+                            // Ödeyenler: Status PAID veya paidAmount >= amount
+                            fee.status == PaymentStatus.PAID || fee.paidAmount >= fee.amount
+                        }
+                        else -> true
+                    }
+                }
             } else {
                 summary.fees
             }
@@ -144,7 +162,23 @@ class FeesFragment : Fragment() {
         lifecycleScope.launch {
             viewModel.getAllFees().map { fees ->
                 currentFilter?.let { filter ->
-                    fees.filter { it.status == filter }
+                    fees.filter { fee ->
+                        when (filter) {
+                            PaymentStatus.UNPAID -> {
+                                // Ödemeyenler: Status UNPAID veya paidAmount < amount
+                                fee.status == PaymentStatus.UNPAID && fee.paidAmount < fee.amount
+                            }
+                            PaymentStatus.PARTIALLY_PAID -> {
+                                // Kısmi ödeyenler: Status PARTIALLY_PAID veya (paidAmount > 0 && paidAmount < amount)
+                                fee.status == PaymentStatus.PARTIALLY_PAID || 
+                                (fee.paidAmount > 0 && fee.paidAmount < fee.amount && fee.status != PaymentStatus.PAID)
+                            }
+                            PaymentStatus.PAID -> {
+                                // Ödeyenler: Status PAID veya paidAmount >= amount
+                                fee.status == PaymentStatus.PAID || fee.paidAmount >= fee.amount
+                            }
+                        }
+                    }
                 } ?: fees
             }.collect { filteredFees ->
                 if (isMonthView) {

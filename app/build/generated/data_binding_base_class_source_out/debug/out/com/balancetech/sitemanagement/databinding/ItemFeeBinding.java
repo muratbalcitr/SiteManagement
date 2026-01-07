@@ -30,6 +30,9 @@ public final class ItemFeeBinding implements ViewBinding {
   public final TextView feeMonthYear;
 
   @NonNull
+  public final TextView ownerNameText;
+
+  @NonNull
   public final TextView paidAmount;
 
   @NonNull
@@ -41,18 +44,24 @@ public final class ItemFeeBinding implements ViewBinding {
   @NonNull
   public final TextView statusBadge;
 
+  @NonNull
+  public final TextView unitNumberText;
+
   private ItemFeeBinding(@NonNull MaterialCardView rootView, @NonNull TextView dueDateText,
-      @NonNull TextView feeAmount, @NonNull TextView feeMonthYear, @NonNull TextView paidAmount,
-      @NonNull MaterialButton paymentButton, @NonNull TextView remainingAmountText,
-      @NonNull TextView statusBadge) {
+      @NonNull TextView feeAmount, @NonNull TextView feeMonthYear, @NonNull TextView ownerNameText,
+      @NonNull TextView paidAmount, @NonNull MaterialButton paymentButton,
+      @NonNull TextView remainingAmountText, @NonNull TextView statusBadge,
+      @NonNull TextView unitNumberText) {
     this.rootView = rootView;
     this.dueDateText = dueDateText;
     this.feeAmount = feeAmount;
     this.feeMonthYear = feeMonthYear;
+    this.ownerNameText = ownerNameText;
     this.paidAmount = paidAmount;
     this.paymentButton = paymentButton;
     this.remainingAmountText = remainingAmountText;
     this.statusBadge = statusBadge;
+    this.unitNumberText = unitNumberText;
   }
 
   @Override
@@ -100,6 +109,12 @@ public final class ItemFeeBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.ownerNameText;
+      TextView ownerNameText = ViewBindings.findChildViewById(rootView, id);
+      if (ownerNameText == null) {
+        break missingId;
+      }
+
       id = R.id.paidAmount;
       TextView paidAmount = ViewBindings.findChildViewById(rootView, id);
       if (paidAmount == null) {
@@ -124,8 +139,15 @@ public final class ItemFeeBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.unitNumberText;
+      TextView unitNumberText = ViewBindings.findChildViewById(rootView, id);
+      if (unitNumberText == null) {
+        break missingId;
+      }
+
       return new ItemFeeBinding((MaterialCardView) rootView, dueDateText, feeAmount, feeMonthYear,
-          paidAmount, paymentButton, remainingAmountText, statusBadge);
+          ownerNameText, paidAmount, paymentButton, remainingAmountText, statusBadge,
+          unitNumberText);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

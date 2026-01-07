@@ -28,7 +28,7 @@ class UserDetailViewModel @Inject constructor(
     private val waterMeterRepository: WaterMeterRepository,
     private val paymentRepository: PaymentRepository,
     private val userRepository: UserRepository,
-    private val localDataSource: LocalDataSource
+    val localDataSource: LocalDataSource
 ) : ViewModel() {
     
     suspend fun getUserById(userId: String): User? {

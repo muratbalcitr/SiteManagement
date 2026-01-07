@@ -96,13 +96,17 @@ class UserDetailFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        feeAdapter = FeeAdapter(onItemClick = { fee ->
-            // Show fee details
-        }, onPaymentClick = { fee ->
-            showPaymentDialog(
-                fee.id, fee.amount - fee.paidAmount, PaymentEntryDialogFragment.PaymentType.FEE
-            )
-        })
+        feeAdapter = FeeAdapter(
+            onItemClick = { fee ->
+                // Show fee details
+            },
+            onPaymentClick = { fee ->
+                showPaymentDialog(
+                    fee.id, fee.amount - fee.paidAmount, PaymentEntryDialogFragment.PaymentType.FEE
+                )
+            },
+            localDataSource = viewModel.localDataSource
+        )
 
         extraPaymentAdapter = ExtraPaymentAdapter(onItemClick = { payment ->
             // Show extra payment details

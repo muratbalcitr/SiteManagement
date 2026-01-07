@@ -82,6 +82,7 @@ id nameInputLayout
 id nav_graph
 id nav_host_fragment
 id notificationsRecyclerView
+id ownerNameText
 id paidAmount
 id paidAmountText
 id passwordEditText

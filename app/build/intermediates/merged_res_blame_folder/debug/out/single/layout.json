@@ -1,110 +1,114 @@
 [
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_water_bill.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/item_water_bill.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_user_detail.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_user_detail.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_notifications.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/fragment_notifications.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_payments.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_payments.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_reports.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/fragment_reports.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_unit_checkbox.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/item_unit_checkbox.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_unit_checkbox.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/item_unit_checkbox.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/dialog_water_meter_reading.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/dialog_water_meter_reading.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_user_detail.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/fragment_user_detail.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_fee.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/item_fee.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/dialog_create_extra_payment.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/dialog_create_extra_payment.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/dialog_add_user.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/dialog_add_user.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_fee_month.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/item_fee_month.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_water_meter.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_water_meter.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/dialog_add_user.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/dialog_add_user.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_fees.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_fees.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_register.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/fragment_register.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_users.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_users.xml"
+    },
+    {
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_user.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/item_user.xml"
+    },
+    {
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_login.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_login.xml"
     },
     {
         "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_fee.xml",
         "source": "com.balancetech.sitemanagement.app-main-60:/layout/item_fee.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_extra_payments.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/fragment_extra_payments.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_extra_payments.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_extra_payments.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/dialog_create_fees_for_all_units.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/dialog_create_fees_for_all_units.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/dialog_payment_entry.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/dialog_payment_entry.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_dashboard.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/fragment_dashboard.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_notifications.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_notifications.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_notification.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/item_notification.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_fee_month.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/item_fee_month.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_fees.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/fragment_fees.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_water_bill.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/item_water_bill.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_extra_payment.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/item_extra_payment.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_water_meter.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/item_water_meter.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/dialog_create_fee.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/dialog_create_fee.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/dialog_create_fee.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/dialog_create_fee.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_payment.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/item_payment.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_register.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_register.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/dialog_payment_entry.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/dialog_payment_entry.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_payment.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/item_payment.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_user.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/item_user.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_notification.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/item_notification.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_users.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/fragment_users.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_extra_payment.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/item_extra_payment.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/dialog_water_meter_reading.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/dialog_water_meter_reading.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_reports.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_reports.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/activity_main.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/activity_main.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/dialog_create_extra_payment.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/dialog_create_extra_payment.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_payments.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/fragment_payments.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/dialog_create_fees_for_all_units.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/dialog_create_fees_for_all_units.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/item_water_meter.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/item_water_meter.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_dashboard.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_dashboard.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_water_meter.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/fragment_water_meter.xml"
-    },
-    {
-        "merged": "com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/fragment_login.xml",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/fragment_login.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-mergeDebugResources-57:/layout/activity_main.xml",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/activity_main.xml"
     }
 ]

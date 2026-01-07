@@ -16,7 +16,8 @@ class LocalDataSourceImpl @Inject constructor(
     private val waterBillDao: WaterBillDao,
     private val notificationDao: NotificationDao,
     private val unitDao: UnitDao,
-    private val blockDao: com.balancetech.sitemanagement.data.dao.BlockDao
+    private val blockDao: com.balancetech.sitemanagement.data.dao.BlockDao,
+    private val userUnitDao: UserUnitDao
 ) : LocalDataSource {
     
     // User operations
@@ -27,6 +28,7 @@ class LocalDataSourceImpl @Inject constructor(
     override fun getAllActiveUsers(): Flow<List<User>> = userDao.getAllActiveUsers()
     override fun getUsersByRole(role: com.balancetech.sitemanagement.data.model.UserRole): Flow<List<User>> = userDao.getUsersByRole(role)
     override fun getUsersByUnit(unitId: String): Flow<List<User>> = userDao.getUsersByUnit(unitId)
+    override suspend fun getUserIdsByUnitId(unitId: String): List<String> = userUnitDao.getUserIdsByUnitId(unitId)
     override suspend fun updateUser(user: User) = userDao.updateUser(user)
     
     // Fee operations

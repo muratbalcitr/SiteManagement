@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FeeViewModel @Inject constructor(
     private val feeRepository: FeeRepository,
-    private val localDataSource: LocalDataSource
+    val localDataSource: LocalDataSource
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<FeeUiState>(FeeUiState.Idle)
     val uiState: StateFlow<FeeUiState> = _uiState.asStateFlow()

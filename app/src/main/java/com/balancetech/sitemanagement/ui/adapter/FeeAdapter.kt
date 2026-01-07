@@ -5,15 +5,20 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.balancetech.sitemanagement.data.datasource.LocalDataSource
 import com.balancetech.sitemanagement.data.entity.Fee
 import com.balancetech.sitemanagement.data.model.PaymentStatus
 import com.balancetech.sitemanagement.databinding.ItemFeeBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
 class FeeAdapter(
     private val onItemClick: (Fee) -> Unit,
-    private val onPaymentClick: (Fee) -> Unit
+    private val onPaymentClick: (Fee) -> Unit,
+    private val localDataSource: LocalDataSource
 ) : ListAdapter<Fee, FeeAdapter.FeeViewHolder>(FeeDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeeViewHolder {
@@ -37,7 +42,7 @@ class FeeAdapter(
             binding.apply {
                 val monthNames = arrayOf(
                     "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
-                    "July", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+                    "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
                 )
                 
                 feeMonthYear.text = "${monthNames.getOrNull(fee.month - 1) ?: fee.month.toString()} ${fee.year}"
@@ -49,6 +54,48 @@ class FeeAdapter(
                 
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                 dueDateText.text = "Son Ödeme: ${dateFormat.format(Date(fee.dueDate))}"
+                
+                // Load unit and owner information
+                CoroutineScope(Dispatchers.Main).launch {
+                    val unit = localDataSource.getUnitById(fee.unitId)
+                    if (unit != null) {
+                        // Format unit number (e.g., "A1" -> "A/1", "B5" -> "B/5")
+                        val unitNumber = unit.unitNumber.let { num ->
+                            if (num.length > 1 && num[0].isLetter() && num.substring(1).all { it.isDigit() }) {
+                                "${num[0]}/${num.substring(1)}"
+                            } else {
+                                num
+                            }
+                        }
+                        unitNumberText.text = "Daire: $unitNumber"
+                        
+                        // Get owner name(s) from UserUnit table
+                        try {
+                            val userUnitIds = localDataSource.getUserIdsByUnitId(fee.unitId)
+                            
+                            if (userUnitIds.isNotEmpty()) {
+                                val users = userUnitIds.mapNotNull { userId ->
+                                    localDataSource.getUserById(userId)
+                                }
+                                val ownerNames = users.map { it.name }.distinct()
+                                ownerNameText.text = if (ownerNames.isNotEmpty()) {
+                                    ownerNames.joinToString(", ")
+                                } else {
+                                    unit.ownerName ?: "-"
+                                }
+                            } else {
+                                // Fallback to unit.ownerName if no users found
+                                ownerNameText.text = unit.ownerName ?: "-"
+                            }
+                        } catch (e: Exception) {
+                            // Fallback to unit.ownerName if error
+                            ownerNameText.text = unit.ownerName ?: "-"
+                        }
+                    } else {
+                        unitNumberText.text = "Daire: -"
+                        ownerNameText.text = "-"
+                    }
+                }
                 
                 // Status badge
                 when (fee.status) {

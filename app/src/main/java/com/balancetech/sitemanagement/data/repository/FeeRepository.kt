@@ -95,46 +95,37 @@ class FeeRepository(
         val feesToCreate = mutableListOf<Fee>()
         val feesToUpdate = mutableListOf<Fee>()
 
-        // Get all active users to check which units have users
-        val allUsers = userDao.getAllActiveUsers().first()
-        val unitsWithUsers = allUsers
-            .filter { it.unitId != null && it.isActive }
-            .map { it.unitId!! }
-            .toSet()
-
+        // Create fees for all active units (not just units with users)
         units.forEach { unit ->
-            // Only create fee for units that have active users
-            if (unit.id in unitsWithUsers) {
-                // Check if fee already exists for this unit, month, and year
-                val existingFee = feeDao.getFeeByUnitMonthYear(unit.id, month, year)
+            // Check if fee already exists for this unit, month, and year
+            val existingFee = feeDao.getFeeByUnitMonthYear(unit.id, month, year)
+            
+            if (existingFee != null) {
+                // Update existing fee - preserve paidAmount and status
+                val feeAmount = baseAmount
+                val updatedFee = existingFee.copy(
+                    amount = feeAmount,
+                    dueDate = dueDate,
+                    updatedAt = System.currentTimeMillis()
+                )
+                feesToUpdate.add(updatedFee)
+            } else {
+                // Create new fee
+                val feeAmount = baseAmount
+                // Generate fee ID: unitNumber-month-year (e.g., "a1-1-2024")
+                val unitNumber = unit.unitNumber.lowercase()
+                val feeId = "${unitNumber}-${month}-${year}"
                 
-                if (existingFee != null) {
-                    // Update existing fee - preserve paidAmount and status
-                    val feeAmount = baseAmount
-                    val updatedFee = existingFee.copy(
-                        amount = feeAmount,
-                        dueDate = dueDate,
-                        updatedAt = System.currentTimeMillis()
-                    )
-                    feesToUpdate.add(updatedFee)
-                } else {
-                    // Create new fee
-                    val feeAmount = baseAmount
-                    // Generate fee ID: unitNumber-month-year (e.g., "a1-1-2024")
-                    val unitNumber = unit.unitNumber.lowercase()
-                    val feeId = "${unitNumber}-${month}-${year}"
-                    
-                    val fee = Fee(
-                        id = feeId,
-                        apartmentId = apartmentId,
-                        unitId = unit.id,
-                        month = month,
-                        year = year,
-                        amount = feeAmount,
-                        dueDate = dueDate
-                    )
-                    feesToCreate.add(fee)
-                }
+                val fee = Fee(
+                    id = feeId,
+                    apartmentId = apartmentId,
+                    unitId = unit.id,
+                    month = month,
+                    year = year,
+                    amount = feeAmount,
+                    dueDate = dueDate
+                )
+                feesToCreate.add(fee)
             }
         }
 
