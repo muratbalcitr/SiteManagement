@@ -77,3 +77,4 @@ org.gradle.java.home=/Applications/Android Studio 2.app/Contents/jbr/Contents/Ho
 2. Android SDK'yı tamamen yeniden yükleyin
 3. Projeyi yeni bir dizinde oluşturup dosyaları kopyalayın
 
+

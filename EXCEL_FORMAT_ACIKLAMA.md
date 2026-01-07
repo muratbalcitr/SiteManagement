@@ -71,3 +71,4 @@ Uygulamadan export edilen dosya aynı formatta olacaktır, böylece:
 - Excel'de açıp düzenleyebilirsiniz
 - Başka sistemlere aktarabilirsiniz
 
+

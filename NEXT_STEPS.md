@@ -143,3 +143,4 @@ Dosyanın `app/` klasöründe olduğundan ve `build.gradle` dosyasında Google S
 
 Tüm kodlar hazır. Sadece Firebase projesini oluşturup deploy etmeniz gerekiyor!
 
+

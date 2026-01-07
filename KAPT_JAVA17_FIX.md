@@ -85,3 +85,4 @@ dependencies {
 - Java 22 henüz tam desteklenmiyor
 - KAPT Java 17 ile çalışır, ancak KSP daha iyi performans sağlar
 
+

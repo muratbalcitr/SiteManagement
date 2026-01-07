@@ -194,3 +194,4 @@ firebase deploy --only firestore:indexes
 - Firebase Admin SDK'nın initialize edildiğinden emin olun
 - Authentication kontrolünü geçtiğinizden emin olun
 
+

@@ -42,3 +42,4 @@ firebase deploy --only functions
 
 Detaylı kurulum ve kullanım bilgileri için `FIREBASE_FUNCTIONS_SETUP.md` dosyasına bakın.
 
+

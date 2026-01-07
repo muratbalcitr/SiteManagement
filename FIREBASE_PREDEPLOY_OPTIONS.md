@@ -144,3 +144,4 @@ Manuel düzeltme için lint çıktısındaki hataları takip edin.
 - Bir komut başarısız olursa deploy durur (opsiyonel yapmadıysanız)
 - Predeploy komutları root dizinden çalıştırılır
 
+
