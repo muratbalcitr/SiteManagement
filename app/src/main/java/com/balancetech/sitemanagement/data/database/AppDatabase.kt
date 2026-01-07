@@ -56,10 +56,10 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
         
-        private val MIGRATION_1_2 = object : androidx.room.migration.Migration(1, 2) {
-            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+        val MIGRATION_1_2 = object : androidx.room.migration.Migration(1, 2) {
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
                 // Create user_units table
-                database.execSQL("""
+                db.execSQL("""
                     CREATE TABLE IF NOT EXISTS user_units (
                         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                         userId TEXT NOT NULL,
@@ -71,12 +71,12 @@ abstract class AppDatabase : RoomDatabase() {
                 """.trimIndent())
                 
                 // Create indices
-                database.execSQL("CREATE INDEX IF NOT EXISTS index_user_units_userId ON user_units(userId)")
-                database.execSQL("CREATE INDEX IF NOT EXISTS index_user_units_unitId ON user_units(unitId)")
-                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_user_units_userId_unitId ON user_units(userId, unitId)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_user_units_userId ON user_units(userId)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_user_units_unitId ON user_units(unitId)")
+                db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_user_units_userId_unitId ON user_units(userId, unitId)")
                 
                 // Migrate existing data: copy unitId from users table to user_units table
-                database.execSQL("""
+                db.execSQL("""
                     INSERT INTO user_units (userId, unitId, createdAt)
                     SELECT id, unitId, createdAt
                     FROM users

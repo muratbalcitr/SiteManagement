@@ -1,6 +1,7 @@
 package com.balancetech.sitemanagement.di
 
 import com.balancetech.sitemanagement.data.dao.*
+import com.balancetech.sitemanagement.data.dao.UserUnitDao
 import com.balancetech.sitemanagement.data.datasource.LocalDataSource
 import com.balancetech.sitemanagement.data.datasource.RemoteDataSource
 import com.balancetech.sitemanagement.data.repository.*
@@ -75,9 +76,10 @@ object RepositoryModule {
     @Singleton
     fun provideUserRepository(
         localDataSource: LocalDataSource,
-        remoteDataSource: RemoteDataSource
+        remoteDataSource: RemoteDataSource,
+        userUnitDao: UserUnitDao
     ): UserRepository {
-        return UserRepository(localDataSource, remoteDataSource)
+        return UserRepository(localDataSource, remoteDataSource, userUnitDao)
     }
 
     @Provides

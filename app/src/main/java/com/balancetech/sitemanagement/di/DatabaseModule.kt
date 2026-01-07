@@ -3,6 +3,7 @@ package com.balancetech.sitemanagement.di
 import android.content.Context
 import androidx.room.Room
 import com.balancetech.sitemanagement.data.dao.*
+import com.balancetech.sitemanagement.data.dao.UserUnitDao
 import com.balancetech.sitemanagement.data.database.AppDatabase
 import dagger.Module
 import dagger.Provides
@@ -21,11 +22,16 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "site_management_database"
-        ).build()
+        )
+        .addMigrations(AppDatabase.MIGRATION_1_2)
+        .build()
     }
 
     @Provides
     fun provideUserDao(database: AppDatabase): UserDao = database.userDao()
+
+    @Provides
+    fun provideUserUnitDao(database: AppDatabase): UserUnitDao = database.userUnitDao()
 
     @Provides
     fun provideApartmentDao(database: AppDatabase): ApartmentDao = database.apartmentDao()

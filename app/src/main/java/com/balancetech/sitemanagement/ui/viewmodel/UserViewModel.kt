@@ -161,37 +161,73 @@ class UserViewModel @Inject constructor(
             _uiState.value = UserUiState.Loading
             try {
                 var createdUserCount = 0
+                var updatedUserCount = 0
+                
+                // Önce tüm daireleri grupla (aynı sahip adına göre)
+                val unitsByOwner = units.groupBy { it.ownerName?.trim()?.lowercase() }
+                
                 units.forEach { unit ->
                     localDataSource.insertUnit(unit)
-                    
-                    // Eğer dairede sahip bilgisi varsa, otomatik olarak User oluştur
-                    if (!unit.ownerName.isNullOrBlank()) {
+                }
+                
+                // Her sahip için kullanıcı oluştur veya güncelle
+                unitsByOwner.forEach { (ownerNameKey, ownerUnits) ->
+                    if (ownerNameKey != null && ownerNameKey.isNotBlank()) {
+                        // İlk daireden sahip bilgilerini al
+                        val firstUnit = ownerUnits.first()
+                        val ownerName = firstUnit.ownerName ?: return@forEach
+                        
                         // Email oluştur (ownerName'den)
-                        val email = "${unit.ownerName.lowercase().replace(" ", ".")}@kucukyali.com"
+                        val email = "${ownerName.lowercase().replace(" ", ".")}@kucukyali.com"
+                        
+                        // Tüm daire ID'lerini topla
+                        val unitIds = ownerUnits.map { it.id }
                         
                         // Kullanıcı zaten var mı kontrol et
                         val existingUser = localDataSource.getUserByEmail(email)
                         if (existingUser == null) {
-                            // UserRepository.createUser kullanarak hem local'e hem Firebase'e kaydet
+                            // Yeni kullanıcı oluştur (tüm dairelerle birlikte)
                             val result = userRepository.createUser(
                                 email = email,
                                 password = "", // Şifre sonra ayarlanabilir
-                                name = unit.ownerName,
-                                phone = unit.ownerPhone,
+                                name = ownerName,
+                                phone = firstUnit.ownerPhone,
                                 role = UserRole.RESIDENT,
-                                apartmentId = unit.apartmentId,
-                                unitId = unit.id
+                                apartmentId = firstUnit.apartmentId,
+                                unitIds = unitIds
                             )
                             if (result.isSuccess) {
                                 createdUserCount++
                             }
+                        } else {
+                            // Mevcut kullanıcıya yeni daireleri ekle
+                            val existingUnitIds = userRepository.getUserUnits(existingUser.id).toSet()
+                            val newUnitIds = unitIds.filter { it !in existingUnitIds }
+                            
+                            if (newUnitIds.isNotEmpty()) {
+                                val allUnitIds = (existingUnitIds + newUnitIds).toList()
+                                val result = userRepository.updateUser(existingUser, allUnitIds)
+                                if (result.isSuccess) {
+                                    updatedUserCount++
+                                }
+                            }
                         }
                     }
                 }
-                val message = if (createdUserCount > 0) {
-                    "${units.size} daire ve $createdUserCount kullanıcı başarıyla içe aktarıldı"
-                } else {
-                    "${units.size} daire başarıyla içe aktarıldı"
+                
+                val message = when {
+                    createdUserCount > 0 && updatedUserCount > 0 -> {
+                        "${units.size} daire, $createdUserCount yeni kullanıcı ve $updatedUserCount mevcut kullanıcı başarıyla içe aktarıldı"
+                    }
+                    createdUserCount > 0 -> {
+                        "${units.size} daire ve $createdUserCount kullanıcı başarıyla içe aktarıldı"
+                    }
+                    updatedUserCount > 0 -> {
+                        "${units.size} daire ve $updatedUserCount mevcut kullanıcı güncellendi"
+                    }
+                    else -> {
+                        "${units.size} daire başarıyla içe aktarıldı"
+                    }
                 }
                 _uiState.value = UserUiState.Success(message)
                 // Kullanıcı listesini yenile

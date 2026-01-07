@@ -47,6 +47,15 @@ class AddUserDialogFragment : DialogFragment() {
     }
 
     private fun setupViews() {
+        // Setup units RecyclerView with checkboxes first
+        unitCheckboxAdapter = UnitCheckboxAdapter { unitId, isChecked ->
+            // Handle unit selection
+        }
+        binding.unitsRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = unitCheckboxAdapter
+        }
+        
         // Load blocks for spinner
         viewModel.loadBlocks("apt-001") // TODO: Get from current user
 
@@ -74,20 +83,11 @@ class AddUserDialogFragment : DialogFragment() {
                 if (selectedBlock != null) {
                     viewModel.loadUnitsByBlock(selectedBlock.id)
                     // Clear unit selection when block changes
-                    binding.unitSpinner.setSelection(0)
+                    unitCheckboxAdapter.setSelectedUnits(emptySet())
                 }
             }
 
             override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
-        }
-
-        // Setup units RecyclerView with checkboxes
-        unitCheckboxAdapter = UnitCheckboxAdapter { unitId, isChecked ->
-            // Handle unit selection
-        }
-        binding.unitsRecyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = unitCheckboxAdapter
         }
         
         viewModel.units.observe(this) { units ->

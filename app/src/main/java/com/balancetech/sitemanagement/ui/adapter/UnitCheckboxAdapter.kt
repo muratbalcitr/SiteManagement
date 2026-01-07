@@ -9,7 +9,7 @@ import com.balancetech.sitemanagement.data.entity.Unit
 import com.balancetech.sitemanagement.databinding.ItemUnitCheckboxBinding
 
 class UnitCheckboxAdapter(
-    private val onUnitChecked: (String, Boolean) -> Unit
+    private val onUnitChecked: (String, Boolean) -> kotlin.Unit
 ) : ListAdapter<Unit, UnitCheckboxAdapter.UnitViewHolder>(UnitDiffCallback()) {
 
     private val selectedUnitIds = mutableSetOf<String>()
