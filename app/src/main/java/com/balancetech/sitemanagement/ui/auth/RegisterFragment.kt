@@ -45,7 +45,7 @@ class RegisterFragment : Fragment() {
             }
 
             // Default to RESIDENT role for registration
-            viewModel.register(email, password, name, null, UserRole.RESIDENT)
+            viewModel.register(email, password, name, null, UserRole.ADMIN)
         }
 
         binding.loginTextView.setOnClickListener {

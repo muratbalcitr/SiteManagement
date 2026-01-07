@@ -145,3 +145,4 @@ Manuel düzeltme için lint çıktısındaki hataları takip edin.
 - Predeploy komutları root dizinden çalıştırılır
 
 
+

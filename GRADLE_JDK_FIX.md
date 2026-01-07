@@ -74,3 +74,4 @@ org.gradle.java.home=/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home
 - Gradle 8.2 Java 17+ gerektirir
 
 
+

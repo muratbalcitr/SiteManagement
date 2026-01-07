@@ -36,6 +36,7 @@ class UserRepository @Inject constructor(
 
     /**
      * Create a new user (resident)
+     * If unitId is provided, uses unit name (block + unit number) as document ID
      */
     suspend fun createUser(
         email: String,
@@ -52,10 +53,27 @@ class UserRepository @Inject constructor(
             return Result.failure(Exception("Bu e-posta adresi zaten kullanılıyor"))
         }
 
-        // Generate user ID from name (slug format)
-        val allUsers = localDataSource.getAllActiveUsers().first()
-        val existingIds = allUsers.map { it.id }.toSet()
-        val userId = StringUtils.generateUserIdFromName(name, existingIds)
+        // Generate user ID
+        val userId = if (unitId != null) {
+            // If unitId is provided, get unit info and use unitNumber as document ID
+            // Unit number format is already "A1", "B5", etc. from DatabaseSeedUtil
+            val unit = localDataSource.getUnitById(unitId)
+            if (unit != null) {
+                // Use unitNumber directly as document ID (e.g., "A1", "B5")
+                // Make it lowercase for consistency
+                unit.unitNumber.lowercase()
+            } else {
+                // Fallback to name-based slug if unit not found
+                val allUsers = localDataSource.getAllActiveUsers().first()
+                val existingIds = allUsers.map { it.id }.toSet()
+                StringUtils.generateUserIdFromName(name, existingIds)
+            }
+        } else {
+            // If no unitId, use name-based slug
+            val allUsers = localDataSource.getAllActiveUsers().first()
+            val existingIds = allUsers.map { it.id }.toSet()
+            StringUtils.generateUserIdFromName(name, existingIds)
+        }
 
         val user = User(
             id = userId,

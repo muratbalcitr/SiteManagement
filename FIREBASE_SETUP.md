@@ -152,3 +152,4 @@ Production'a geçmeden önce:
 - Firebase Functions kullanmak istiyorsanız, backend kodlarını ayrı bir klasörde tutmanız önerilir
 
 
+

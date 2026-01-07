@@ -106,9 +106,15 @@ object ExcelImportUtil {
         }
         
         val blockName = values[0].trim()
-        val unitNumber = values[1].trim()
+        var unitNumber = values[1].trim()
         val floor = values[2].trim().toIntOrNull() ?: throw Exception("Geçersiz kat numarası")
         val area = values[3].trim().toDoubleOrNull() ?: throw Exception("Geçersiz alan değeri")
+        
+        // Ensure unitNumber includes block prefix (e.g., "A1", "B5")
+        // If unitNumber is just a number, prepend block name
+        if (unitNumber.all { it.isDigit() }) {
+            unitNumber = "${blockName.uppercase()}$unitNumber"
+        }
         
         // Optional fields
         val landShare = if (values.size > 4) {

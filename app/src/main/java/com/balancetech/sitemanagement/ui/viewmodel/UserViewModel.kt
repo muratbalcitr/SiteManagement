@@ -142,7 +142,7 @@ class UserViewModel @Inject constructor(
                     // Eğer dairede sahip bilgisi varsa, otomatik olarak User oluştur
                     if (!unit.ownerName.isNullOrBlank()) {
                         // Email oluştur (ownerName'den)
-                        val email = "${unit.ownerName.lowercase().replace(" ", ".")}@example.com"
+                        val email = "${unit.ownerName.lowercase().replace(" ", ".")}@kucukyali.com"
                         
                         // Kullanıcı zaten var mı kontrol et
                         val existingUser = localDataSource.getUserByEmail(email)

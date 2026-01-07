@@ -195,3 +195,4 @@ firebase deploy --only firestore:indexes
 - Authentication kontrolünü geçtiğinizden emin olun
 
 
+

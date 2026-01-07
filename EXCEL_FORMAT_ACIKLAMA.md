@@ -72,3 +72,4 @@ Uygulamadan export edilen dosya aynı formatta olacaktır, böylece:
 - Başka sistemlere aktarabilirsiniz
 
 
+

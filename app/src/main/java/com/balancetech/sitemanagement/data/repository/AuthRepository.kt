@@ -94,7 +94,7 @@ class AuthRepository @Inject constructor(
                         password = "", // Don't store password
                         name = userName,
                         phone = firebaseUser.phoneNumber,
-                        role = com.balancetech.sitemanagement.data.model.UserRole.RESIDENT,
+                        role = com.balancetech.sitemanagement.data.model.UserRole.ADMIN,
                         isActive = true
                     )
                     localDataSource.insertUser(user)
