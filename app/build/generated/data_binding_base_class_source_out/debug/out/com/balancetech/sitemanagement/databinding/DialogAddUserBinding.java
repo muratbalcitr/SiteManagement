@@ -10,6 +10,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.balancetech.sitemanagement.R;
@@ -51,14 +52,14 @@ public final class DialogAddUserBinding implements ViewBinding {
   public final ProgressBar progressBar;
 
   @NonNull
-  public final Spinner unitSpinner;
+  public final RecyclerView unitsRecyclerView;
 
   private DialogAddUserBinding(@NonNull ScrollView rootView, @NonNull MaterialButton addButton,
       @NonNull Spinner blockSpinner, @NonNull MaterialButton cancelButton,
       @NonNull TextInputEditText emailEditText, @NonNull TextView errorText,
       @NonNull TextInputEditText nameEditText, @NonNull TextInputEditText passwordEditText,
       @NonNull TextInputEditText phoneEditText, @NonNull ProgressBar progressBar,
-      @NonNull Spinner unitSpinner) {
+      @NonNull RecyclerView unitsRecyclerView) {
     this.rootView = rootView;
     this.addButton = addButton;
     this.blockSpinner = blockSpinner;
@@ -69,7 +70,7 @@ public final class DialogAddUserBinding implements ViewBinding {
     this.passwordEditText = passwordEditText;
     this.phoneEditText = phoneEditText;
     this.progressBar = progressBar;
-    this.unitSpinner = unitSpinner;
+    this.unitsRecyclerView = unitsRecyclerView;
   }
 
   @Override
@@ -153,15 +154,15 @@ public final class DialogAddUserBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.unitSpinner;
-      Spinner unitSpinner = ViewBindings.findChildViewById(rootView, id);
-      if (unitSpinner == null) {
+      id = R.id.unitsRecyclerView;
+      RecyclerView unitsRecyclerView = ViewBindings.findChildViewById(rootView, id);
+      if (unitsRecyclerView == null) {
         break missingId;
       }
 
       return new DialogAddUserBinding((ScrollView) rootView, addButton, blockSpinner, cancelButton,
           emailEditText, errorText, nameEditText, passwordEditText, phoneEditText, progressBar,
-          unitSpinner);
+          unitsRecyclerView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

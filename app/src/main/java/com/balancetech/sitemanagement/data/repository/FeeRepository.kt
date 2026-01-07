@@ -46,8 +46,15 @@ class FeeRepository(
         amount: Double,
         dueDate: Long
     ): Result<Fee> {
+        // Get unit to extract unit number for document ID
+        val unit = localDataSource.getUnitById(unitId)
+        val unitNumber = unit?.unitNumber?.lowercase() ?: unitId
+        
+        // Generate fee ID: unitNumber-month-year (e.g., "a1-1-2024")
+        val feeId = "${unitNumber}-${month}-${year}"
+        
         val fee = Fee(
-            id = UUID.randomUUID().toString(),
+            id = feeId,
             apartmentId = apartmentId,
             unitId = unitId,
             month = month,
@@ -113,8 +120,12 @@ class FeeRepository(
                 } else {
                     // Create new fee
                     val feeAmount = baseAmount
+                    // Generate fee ID: unitNumber-month-year (e.g., "a1-1-2024")
+                    val unitNumber = unit.unitNumber.lowercase()
+                    val feeId = "${unitNumber}-${month}-${year}"
+                    
                     val fee = Fee(
-                        id = UUID.randomUUID().toString(),
+                        id = feeId,
                         apartmentId = apartmentId,
                         unitId = unit.id,
                         month = month,

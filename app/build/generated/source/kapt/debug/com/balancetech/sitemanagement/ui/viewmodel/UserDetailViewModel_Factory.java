@@ -4,6 +4,7 @@ import com.balancetech.sitemanagement.data.datasource.LocalDataSource;
 import com.balancetech.sitemanagement.data.repository.ExtraPaymentRepository;
 import com.balancetech.sitemanagement.data.repository.FeeRepository;
 import com.balancetech.sitemanagement.data.repository.PaymentRepository;
+import com.balancetech.sitemanagement.data.repository.UserRepository;
 import com.balancetech.sitemanagement.data.repository.WaterMeterRepository;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
@@ -34,36 +35,42 @@ public final class UserDetailViewModel_Factory implements Factory<UserDetailView
 
   private final Provider<PaymentRepository> paymentRepositoryProvider;
 
+  private final Provider<UserRepository> userRepositoryProvider;
+
   private final Provider<LocalDataSource> localDataSourceProvider;
 
   public UserDetailViewModel_Factory(Provider<FeeRepository> feeRepositoryProvider,
       Provider<ExtraPaymentRepository> extraPaymentRepositoryProvider,
       Provider<WaterMeterRepository> waterMeterRepositoryProvider,
       Provider<PaymentRepository> paymentRepositoryProvider,
+      Provider<UserRepository> userRepositoryProvider,
       Provider<LocalDataSource> localDataSourceProvider) {
     this.feeRepositoryProvider = feeRepositoryProvider;
     this.extraPaymentRepositoryProvider = extraPaymentRepositoryProvider;
     this.waterMeterRepositoryProvider = waterMeterRepositoryProvider;
     this.paymentRepositoryProvider = paymentRepositoryProvider;
+    this.userRepositoryProvider = userRepositoryProvider;
     this.localDataSourceProvider = localDataSourceProvider;
   }
 
   @Override
   public UserDetailViewModel get() {
-    return newInstance(feeRepositoryProvider.get(), extraPaymentRepositoryProvider.get(), waterMeterRepositoryProvider.get(), paymentRepositoryProvider.get(), localDataSourceProvider.get());
+    return newInstance(feeRepositoryProvider.get(), extraPaymentRepositoryProvider.get(), waterMeterRepositoryProvider.get(), paymentRepositoryProvider.get(), userRepositoryProvider.get(), localDataSourceProvider.get());
   }
 
   public static UserDetailViewModel_Factory create(Provider<FeeRepository> feeRepositoryProvider,
       Provider<ExtraPaymentRepository> extraPaymentRepositoryProvider,
       Provider<WaterMeterRepository> waterMeterRepositoryProvider,
       Provider<PaymentRepository> paymentRepositoryProvider,
+      Provider<UserRepository> userRepositoryProvider,
       Provider<LocalDataSource> localDataSourceProvider) {
-    return new UserDetailViewModel_Factory(feeRepositoryProvider, extraPaymentRepositoryProvider, waterMeterRepositoryProvider, paymentRepositoryProvider, localDataSourceProvider);
+    return new UserDetailViewModel_Factory(feeRepositoryProvider, extraPaymentRepositoryProvider, waterMeterRepositoryProvider, paymentRepositoryProvider, userRepositoryProvider, localDataSourceProvider);
   }
 
   public static UserDetailViewModel newInstance(FeeRepository feeRepository,
       ExtraPaymentRepository extraPaymentRepository, WaterMeterRepository waterMeterRepository,
-      PaymentRepository paymentRepository, LocalDataSource localDataSource) {
-    return new UserDetailViewModel(feeRepository, extraPaymentRepository, waterMeterRepository, paymentRepository, localDataSource);
+      PaymentRepository paymentRepository, UserRepository userRepository,
+      LocalDataSource localDataSource) {
+    return new UserDetailViewModel(feeRepository, extraPaymentRepository, waterMeterRepository, paymentRepository, userRepository, localDataSource);
   }
 }

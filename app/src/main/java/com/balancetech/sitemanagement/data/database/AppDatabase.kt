@@ -14,6 +14,7 @@ import com.balancetech.sitemanagement.data.entity.Unit as UnitEntity
         Apartment::class,
         Block::class,
         UnitEntity::class,
+        UserUnit::class,
         Fee::class,
         ExtraPayment::class,
         WaterMeter::class,
@@ -21,11 +22,12 @@ import com.balancetech.sitemanagement.data.entity.Unit as UnitEntity
         Payment::class,
         Notification::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
+    abstract fun userUnitDao(): UserUnitDao
     abstract fun apartmentDao(): ApartmentDao
     abstract fun blockDao(): com.balancetech.sitemanagement.data.dao.BlockDao
     abstract fun unitDao(): UnitDao
@@ -46,9 +48,40 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "site_management_database"
-                ).build()
+                )
+                .addMigrations(MIGRATION_1_2)
+                .build()
                 INSTANCE = instance
                 instance
+            }
+        }
+        
+        private val MIGRATION_1_2 = object : androidx.room.migration.Migration(1, 2) {
+            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                // Create user_units table
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS user_units (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        userId TEXT NOT NULL,
+                        unitId TEXT NOT NULL,
+                        createdAt INTEGER NOT NULL,
+                        FOREIGN KEY(userId) REFERENCES users(id) ON DELETE CASCADE,
+                        FOREIGN KEY(unitId) REFERENCES units(id) ON DELETE CASCADE
+                    )
+                """.trimIndent())
+                
+                // Create indices
+                database.execSQL("CREATE INDEX IF NOT EXISTS index_user_units_userId ON user_units(userId)")
+                database.execSQL("CREATE INDEX IF NOT EXISTS index_user_units_unitId ON user_units(unitId)")
+                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_user_units_userId_unitId ON user_units(userId, unitId)")
+                
+                // Migrate existing data: copy unitId from users table to user_units table
+                database.execSQL("""
+                    INSERT INTO user_units (userId, unitId, createdAt)
+                    SELECT id, unitId, createdAt
+                    FROM users
+                    WHERE unitId IS NOT NULL
+                """.trimIndent())
             }
         }
     }

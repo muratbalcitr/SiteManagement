@@ -1,5 +1,6 @@
 package com.balancetech.sitemanagement.data.repository;
 
+import com.balancetech.sitemanagement.data.dao.UserUnitDao;
 import com.balancetech.sitemanagement.data.datasource.LocalDataSource;
 import com.balancetech.sitemanagement.data.datasource.RemoteDataSource;
 import dagger.internal.DaggerGenerated;
@@ -27,24 +28,29 @@ public final class UserRepository_Factory implements Factory<UserRepository> {
 
   private final Provider<RemoteDataSource> remoteDataSourceProvider;
 
+  private final Provider<UserUnitDao> userUnitDaoProvider;
+
   public UserRepository_Factory(Provider<LocalDataSource> localDataSourceProvider,
-      Provider<RemoteDataSource> remoteDataSourceProvider) {
+      Provider<RemoteDataSource> remoteDataSourceProvider,
+      Provider<UserUnitDao> userUnitDaoProvider) {
     this.localDataSourceProvider = localDataSourceProvider;
     this.remoteDataSourceProvider = remoteDataSourceProvider;
+    this.userUnitDaoProvider = userUnitDaoProvider;
   }
 
   @Override
   public UserRepository get() {
-    return newInstance(localDataSourceProvider.get(), remoteDataSourceProvider.get());
+    return newInstance(localDataSourceProvider.get(), remoteDataSourceProvider.get(), userUnitDaoProvider.get());
   }
 
   public static UserRepository_Factory create(Provider<LocalDataSource> localDataSourceProvider,
-      Provider<RemoteDataSource> remoteDataSourceProvider) {
-    return new UserRepository_Factory(localDataSourceProvider, remoteDataSourceProvider);
+      Provider<RemoteDataSource> remoteDataSourceProvider,
+      Provider<UserUnitDao> userUnitDaoProvider) {
+    return new UserRepository_Factory(localDataSourceProvider, remoteDataSourceProvider, userUnitDaoProvider);
   }
 
   public static UserRepository newInstance(LocalDataSource localDataSource,
-      RemoteDataSource remoteDataSource) {
-    return new UserRepository(localDataSource, remoteDataSource);
+      RemoteDataSource remoteDataSource, UserUnitDao userUnitDao) {
+    return new UserRepository(localDataSource, remoteDataSource, userUnitDao);
   }
 }

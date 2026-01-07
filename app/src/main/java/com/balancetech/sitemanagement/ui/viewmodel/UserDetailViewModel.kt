@@ -12,6 +12,7 @@ import com.balancetech.sitemanagement.data.entity.WaterBill
 import com.balancetech.sitemanagement.data.repository.ExtraPaymentRepository
 import com.balancetech.sitemanagement.data.repository.FeeRepository
 import com.balancetech.sitemanagement.data.repository.PaymentRepository
+import com.balancetech.sitemanagement.data.repository.UserRepository
 import com.balancetech.sitemanagement.data.repository.WaterMeterRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -26,6 +27,7 @@ class UserDetailViewModel @Inject constructor(
     private val extraPaymentRepository: ExtraPaymentRepository,
     private val waterMeterRepository: WaterMeterRepository,
     private val paymentRepository: PaymentRepository,
+    private val userRepository: UserRepository,
     private val localDataSource: LocalDataSource
 ) : ViewModel() {
     
@@ -51,6 +53,10 @@ class UserDetailViewModel @Inject constructor(
     
     fun getPaymentsByUnit(unitId: String): Flow<List<Payment>> {
         return paymentRepository.getPaymentsByUnit(unitId)
+    }
+    
+    suspend fun getUserUnits(userId: String): List<String> {
+        return userRepository.getUserUnits(userId)
     }
     
     suspend fun getTotalDebt(unitId: String): Double {

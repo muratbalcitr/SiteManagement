@@ -3410,6 +3410,7 @@ int id extraPaymentsFragment 0x7f0800e9
 int id extraPaymentsRecyclerView 0x7f0800ea
 int id fade 0x7f0800eb
 int id feeAmount 0x7f0800ec
+int id feeCountText 0x7f08028a
 int id feeMonthYear 0x7f0800ed
 int id feesCard 0x7f0800ee
 int id feesFragment 0x7f0800ef
@@ -3521,6 +3522,7 @@ int id meterNumberText 0x7f080157
 int id middle 0x7f080158
 int id mini 0x7f080159
 int id monthSpinner 0x7f08015a
+int id monthYearText 0x7f08028b
 int id month_grid 0x7f08015b
 int id month_navigation_bar 0x7f08015c
 int id month_navigation_fragment_toggle 0x7f08015d
@@ -3662,6 +3664,7 @@ int id scrollIndicatorDown 0x7f0801e0
 int id scrollIndicatorUp 0x7f0801e1
 int id scrollView 0x7f0801e2
 int id scrollable 0x7f0801e3
+int id searchMenuItem 0x7f08028d
 int id search_badge 0x7f0801e4
 int id search_bar 0x7f0801e5
 int id search_button 0x7f0801e6
@@ -3779,11 +3782,12 @@ int id typeText 0x7f080254
 int id unchecked 0x7f080255
 int id uniform 0x7f080256
 int id unitAreaText 0x7f080281
+int id unitCheckbox 0x7f08028e
 int id unitIdEditText 0x7f080257
 int id unitInfoText 0x7f080258
 int id unitNumberText 0x7f080282
 int id unitPriceText 0x7f080259
-int id unitSpinner 0x7f08025a
+int id unitsRecyclerView 0x7f08028f
 int id unlabeled 0x7f08025b
 int id unreadIndicator 0x7f08025c
 int id up 0x7f08025d
@@ -3975,8 +3979,10 @@ int layout ime_base_split_test_activity 0x7f0b003f
 int layout ime_secondary_split_test_activity 0x7f0b0040
 int layout item_extra_payment 0x7f0b0041
 int layout item_fee 0x7f0b0042
+int layout item_fee_month 0x7f0b0086
 int layout item_notification 0x7f0b0043
 int layout item_payment 0x7f0b0044
+int layout item_unit_checkbox 0x7f0b0087
 int layout item_user 0x7f0b0045
 int layout item_water_bill 0x7f0b0046
 int layout item_water_meter 0x7f0b0047

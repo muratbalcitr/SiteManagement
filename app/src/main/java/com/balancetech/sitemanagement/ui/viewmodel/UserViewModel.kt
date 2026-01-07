@@ -82,7 +82,7 @@ class UserViewModel @Inject constructor(
         phone: String?,
         role: UserRole,
         apartmentId: String?,
-        unitId: String?
+        unitIds: List<String>
     ) {
         viewModelScope.launch {
             _uiState.value = UserUiState.Loading
@@ -93,7 +93,7 @@ class UserViewModel @Inject constructor(
                 phone = phone,
                 role = role,
                 apartmentId = apartmentId,
-                unitId = unitId
+                unitIds = unitIds
             )
             _uiState.value = if (result.isSuccess) {
                 UserUiState.Success("Daire sakini başarıyla eklendi")
@@ -102,17 +102,42 @@ class UserViewModel @Inject constructor(
             }
         }
     }
+    
+    // Backward compatibility
+    fun createUser(
+        email: String,
+        password: String,
+        name: String,
+        phone: String?,
+        role: UserRole,
+        apartmentId: String?,
+        unitId: String?
+    ) {
+        createUser(
+            email = email,
+            password = password,
+            name = name,
+            phone = phone,
+            role = role,
+            apartmentId = apartmentId,
+            unitIds = if (unitId != null) listOf(unitId) else emptyList()
+        )
+    }
 
-    fun updateUser(user: User) {
+    fun updateUser(user: User, unitIds: List<String>? = null) {
         viewModelScope.launch {
             _uiState.value = UserUiState.Loading
-            val result = userRepository.updateUser(user)
+            val result = userRepository.updateUser(user, unitIds)
             _uiState.value = if (result.isSuccess) {
                 UserUiState.Success("Kullanıcı güncellendi")
             } else {
                 UserUiState.Error(result.exceptionOrNull()?.message ?: "Güncelleme hatası")
             }
         }
+    }
+    
+    suspend fun getUserUnits(userId: String): List<String> {
+        return userRepository.getUserUnits(userId)
     }
 
     fun deleteUser(user: User) {

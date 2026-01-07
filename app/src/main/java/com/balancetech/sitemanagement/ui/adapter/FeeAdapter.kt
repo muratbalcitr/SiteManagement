@@ -72,12 +72,19 @@ class FeeAdapter(
                     }
                 }
                 
+                // Enable/disable payment button based on payment status
+                val isFullyPaid = fee.status == PaymentStatus.PAID || (fee.paidAmount >= fee.amount)
+                paymentButton.isEnabled = !isFullyPaid
+                paymentButton.alpha = if (isFullyPaid) 0.5f else 1.0f
+                
                 root.setOnClickListener {
                     onItemClick(fee)
                 }
                 
                 paymentButton.setOnClickListener {
-                    onPaymentClick(fee)
+                    if (!isFullyPaid) {
+                        onPaymentClick(fee)
+                    }
                 }
             }
         }

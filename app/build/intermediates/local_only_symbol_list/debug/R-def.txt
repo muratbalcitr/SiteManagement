@@ -55,6 +55,7 @@ id extraPaymentsCard
 id extraPaymentsFragment
 id extraPaymentsRecyclerView
 id feeAmount
+id feeCountText
 id feeMonthYear
 id feesCard
 id feesFragment
@@ -75,6 +76,7 @@ id markAllReadButton
 id messageText
 id meterNumberText
 id monthSpinner
+id monthYearText
 id nameEditText
 id nameInputLayout
 id nav_graph
@@ -105,6 +107,7 @@ id registerFragment
 id registerTextView
 id remainingAmountText
 id roleBadge
+id searchMenuItem
 id statusBadge
 id syncButton
 id tabLayout
@@ -121,11 +124,12 @@ id typeBadge
 id typeSpinner
 id typeText
 id unitAreaText
+id unitCheckbox
 id unitIdEditText
 id unitInfoText
 id unitNumberText
 id unitPriceText
-id unitSpinner
+id unitsRecyclerView
 id unreadIndicator
 id userDetailFragment
 id userEmailText
@@ -159,8 +163,10 @@ layout fragment_users
 layout fragment_water_meter
 layout item_extra_payment
 layout item_fee
+layout item_fee_month
 layout item_notification
 layout item_payment
+layout item_unit_checkbox
 layout item_user
 layout item_water_bill
 layout item_water_meter

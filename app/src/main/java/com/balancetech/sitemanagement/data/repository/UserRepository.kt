@@ -1,8 +1,10 @@
 package com.balancetech.sitemanagement.data.repository
 
+import com.balancetech.sitemanagement.data.dao.UserUnitDao
 import com.balancetech.sitemanagement.data.datasource.LocalDataSource
 import com.balancetech.sitemanagement.data.datasource.RemoteDataSource
 import com.balancetech.sitemanagement.data.entity.User
+import com.balancetech.sitemanagement.data.entity.UserUnit
 import com.balancetech.sitemanagement.data.model.UserRole
 import com.balancetech.sitemanagement.util.StringUtils
 import kotlinx.coroutines.CoroutineScope
@@ -17,7 +19,8 @@ import javax.inject.Singleton
 @Singleton
 class UserRepository @Inject constructor(
     private val localDataSource: LocalDataSource,
-    private val remoteDataSource: RemoteDataSource
+    private val remoteDataSource: RemoteDataSource,
+    private val userUnitDao: UserUnitDao
 ) {
     /**
      * Get all active users (residents)
@@ -35,8 +38,15 @@ class UserRepository @Inject constructor(
     fun getUsersByUnit(unitId: String): Flow<List<User>> = localDataSource.getUsersByUnit(unitId)
 
     /**
+     * Get units for a user
+     */
+    suspend fun getUserUnits(userId: String): List<String> {
+        return userUnitDao.getUnitIdsByUserId(userId)
+    }
+
+    /**
      * Create a new user (resident)
-     * If unitId is provided, uses unit name (block + unit number) as document ID
+     * If unitIds is provided, creates user-unit relationships
      */
     suspend fun createUser(
         email: String,
@@ -45,35 +55,29 @@ class UserRepository @Inject constructor(
         phone: String?,
         role: UserRole,
         apartmentId: String?,
-        unitId: String?
+        unitIds: List<String>
     ): Result<User> {
         // Check if user already exists
         val existingUser = localDataSource.getUserByEmail(email)
         if (existingUser != null) {
-            return Result.failure(Exception("Bu e-posta adresi zaten kullanılıyor"))
+            // If user exists, add new units to existing user
+            val existingUnitIds = userUnitDao.getUnitIdsByUserId(existingUser.id).toSet()
+            val newUnitIds = unitIds.filter { it !in existingUnitIds }
+            
+            if (newUnitIds.isNotEmpty()) {
+                val userUnits = newUnitIds.map { unitId ->
+                    UserUnit(userId = existingUser.id, unitId = unitId)
+                }
+                userUnitDao.insertUserUnits(userUnits)
+            }
+            
+            return Result.success(existingUser)
         }
 
-        // Generate user ID
-        val userId = if (unitId != null) {
-            // If unitId is provided, get unit info and use unitNumber as document ID
-            // Unit number format is already "A1", "B5", etc. from DatabaseSeedUtil
-            val unit = localDataSource.getUnitById(unitId)
-            if (unit != null) {
-                // Use unitNumber directly as document ID (e.g., "A1", "B5")
-                // Make it lowercase for consistency
-                unit.unitNumber.lowercase()
-            } else {
-                // Fallback to name-based slug if unit not found
-                val allUsers = localDataSource.getAllActiveUsers().first()
-                val existingIds = allUsers.map { it.id }.toSet()
-                StringUtils.generateUserIdFromName(name, existingIds)
-            }
-        } else {
-            // If no unitId, use name-based slug
-            val allUsers = localDataSource.getAllActiveUsers().first()
-            val existingIds = allUsers.map { it.id }.toSet()
-            StringUtils.generateUserIdFromName(name, existingIds)
-        }
+        // Generate user ID based on name
+        val allUsers = localDataSource.getAllActiveUsers().first()
+        val existingIds = allUsers.map { it.id }.toSet()
+        val userId = StringUtils.generateUserIdFromName(name, existingIds)
 
         val user = User(
             id = userId,
@@ -83,12 +87,20 @@ class UserRepository @Inject constructor(
             phone = phone,
             role = role,
             apartmentId = apartmentId,
-            unitId = unitId,
+            unitId = unitIds.firstOrNull(), // Keep for backward compatibility
             isActive = true
         )
 
         // Save to local first (offline-first)
         localDataSource.insertUser(user)
+
+        // Create user-unit relationships
+        if (unitIds.isNotEmpty()) {
+            val userUnits = unitIds.map { unitId ->
+                UserUnit(userId = userId, unitId = unitId)
+            }
+            userUnitDao.insertUserUnits(userUnits)
+        }
 
         // Then sync to Firebase
         CoroutineScope(Dispatchers.IO).launch {
@@ -101,13 +113,49 @@ class UserRepository @Inject constructor(
 
         return Result.success(user)
     }
+    
+    /**
+     * Create user with single unit (backward compatibility)
+     */
+    suspend fun createUser(
+        email: String,
+        password: String,
+        name: String,
+        phone: String?,
+        role: UserRole,
+        apartmentId: String?,
+        unitId: String?
+    ): Result<User> {
+        return createUser(
+            email = email,
+            password = password,
+            name = name,
+            phone = phone,
+            role = role,
+            apartmentId = apartmentId,
+            unitIds = if (unitId != null) listOf(unitId) else emptyList()
+        )
+    }
 
     /**
-     * Update user
+     * Update user and their units
      */
-    suspend fun updateUser(user: User): Result<User> {
+    suspend fun updateUser(user: User, unitIds: List<String>? = null): Result<User> {
         // Update local first
         localDataSource.updateUser(user)
+
+        // Update user-unit relationships if provided
+        if (unitIds != null) {
+            // Delete existing relationships
+            userUnitDao.deleteAllUserUnits(user.id)
+            // Create new relationships
+            if (unitIds.isNotEmpty()) {
+                val userUnits = unitIds.map { unitId ->
+                    UserUnit(userId = user.id, unitId = unitId)
+                }
+                userUnitDao.insertUserUnits(userUnits)
+            }
+        }
 
         // Then sync to remote
         CoroutineScope(Dispatchers.IO).launch {

@@ -29,7 +29,17 @@ exports.createFee = functions.https.onCall(async (data, context) => {
       );
     }
 
-    const feeId = db.collection("fees").doc().id;
+    // Get unit to extract unit number for document ID
+    const unitDoc = await db.collection("units").doc(unitId).get();
+    let unitNumber = unitId; // Fallback to unitId if unit not found
+    if (unitDoc.exists) {
+      const unit = unitDoc.data();
+      unitNumber = (unit.unitNumber || unitId).toLowerCase();
+    }
+
+    // Generate fee ID: unitNumber-month-year (e.g., "a1-1-2024")
+    const feeId = `${unitNumber}-${month}-${year}`;
+    
     const fee = {
       id: feeId,
       apartmentId,
@@ -100,7 +110,10 @@ exports.createFeesForAllUnits = functions.https.onCall(
         unitsSnapshot.forEach((doc) => {
           const unit = doc.data();
           const feeAmount = baseAmount * (unit.landShare / 100.0);
-          const feeId = db.collection("fees").doc().id;
+          
+          // Generate fee ID: unitNumber-month-year (e.g., "a1-1-2024")
+          const unitNumber = (unit.unitNumber || unit.id).toLowerCase();
+          const feeId = `${unitNumber}-${month}-${year}`;
 
           const fee = {
             id: feeId,

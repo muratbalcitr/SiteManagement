@@ -62,6 +62,12 @@ class ExtraPaymentAdapter(
                     }
                 }
                 
+                // Enable/disable payment button based on payment status
+                val isFullyPaid = extraPayment.status == com.balancetech.sitemanagement.data.model.PaymentStatus.PAID || 
+                                  (extraPayment.paidAmount >= extraPayment.amount)
+                paymentButton.isEnabled = !isFullyPaid
+                paymentButton.alpha = if (isFullyPaid) 0.5f else 1.0f
+                
                 // Type badge
                 typeText.text = when (extraPayment.type) {
                     com.balancetech.sitemanagement.data.model.ExtraPaymentType.MAINTENANCE -> "Bakım"
@@ -91,7 +97,11 @@ class ExtraPaymentAdapter(
                 }
                 
                 root.setOnClickListener { onItemClick(extraPayment) }
-                paymentButton.setOnClickListener { onPaymentClick(extraPayment) }
+                paymentButton.setOnClickListener { 
+                    if (!isFullyPaid) {
+                        onPaymentClick(extraPayment) 
+                    }
+                }
             }
         }
     }

@@ -3411,6 +3411,7 @@ id extraPaymentsFragment
 id extraPaymentsRecyclerView
 id fade
 id feeAmount
+id feeCountText
 id feeMonthYear
 id feesCard
 id feesFragment
@@ -3522,6 +3523,7 @@ id meterNumberText
 id middle
 id mini
 id monthSpinner
+id monthYearText
 id month_grid
 id month_navigation_bar
 id month_navigation_fragment_toggle
@@ -3663,6 +3665,7 @@ id scrollIndicatorDown
 id scrollIndicatorUp
 id scrollView
 id scrollable
+id searchMenuItem
 id search_badge
 id search_bar
 id search_button
@@ -3780,11 +3783,12 @@ id typeText
 id unchecked
 id uniform
 id unitAreaText
+id unitCheckbox
 id unitIdEditText
 id unitInfoText
 id unitNumberText
 id unitPriceText
-id unitSpinner
+id unitsRecyclerView
 id unlabeled
 id unreadIndicator
 id up
@@ -3976,8 +3980,10 @@ layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
 layout item_extra_payment
 layout item_fee
+layout item_fee_month
 layout item_notification
 layout item_payment
+layout item_unit_checkbox
 layout item_user
 layout item_water_bill
 layout item_water_meter

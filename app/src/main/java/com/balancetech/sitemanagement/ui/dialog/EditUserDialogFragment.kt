@@ -9,10 +9,12 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.balancetech.sitemanagement.data.entity.Unit as UnitEntity
 import com.balancetech.sitemanagement.data.entity.User
 import com.balancetech.sitemanagement.data.model.UserRole
 import com.balancetech.sitemanagement.databinding.DialogAddUserBinding
+import com.balancetech.sitemanagement.ui.adapter.UnitCheckboxAdapter
 import com.balancetech.sitemanagement.ui.viewmodel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -22,6 +24,7 @@ class EditUserDialogFragment : DialogFragment() {
     private var _binding: DialogAddUserBinding? = null
     private val binding get() = _binding!!
     private val viewModel: UserViewModel by viewModels()
+    private lateinit var unitCheckboxAdapter: UnitCheckboxAdapter
 
     private var onUserUpdated: (() -> Unit)? = null
     private var userToEdit: User? = null
@@ -94,12 +97,13 @@ class EditUserDialogFragment : DialogFragment() {
             blockAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.blockSpinner.adapter = blockAdapter
             
-            // Select user's current block if available
-            if (user.unitId != null) {
-                lifecycleScope.launch {
+            // Load user's units and select appropriate block
+            lifecycleScope.launch {
+                val userUnitIds = viewModel.getUserUnits(user.id).toSet()
+                if (userUnitIds.isNotEmpty()) {
                     val allUnits = viewModel.getAllUnits("apt-001")
-                    val userUnit = allUnits.find { it.id == user.unitId }
-                    userUnit?.blockId?.let { blockId ->
+                    val firstUserUnit = allUnits.find { it.id in userUnitIds }
+                    firstUserUnit?.blockId?.let { blockId ->
                         val blockIndex = blocks.indexOfFirst { it.id == blockId }
                         if (blockIndex >= 0) {
                             binding.blockSpinner.setSelection(blockIndex)
@@ -112,9 +116,9 @@ class EditUserDialogFragment : DialogFragment() {
                             viewModel.loadUnitsByBlock(blocks[0].id)
                         }
                     }
+                } else if (blocks.isNotEmpty()) {
+                    viewModel.loadUnitsByBlock(blocks[0].id)
                 }
-            } else if (blocks.isNotEmpty()) {
-                viewModel.loadUnitsByBlock(blocks[0].id)
             }
         }
 
@@ -124,32 +128,28 @@ class EditUserDialogFragment : DialogFragment() {
                 val selectedBlock = viewModel.blocks.value?.get(position)
                 if (selectedBlock != null) {
                     viewModel.loadUnitsByBlock(selectedBlock.id)
-                    // Clear unit selection when block changes
-                    binding.unitSpinner.setSelection(0)
                 }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        // Setup unit spinner
+        // Setup units RecyclerView with checkboxes
+        unitCheckboxAdapter = UnitCheckboxAdapter { unitId, isChecked ->
+            // Handle unit selection
+        }
+        binding.unitsRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = unitCheckboxAdapter
+        }
+        
         viewModel.units.observe(this) { units ->
-            val unitNames = units.map { "Daire ${it.unitNumber}${if (it.ownerName != null) " - ${it.ownerName}" else ""}" }
-            val unitAdapter = ArrayAdapter(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                unitNames
-            )
-            unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.unitSpinner.adapter = unitAdapter
-            binding.unitSpinner.isEnabled = units.isNotEmpty()
+            unitCheckboxAdapter.submitList(units)
             
-            // Select user's current unit if available
-            if (user.unitId != null) {
-                val unitIndex = units.indexOfFirst { it.id == user.unitId }
-                if (unitIndex >= 0) {
-                    binding.unitSpinner.setSelection(unitIndex)
-                }
+            // Load and set user's current units
+            lifecycleScope.launch {
+                val userUnitIds = viewModel.getUserUnits(user.id).toSet()
+                unitCheckboxAdapter.setSelectedUnits(userUnitIds)
             }
         }
 
@@ -198,7 +198,6 @@ class EditUserDialogFragment : DialogFragment() {
         val phone = binding.phoneEditText.text.toString().trim()
         val password = binding.passwordEditText.text.toString().trim()
         val selectedBlockIndex = binding.blockSpinner.selectedItemPosition
-        val selectedUnitIndex = binding.unitSpinner.selectedItemPosition
 
         if (name.isEmpty()) {
             binding.errorText.text = "Lütfen adı girin"
@@ -212,14 +211,16 @@ class EditUserDialogFragment : DialogFragment() {
             return
         }
 
-        if (selectedUnitIndex < 0) {
-            binding.errorText.text = "Lütfen bir daire seçin"
+        val selectedUnitIds = unitCheckboxAdapter.getSelectedUnits()
+        if (selectedUnitIds.isEmpty()) {
+            binding.errorText.text = "Lütfen en az bir daire seçin"
             binding.errorText.visibility = View.VISIBLE
             return
         }
 
-        val selectedUnit = viewModel.units.value?.get(selectedUnitIndex)
-        if (selectedUnit == null) {
+        val units = viewModel.units.value ?: emptyList()
+        val firstUnit = units.firstOrNull { it.id in selectedUnitIds }
+        if (firstUnit == null) {
             binding.errorText.text = "Geçersiz daire seçimi"
             binding.errorText.visibility = View.VISIBLE
             return
@@ -230,11 +231,11 @@ class EditUserDialogFragment : DialogFragment() {
             name = name,
             phone = phone.ifEmpty { null },
             password = if (password.isNotEmpty()) password else user.password, // Only update if new password provided
-            apartmentId = selectedUnit.apartmentId,
-            unitId = selectedUnit.id
+            apartmentId = firstUnit.apartmentId,
+            unitId = firstUnit.id // Keep for backward compatibility
         )
 
-        viewModel.updateUser(updatedUser)
+        viewModel.updateUser(updatedUser, selectedUnitIds.toList())
     }
 
     override fun onDestroyView() {

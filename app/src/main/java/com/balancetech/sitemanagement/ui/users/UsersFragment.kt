@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -57,11 +58,31 @@ class UsersFragment : Fragment() {
         setupToolbar()
         setupRecyclerView()
         setupFab()
+        setupSearch()
         observeViewModel()
     }
     
     private fun setupToolbar() {
         binding.toolbar.inflateMenu(R.menu.users_menu)
+        
+        // Setup search view
+        val searchMenuItem = binding.toolbar.menu.findItem(R.id.searchMenuItem)
+        val searchView = searchMenuItem?.actionView as? SearchView
+        searchView?.let {
+            it.queryHint = "İsim, e-posta veya telefon ara..."
+            it.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    performSearch(query ?: "")
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    performSearch(newText ?: "")
+                    return true
+                }
+            })
+        }
+        
         binding.toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.importButton -> {
@@ -106,6 +127,28 @@ class UsersFragment : Fragment() {
     private fun setupFab() {
         binding.addUserFab.setOnClickListener {
             showAddUserDialog()
+        }
+    }
+    
+    private fun setupSearch() {
+        // Search is now handled in toolbar via SearchView
+    }
+    
+    private fun performSearch(query: String) {
+        val searchQuery = query.trim().lowercase()
+        lifecycleScope.launch {
+            val allUsers = viewModel.users.value
+            val filteredUsers = if (searchQuery.isEmpty()) {
+                allUsers
+            } else {
+                allUsers.filter { user ->
+                    user.name.lowercase().contains(searchQuery) ||
+                    user.email.lowercase().contains(searchQuery) ||
+                    (user.phone?.lowercase()?.contains(searchQuery) == true)
+                }
+            }
+            userAdapter.submitList(filteredUsers)
+            binding.emptyState.visibility = if (filteredUsers.isEmpty()) View.VISIBLE else View.GONE
         }
     }
     
@@ -256,8 +299,22 @@ class UsersFragment : Fragment() {
         // Observe users list
         lifecycleScope.launch {
             viewModel.users.collect { users ->
-                userAdapter.submitList(users)
-                binding.emptyState.visibility = if (users.isEmpty()) View.VISIBLE else View.GONE
+                // Get search query from SearchView if available
+                val searchMenuItem = binding.toolbar.menu.findItem(R.id.searchMenuItem)
+                val searchView = searchMenuItem?.actionView as? SearchView
+                val query = searchView?.query?.toString()?.trim()?.lowercase() ?: ""
+                
+                val filteredUsers = if (query.isEmpty()) {
+                    users
+                } else {
+                    users.filter { user ->
+                        user.name.lowercase().contains(query) ||
+                        user.email.lowercase().contains(query) ||
+                        (user.phone?.lowercase()?.contains(query) == true)
+                    }
+                }
+                userAdapter.submitList(filteredUsers)
+                binding.emptyState.visibility = if (filteredUsers.isEmpty()) View.VISIBLE else View.GONE
             }
         }
 

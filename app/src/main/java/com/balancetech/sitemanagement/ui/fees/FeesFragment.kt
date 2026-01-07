@@ -10,10 +10,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.balancetech.sitemanagement.R
 import com.balancetech.sitemanagement.data.entity.Unit as UnitEntity
 import com.balancetech.sitemanagement.data.model.PaymentStatus
 import com.balancetech.sitemanagement.databinding.FragmentFeesBinding
 import com.balancetech.sitemanagement.ui.adapter.FeeAdapter
+import com.balancetech.sitemanagement.ui.adapter.FeeMonthAdapter
+import com.balancetech.sitemanagement.data.model.FeeMonthSummary
 import com.balancetech.sitemanagement.ui.dialog.CreateFeeDialogFragment
 import com.balancetech.sitemanagement.ui.dialog.PaymentEntryDialogFragment
 import com.balancetech.sitemanagement.ui.viewmodel.FeeViewModel
@@ -31,7 +34,9 @@ class FeesFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: FeeViewModel by viewModels()
     private lateinit var adapter: FeeAdapter
+    private lateinit var monthAdapter: FeeMonthAdapter
     private var currentFilter: PaymentStatus? = null
+    private var isMonthView: Boolean = true // Default to month view
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,10 +50,24 @@ class FeesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
+        setupToolbar()
         setupTabs()
         setupRecyclerView()
         observeViewModel()
         setupFab()
+    }
+    
+    private fun setupToolbar() {
+        binding.toolbar.setNavigationOnClickListener {
+            if (!isMonthView) {
+                // Go back to month view
+                isMonthView = true
+                binding.feesRecyclerView.adapter = monthAdapter
+                binding.toolbar.title = "Aidatlar"
+                binding.toolbar.navigationIcon = null
+                observeViewModel()
+            }
+        }
     }
     
     private fun setupTabs() {
@@ -64,6 +83,9 @@ class FeesFragment : Fragment() {
                     2 -> PaymentStatus.PAID
                     else -> null
                 }
+                // Reset to month view when tab changes
+                isMonthView = true
+                binding.feesRecyclerView.adapter = monthAdapter
                 observeViewModel()
             }
 
@@ -85,9 +107,36 @@ class FeesFragment : Fragment() {
             }
         )
         
+        monthAdapter = FeeMonthAdapter(
+            onItemClick = { summary ->
+                // Show detailed fees for this month
+                showMonthDetails(summary)
+            }
+        )
+        
         binding.feesRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            this.adapter = this@FeesFragment.adapter
+            adapter = monthAdapter // Start with month view
+        }
+    }
+    
+    private fun showMonthDetails(summary: FeeMonthSummary) {
+        // Switch to detail view showing individual fees for this month
+        isMonthView = false
+        binding.feesRecyclerView.adapter = adapter
+        
+        // Update toolbar title and show back button
+        binding.toolbar.title = "${summary.monthName} ${summary.year} - Detay"
+        binding.toolbar.setNavigationIcon( android.R.drawable.arrow_down_float)
+        
+        lifecycleScope.launch {
+            val filteredFees = if (currentFilter != null) {
+                summary.fees.filter { it.status == currentFilter }
+            } else {
+                summary.fees
+            }
+            adapter.submitList(filteredFees)
+            binding.emptyState.visibility = if (filteredFees.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 
@@ -98,8 +147,24 @@ class FeesFragment : Fragment() {
                     fees.filter { it.status == filter }
                 } ?: fees
             }.collect { filteredFees ->
-                adapter.submitList(filteredFees)
-                binding.emptyState.visibility = if (filteredFees.isEmpty()) View.VISIBLE else View.GONE
+                if (isMonthView) {
+                    // Group fees by month and year
+                    val monthGroups = filteredFees.groupBy { Pair(it.month, it.year) }
+                    val monthSummaries = monthGroups.map { (monthYear, feesList) ->
+                        FeeMonthSummary(
+                            month = monthYear.first,
+                            year = monthYear.second,
+                            fees = feesList
+                        )
+                    }.sortedWith(compareByDescending<FeeMonthSummary> { it.year }
+                        .thenByDescending { it.month })
+                    
+                    monthAdapter.submitList(monthSummaries)
+                    binding.emptyState.visibility = if (monthSummaries.isEmpty()) View.VISIBLE else View.GONE
+                } else {
+                    adapter.submitList(filteredFees)
+                    binding.emptyState.visibility = if (filteredFees.isEmpty()) View.VISIBLE else View.GONE
+                }
             }
         }
 

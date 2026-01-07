@@ -27,6 +27,8 @@ import com.balancetech.sitemanagement.data.dao.UnitDao;
 import com.balancetech.sitemanagement.data.dao.UnitDao_Impl;
 import com.balancetech.sitemanagement.data.dao.UserDao;
 import com.balancetech.sitemanagement.data.dao.UserDao_Impl;
+import com.balancetech.sitemanagement.data.dao.UserUnitDao;
+import com.balancetech.sitemanagement.data.dao.UserUnitDao_Impl;
 import com.balancetech.sitemanagement.data.dao.WaterBillDao;
 import com.balancetech.sitemanagement.data.dao.WaterBillDao_Impl;
 import com.balancetech.sitemanagement.data.dao.WaterMeterDao;
@@ -36,6 +38,7 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.SuppressWarnings;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -47,6 +50,8 @@ import javax.annotation.processing.Generated;
 @SuppressWarnings({"unchecked", "deprecation"})
 public final class AppDatabase_Impl extends AppDatabase {
   private volatile UserDao _userDao;
+
+  private volatile UserUnitDao _userUnitDao;
 
   private volatile ApartmentDao _apartmentDao;
 
@@ -69,13 +74,17 @@ public final class AppDatabase_Impl extends AppDatabase {
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(1) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(2) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `users` (`id` TEXT NOT NULL, `email` TEXT NOT NULL, `password` TEXT NOT NULL, `name` TEXT NOT NULL, `phone` TEXT, `role` TEXT NOT NULL, `apartmentId` TEXT, `unitId` TEXT, `createdAt` INTEGER NOT NULL, `isActive` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `apartments` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `address` TEXT NOT NULL, `blockCount` INTEGER NOT NULL, `totalUnits` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `isActive` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `blocks` (`id` TEXT NOT NULL, `apartmentId` TEXT NOT NULL, `name` TEXT NOT NULL, `floorCount` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `units` (`id` TEXT NOT NULL, `apartmentId` TEXT NOT NULL, `blockId` TEXT, `unitNumber` TEXT NOT NULL, `floor` INTEGER NOT NULL, `area` REAL NOT NULL, `landShare` REAL NOT NULL, `ownerType` TEXT NOT NULL, `ownerName` TEXT, `ownerPhone` TEXT, `createdAt` INTEGER NOT NULL, `isActive` INTEGER NOT NULL, PRIMARY KEY(`id`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `user_units` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` TEXT NOT NULL, `unitId` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, FOREIGN KEY(`userId`) REFERENCES `users`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`unitId`) REFERENCES `units`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_user_units_userId` ON `user_units` (`userId`)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_user_units_unitId` ON `user_units` (`unitId`)");
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_user_units_userId_unitId` ON `user_units` (`userId`, `unitId`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `fees` (`id` TEXT NOT NULL, `apartmentId` TEXT NOT NULL, `unitId` TEXT NOT NULL, `month` INTEGER NOT NULL, `year` INTEGER NOT NULL, `amount` REAL NOT NULL, `paidAmount` REAL NOT NULL, `status` TEXT NOT NULL, `dueDate` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `extra_payments` (`id` TEXT NOT NULL, `apartmentId` TEXT NOT NULL, `unitId` TEXT, `title` TEXT NOT NULL, `description` TEXT, `amount` REAL NOT NULL, `type` TEXT NOT NULL, `installmentCount` INTEGER NOT NULL, `currentInstallment` INTEGER NOT NULL, `paidAmount` REAL NOT NULL, `status` TEXT NOT NULL, `dueDate` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `water_meters` (`id` TEXT NOT NULL, `unitId` TEXT NOT NULL, `meterNumber` TEXT NOT NULL, `previousReading` REAL NOT NULL, `currentReading` REAL NOT NULL, `unitPrice` REAL NOT NULL, `lastReadingDate` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
@@ -83,7 +92,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("CREATE TABLE IF NOT EXISTS `payments` (`id` TEXT NOT NULL, `unitId` TEXT NOT NULL, `feeId` TEXT, `extraPaymentId` TEXT, `waterBillId` TEXT, `amount` REAL NOT NULL, `paymentDate` INTEGER NOT NULL, `paymentMethod` TEXT NOT NULL, `description` TEXT, `createdBy` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `notifications` (`id` TEXT NOT NULL, `userId` TEXT NOT NULL, `title` TEXT NOT NULL, `message` TEXT NOT NULL, `type` TEXT NOT NULL, `isRead` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c2cc36b5c77a348f1c9e3ce288ac1bfe')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd11e0908bc09a9495b82620f66aabb02')");
       }
 
       @Override
@@ -92,6 +101,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("DROP TABLE IF EXISTS `apartments`");
         db.execSQL("DROP TABLE IF EXISTS `blocks`");
         db.execSQL("DROP TABLE IF EXISTS `units`");
+        db.execSQL("DROP TABLE IF EXISTS `user_units`");
         db.execSQL("DROP TABLE IF EXISTS `fees`");
         db.execSQL("DROP TABLE IF EXISTS `extra_payments`");
         db.execSQL("DROP TABLE IF EXISTS `water_meters`");
@@ -119,6 +129,7 @@ public final class AppDatabase_Impl extends AppDatabase {
       @Override
       public void onOpen(@NonNull final SupportSQLiteDatabase db) {
         mDatabase = db;
+        db.execSQL("PRAGMA foreign_keys = ON");
         internalInitInvalidationTracker(db);
         final List<? extends RoomDatabase.Callback> _callbacks = mCallbacks;
         if (_callbacks != null) {
@@ -214,6 +225,25 @@ public final class AppDatabase_Impl extends AppDatabase {
           return new RoomOpenHelper.ValidationResult(false, "units(com.balancetech.sitemanagement.data.entity.Unit).\n"
                   + " Expected:\n" + _infoUnits + "\n"
                   + " Found:\n" + _existingUnits);
+        }
+        final HashMap<String, TableInfo.Column> _columnsUserUnits = new HashMap<String, TableInfo.Column>(4);
+        _columnsUserUnits.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserUnits.put("userId", new TableInfo.Column("userId", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserUnits.put("unitId", new TableInfo.Column("unitId", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserUnits.put("createdAt", new TableInfo.Column("createdAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysUserUnits = new HashSet<TableInfo.ForeignKey>(2);
+        _foreignKeysUserUnits.add(new TableInfo.ForeignKey("users", "CASCADE", "NO ACTION", Arrays.asList("userId"), Arrays.asList("id")));
+        _foreignKeysUserUnits.add(new TableInfo.ForeignKey("units", "CASCADE", "NO ACTION", Arrays.asList("unitId"), Arrays.asList("id")));
+        final HashSet<TableInfo.Index> _indicesUserUnits = new HashSet<TableInfo.Index>(3);
+        _indicesUserUnits.add(new TableInfo.Index("index_user_units_userId", false, Arrays.asList("userId"), Arrays.asList("ASC")));
+        _indicesUserUnits.add(new TableInfo.Index("index_user_units_unitId", false, Arrays.asList("unitId"), Arrays.asList("ASC")));
+        _indicesUserUnits.add(new TableInfo.Index("index_user_units_userId_unitId", true, Arrays.asList("userId", "unitId"), Arrays.asList("ASC", "ASC")));
+        final TableInfo _infoUserUnits = new TableInfo("user_units", _columnsUserUnits, _foreignKeysUserUnits, _indicesUserUnits);
+        final TableInfo _existingUserUnits = TableInfo.read(db, "user_units");
+        if (!_infoUserUnits.equals(_existingUserUnits)) {
+          return new RoomOpenHelper.ValidationResult(false, "user_units(com.balancetech.sitemanagement.data.entity.UserUnit).\n"
+                  + " Expected:\n" + _infoUserUnits + "\n"
+                  + " Found:\n" + _existingUserUnits);
         }
         final HashMap<String, TableInfo.Column> _columnsFees = new HashMap<String, TableInfo.Column>(11);
         _columnsFees.put("id", new TableInfo.Column("id", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
@@ -344,7 +374,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "c2cc36b5c77a348f1c9e3ce288ac1bfe", "51cb3276853575863c77339f33c4b63b");
+    }, "d11e0908bc09a9495b82620f66aabb02", "bd4dad904fba1b7e4e0e4eb29c6386c0");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -355,19 +385,27 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected InvalidationTracker createInvalidationTracker() {
     final HashMap<String, String> _shadowTablesMap = new HashMap<String, String>(0);
     final HashMap<String, Set<String>> _viewTables = new HashMap<String, Set<String>>(0);
-    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "users","apartments","blocks","units","fees","extra_payments","water_meters","water_bills","payments","notifications");
+    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "users","apartments","blocks","units","user_units","fees","extra_payments","water_meters","water_bills","payments","notifications");
   }
 
   @Override
   public void clearAllTables() {
     super.assertNotMainThread();
     final SupportSQLiteDatabase _db = super.getOpenHelper().getWritableDatabase();
+    final boolean _supportsDeferForeignKeys = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP;
     try {
+      if (!_supportsDeferForeignKeys) {
+        _db.execSQL("PRAGMA foreign_keys = FALSE");
+      }
       super.beginTransaction();
+      if (_supportsDeferForeignKeys) {
+        _db.execSQL("PRAGMA defer_foreign_keys = TRUE");
+      }
       _db.execSQL("DELETE FROM `users`");
       _db.execSQL("DELETE FROM `apartments`");
       _db.execSQL("DELETE FROM `blocks`");
       _db.execSQL("DELETE FROM `units`");
+      _db.execSQL("DELETE FROM `user_units`");
       _db.execSQL("DELETE FROM `fees`");
       _db.execSQL("DELETE FROM `extra_payments`");
       _db.execSQL("DELETE FROM `water_meters`");
@@ -377,6 +415,9 @@ public final class AppDatabase_Impl extends AppDatabase {
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();
+      if (!_supportsDeferForeignKeys) {
+        _db.execSQL("PRAGMA foreign_keys = TRUE");
+      }
       _db.query("PRAGMA wal_checkpoint(FULL)").close();
       if (!_db.inTransaction()) {
         _db.execSQL("VACUUM");
@@ -389,6 +430,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected Map<Class<?>, List<Class<?>>> getRequiredTypeConverters() {
     final HashMap<Class<?>, List<Class<?>>> _typeConvertersMap = new HashMap<Class<?>, List<Class<?>>>();
     _typeConvertersMap.put(UserDao.class, UserDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(UserUnitDao.class, UserUnitDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(ApartmentDao.class, ApartmentDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(BlockDao.class, BlockDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(UnitDao.class, UnitDao_Impl.getRequiredConverters());
@@ -426,6 +468,20 @@ public final class AppDatabase_Impl extends AppDatabase {
           _userDao = new UserDao_Impl(this);
         }
         return _userDao;
+      }
+    }
+  }
+
+  @Override
+  public UserUnitDao userUnitDao() {
+    if (_userUnitDao != null) {
+      return _userUnitDao;
+    } else {
+      synchronized(this) {
+        if(_userUnitDao == null) {
+          _userUnitDao = new UserUnitDao_Impl(this);
+        }
+        return _userUnitDao;
       }
     }
   }

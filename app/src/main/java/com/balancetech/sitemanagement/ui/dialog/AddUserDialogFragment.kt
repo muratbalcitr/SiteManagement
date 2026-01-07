@@ -9,9 +9,11 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.balancetech.sitemanagement.data.entity.Unit as UnitEntity
 import com.balancetech.sitemanagement.data.model.UserRole
 import com.balancetech.sitemanagement.databinding.DialogAddUserBinding
+import com.balancetech.sitemanagement.ui.adapter.UnitCheckboxAdapter
 import com.balancetech.sitemanagement.ui.viewmodel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -20,6 +22,7 @@ class AddUserDialogFragment : DialogFragment() {
     private var _binding: DialogAddUserBinding? = null
     private val binding get() = _binding!!
     private val viewModel: UserViewModel by viewModels()
+    private lateinit var unitCheckboxAdapter: UnitCheckboxAdapter
 
     private var onUserAdded: (() -> Unit)? = null
 
@@ -78,17 +81,17 @@ class AddUserDialogFragment : DialogFragment() {
             override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
         }
 
-        // Setup unit spinner
+        // Setup units RecyclerView with checkboxes
+        unitCheckboxAdapter = UnitCheckboxAdapter { unitId, isChecked ->
+            // Handle unit selection
+        }
+        binding.unitsRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = unitCheckboxAdapter
+        }
+        
         viewModel.units.observe(this) { units ->
-            val unitNames = units.map { "Daire ${it.unitNumber}${if (it.ownerName != null) " - ${it.ownerName}" else ""}" }
-            val unitAdapter = ArrayAdapter(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                unitNames
-            )
-            unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.unitSpinner.adapter = unitAdapter
-            binding.unitSpinner.isEnabled = units.isNotEmpty()
+            unitCheckboxAdapter.submitList(units)
         }
 
         binding.addButton.setOnClickListener {
@@ -134,7 +137,6 @@ class AddUserDialogFragment : DialogFragment() {
         val phone = binding.phoneEditText.text.toString().trim()
         val password = binding.passwordEditText.text.toString().trim()
         val selectedBlockIndex = binding.blockSpinner.selectedItemPosition
-        val selectedUnitIndex = binding.unitSpinner.selectedItemPosition
 
         if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
             binding.errorText.text = "Lütfen tüm zorunlu alanları doldurun"
@@ -148,14 +150,16 @@ class AddUserDialogFragment : DialogFragment() {
             return
         }
 
-        if (selectedUnitIndex < 0) {
-            binding.errorText.text = "Lütfen bir daire seçin"
+        val selectedUnitIds = unitCheckboxAdapter.getSelectedUnits()
+        if (selectedUnitIds.isEmpty()) {
+            binding.errorText.text = "Lütfen en az bir daire seçin"
             binding.errorText.visibility = View.VISIBLE
             return
         }
 
-        val selectedUnit = viewModel.units.value?.get(selectedUnitIndex)
-        if (selectedUnit == null) {
+        val units = viewModel.units.value ?: emptyList()
+        val firstUnit = units.firstOrNull { it.id in selectedUnitIds }
+        if (firstUnit == null) {
             binding.errorText.text = "Geçersiz daire seçimi"
             binding.errorText.visibility = View.VISIBLE
             return
@@ -167,8 +171,8 @@ class AddUserDialogFragment : DialogFragment() {
             name = name,
             phone = phone.ifEmpty { null },
             role = UserRole.RESIDENT,
-            apartmentId = selectedUnit.apartmentId,
-            unitId = selectedUnit.id
+            apartmentId = firstUnit.apartmentId,
+            unitIds = selectedUnitIds.toList()
         )
     }
 

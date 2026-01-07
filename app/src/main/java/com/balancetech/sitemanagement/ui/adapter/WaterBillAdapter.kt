@@ -73,12 +73,20 @@ class WaterBillAdapter(
                     }
                 }
                 
+                // Enable/disable payment button based on payment status
+                val isFullyPaid = waterBill.status == PaymentStatus.PAID || 
+                                 (waterBill.paidAmount >= waterBill.totalAmount)
+                paymentButton.isEnabled = !isFullyPaid
+                paymentButton.alpha = if (isFullyPaid) 0.5f else 1.0f
+                
                 root.setOnClickListener {
                     onItemClick(waterBill)
                 }
                 
                 paymentButton.setOnClickListener {
-                    onPaymentClick(waterBill)
+                    if (!isFullyPaid) {
+                        onPaymentClick(waterBill)
+                    }
                 }
             }
         }
