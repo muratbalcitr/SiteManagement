@@ -3645,6 +3645,7 @@ int id registerButton 0x7f0801d7
 int id registerFragment 0x7f0801d8
 int id registerTextView 0x7f0801d9
 int id remainingAmountText 0x7f0801da
+int id remainingPaymentTextView 0x7f08028f
 int id report_drawn 0x7f0801db
 int id reverseSawtooth 0x7f0801dc
 int id right 0x7f0801dd

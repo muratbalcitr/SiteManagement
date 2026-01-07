@@ -38,7 +38,7 @@ class LoginFragment : Fragment() {
             val password = binding.passwordEditText.text.toString()
 
             if (email.isBlank() || password.isBlank()) {
-                Toast.makeText(requireContext(), "Lütfen tüm alanları doldurun", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.please_fill_all_fields), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 

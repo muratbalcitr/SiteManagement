@@ -139,20 +139,20 @@ class AddUserDialogFragment : DialogFragment() {
         val selectedBlockIndex = binding.blockSpinner.selectedItemPosition
 
         if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            binding.errorText.text = "Lütfen tüm zorunlu alanları doldurun"
+            binding.errorText.text = getString(R.string.please_fill_all_required_fields)
             binding.errorText.visibility = View.VISIBLE
             return
         }
 
         if (selectedBlockIndex < 0) {
-            binding.errorText.text = "Lütfen bir blok seçin"
+            binding.errorText.text = getString(R.string.please_select_block)
             binding.errorText.visibility = View.VISIBLE
             return
         }
 
         val selectedUnitIds = unitCheckboxAdapter.getSelectedUnits()
         if (selectedUnitIds.isEmpty()) {
-            binding.errorText.text = "Lütfen en az bir daire seçin"
+            binding.errorText.text = getString(R.string.please_select_at_least_one_unit)
             binding.errorText.visibility = View.VISIBLE
             return
         }
@@ -160,7 +160,7 @@ class AddUserDialogFragment : DialogFragment() {
         val units = viewModel.units.value ?: emptyList()
         val firstUnit = units.firstOrNull { it.id in selectedUnitIds }
         if (firstUnit == null) {
-            binding.errorText.text = "Geçersiz daire seçimi"
+            binding.errorText.text = getString(R.string.invalid_unit_selection)
             binding.errorText.visibility = View.VISIBLE
             return
         }

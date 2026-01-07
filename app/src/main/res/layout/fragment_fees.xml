@@ -57,15 +57,15 @@
         android:layout_margin="16dp"
         android:src="@android:drawable/ic_input_add"
         app:layout_anchor="@id/feesRecyclerView"
-        app:layout_anchorGravity="bottom|end" />
+        app:layout_anchorGravity="bottom|start" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/createFeesForAllButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:text="📋 Tüm Dairelere Aidat"
-        style="@style/Widget.Material3.Button.OutlinedButton"
+        style="@style/Widget.Material3.Button"
         app:layout_anchor="@id/addFeeFab"
         app:layout_anchorGravity="top|end" />
 

@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.balancetech.sitemanagement.R
 import com.balancetech.sitemanagement.data.datasource.LocalDataSource
 import com.balancetech.sitemanagement.data.entity.Fee
 import com.balancetech.sitemanagement.data.model.PaymentStatus
@@ -40,20 +41,17 @@ class FeeAdapter(
 
         fun bind(fee: Fee) {
             binding.apply {
-                val monthNames = arrayOf(
-                    "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
-                    "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
-                )
+                val monthNames = root.context.resources.getStringArray(R.array.month_names)
                 
                 feeMonthYear.text = "${monthNames.getOrNull(fee.month - 1) ?: fee.month.toString()} ${fee.year}"
-                feeAmount.text = String.format("%.2f ₺", fee.amount)
-                paidAmount.text = String.format("Ödenen: %.2f ₺", fee.paidAmount)
+                feeAmount.text = String.format(root.context.getString(R.string.currency_format), fee.amount)
+                paidAmount.text = root.context.getString(R.string.paid_amount_format, String.format("%.2f", fee.paidAmount))
                 
                 val remainingAmount = fee.amount - fee.paidAmount
-                remainingAmountText.text = String.format("Kalan: %.2f ₺", remainingAmount)
+                remainingAmountText.text = root.context.getString(R.string.remaining_amount_format, String.format("%.2f", remainingAmount))
                 
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                dueDateText.text = "Son Ödeme: ${dateFormat.format(Date(fee.dueDate))}"
+                dueDateText.text = root.context.getString(R.string.due_date_format, dateFormat.format(Date(fee.dueDate)))
                 
                 // Load unit and owner information
                 CoroutineScope(Dispatchers.Main).launch {
@@ -67,7 +65,7 @@ class FeeAdapter(
                                 num
                             }
                         }
-                        unitNumberText.text = "Daire: $unitNumber"
+                        unitNumberText.text = root.context.getString(R.string.unit_number_format, unitNumber)
                         
                         // Get owner name(s) from UserUnit table
                         try {
@@ -79,40 +77,40 @@ class FeeAdapter(
                                 }
                                 val ownerNames = users.map { it.name }.distinct()
                                 ownerNameText.text = if (ownerNames.isNotEmpty()) {
-                                    ownerNames.joinToString(", ")
+                                    root.context.getString(R.string.owner_name_format, ownerNames.joinToString(", "))
                                 } else {
-                                    unit.ownerName ?: "-"
+                                    root.context.getString(R.string.owner_name_format, unit.ownerName ?: root.context.getString(R.string.unknown))
                                 }
                             } else {
                                 // Fallback to unit.ownerName if no users found
-                                ownerNameText.text = unit.ownerName ?: "-"
+                                ownerNameText.text = root.context.getString(R.string.owner_name_format, unit.ownerName ?: root.context.getString(R.string.unknown))
                             }
                         } catch (e: Exception) {
                             // Fallback to unit.ownerName if error
-                            ownerNameText.text = unit.ownerName ?: "-"
+                            ownerNameText.text = root.context.getString(R.string.owner_name_format, unit.ownerName ?: root.context.getString(R.string.unknown))
                         }
                     } else {
-                        unitNumberText.text = "Daire: -"
-                        ownerNameText.text = "-"
+                        unitNumberText.text = root.context.getString(R.string.unknown_unit)
+                        ownerNameText.text = root.context.getString(R.string.unknown_owner)
                     }
                 }
                 
                 // Status badge
                 when (fee.status) {
                     PaymentStatus.PAID -> {
-                        statusBadge.text = "Ödendi"
+                        statusBadge.text = root.context.getString(R.string.fee_status_paid)
                         statusBadge.setBackgroundColor(
                             root.context.getColor(android.R.color.holo_green_light)
                         )
                     }
                     PaymentStatus.PARTIALLY_PAID -> {
-                        statusBadge.text = "Kısmi Ödendi"
+                        statusBadge.text = root.context.getString(R.string.fee_status_partially_paid)
                         statusBadge.setBackgroundColor(
                             root.context.getColor(android.R.color.holo_orange_light)
                         )
                     }
                     PaymentStatus.UNPAID -> {
-                        statusBadge.text = "Ödenmedi"
+                        statusBadge.text = root.context.getString(R.string.fee_status_unpaid)
                         statusBadge.setBackgroundColor(
                             root.context.getColor(android.R.color.holo_red_light)
                         )

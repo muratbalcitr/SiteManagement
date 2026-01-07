@@ -11,7 +11,6 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.balancetech.sitemanagement.R;
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import java.lang.NullPointerException;
@@ -41,10 +40,10 @@ public final class FragmentDashboardBinding implements ViewBinding {
   public final TextView profileNameText;
 
   @NonNull
-  public final MaterialButton syncButton;
+  public final TextView remainingPaymentTextView;
 
   @NonNull
-  public final MaterialToolbar toolbar;
+  public final MaterialButton syncButton;
 
   @NonNull
   public final TextView totalCreditTextView;
@@ -62,7 +61,7 @@ public final class FragmentDashboardBinding implements ViewBinding {
       @NonNull MaterialCardView extraPaymentsCard, @NonNull MaterialCardView feesCard,
       @NonNull MaterialCardView paymentsCard, @NonNull MaterialCardView profileCard,
       @NonNull TextView profileEmailText, @NonNull TextView profileNameText,
-      @NonNull MaterialButton syncButton, @NonNull MaterialToolbar toolbar,
+      @NonNull TextView remainingPaymentTextView, @NonNull MaterialButton syncButton,
       @NonNull TextView totalCreditTextView, @NonNull TextView totalDebtTextView,
       @NonNull MaterialCardView usersCard, @NonNull MaterialCardView waterMeterCard) {
     this.rootView = rootView;
@@ -72,8 +71,8 @@ public final class FragmentDashboardBinding implements ViewBinding {
     this.profileCard = profileCard;
     this.profileEmailText = profileEmailText;
     this.profileNameText = profileNameText;
+    this.remainingPaymentTextView = remainingPaymentTextView;
     this.syncButton = syncButton;
-    this.toolbar = toolbar;
     this.totalCreditTextView = totalCreditTextView;
     this.totalDebtTextView = totalDebtTextView;
     this.usersCard = usersCard;
@@ -143,15 +142,15 @@ public final class FragmentDashboardBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.syncButton;
-      MaterialButton syncButton = ViewBindings.findChildViewById(rootView, id);
-      if (syncButton == null) {
+      id = R.id.remainingPaymentTextView;
+      TextView remainingPaymentTextView = ViewBindings.findChildViewById(rootView, id);
+      if (remainingPaymentTextView == null) {
         break missingId;
       }
 
-      id = R.id.toolbar;
-      MaterialToolbar toolbar = ViewBindings.findChildViewById(rootView, id);
-      if (toolbar == null) {
+      id = R.id.syncButton;
+      MaterialButton syncButton = ViewBindings.findChildViewById(rootView, id);
+      if (syncButton == null) {
         break missingId;
       }
 
@@ -180,8 +179,8 @@ public final class FragmentDashboardBinding implements ViewBinding {
       }
 
       return new FragmentDashboardBinding((CoordinatorLayout) rootView, extraPaymentsCard, feesCard,
-          paymentsCard, profileCard, profileEmailText, profileNameText, syncButton, toolbar,
-          totalCreditTextView, totalDebtTextView, usersCard, waterMeterCard);
+          paymentsCard, profileCard, profileEmailText, profileNameText, remainingPaymentTextView,
+          syncButton, totalCreditTextView, totalDebtTextView, usersCard, waterMeterCard);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

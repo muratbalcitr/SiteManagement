@@ -233,16 +233,18 @@ class AuthRepository @Inject constructor(
      * Convert Firebase Auth error code to user-friendly message
      */
     private fun getAuthErrorMessage(errorCode: String): String {
+        // Note: This method is called from repository which doesn't have context
+        // Error messages should be handled in ViewModel/UI layer with context
         return when (errorCode) {
-            "ERROR_INVALID_EMAIL" -> "Geçersiz e-posta adresi"
-            "ERROR_WRONG_PASSWORD" -> "Yanlış şifre"
-            "ERROR_USER_NOT_FOUND" -> "Kullanıcı bulunamadı"
-            "ERROR_USER_DISABLED" -> "Bu kullanıcı devre dışı bırakılmış"
-            "ERROR_TOO_MANY_REQUESTS" -> "Çok fazla deneme. Lütfen daha sonra tekrar deneyin"
-            "ERROR_EMAIL_ALREADY_IN_USE" -> "Bu e-posta adresi zaten kullanılıyor"
-            "ERROR_WEAK_PASSWORD" -> "Şifre çok zayıf. En az 6 karakter olmalı"
-            "ERROR_NETWORK_REQUEST_FAILED" -> "Ağ hatası. İnternet bağlantınızı kontrol edin"
-            else -> "Kimlik doğrulama hatası: $errorCode"
+            "ERROR_INVALID_EMAIL" -> "ERROR_INVALID_EMAIL"
+            "ERROR_WRONG_PASSWORD" -> "ERROR_WRONG_PASSWORD"
+            "ERROR_USER_NOT_FOUND" -> "ERROR_USER_NOT_FOUND"
+            "ERROR_USER_DISABLED" -> "ERROR_USER_DISABLED"
+            "ERROR_TOO_MANY_REQUESTS" -> "ERROR_TOO_MANY_REQUESTS"
+            "ERROR_EMAIL_ALREADY_IN_USE" -> "ERROR_EMAIL_ALREADY_IN_USE"
+            "ERROR_WEAK_PASSWORD" -> "ERROR_WEAK_PASSWORD"
+            "ERROR_NETWORK_REQUEST_FAILED" -> "ERROR_NETWORK_REQUEST_FAILED"
+            else -> "ERROR_AUTH_GENERIC:$errorCode"
         }
     }
 }

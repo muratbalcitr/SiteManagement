@@ -88,6 +88,16 @@ class DashboardViewModel @Inject constructor(
 
     val totalCredit: Flow<Double> = getTotalCredit()
 
+    // Remaining Payment (Kalan Ödeme) - Toplam Borç - Toplam Ödenen
+    fun getRemainingPayment(unitId: String? = null): Flow<Double> = combine(
+        getTotalDebt(unitId),
+        getTotalCredit(unitId)
+    ) { debt, credit ->
+        debt - credit
+    }
+
+    val remainingPayment: Flow<Double> = getRemainingPayment()
+
     fun loadDashboardData(unitId: String) {
         viewModelScope.launch {
             _uiState.value = DashboardUiState.Loading

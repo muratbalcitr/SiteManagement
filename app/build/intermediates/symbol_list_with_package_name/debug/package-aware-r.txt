@@ -3646,6 +3646,7 @@ id registerButton
 id registerFragment
 id registerTextView
 id remainingAmountText
+id remainingPaymentTextView
 id report_drawn
 id reverseSawtooth
 id right

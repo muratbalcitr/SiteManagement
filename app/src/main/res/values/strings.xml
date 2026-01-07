@@ -1,5 +1,222 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Küçükyalı Site Yönetimi</string>
+    
+    <!-- Dashboard -->
+    <string name="dashboard_title">Ana Sayfa</string>
+    <string name="total_debt">Toplam Borç</string>
+    <string name="total_credit">Toplam Ödenen</string>
+    <string name="remaining_payment">Kalan Ödeme</string>
+    <string name="sync_to_server">🔄 Sunucu ile Senkronize Et</string>
+    <string name="syncing">Senkronize ediliyor…</string>
+    <string name="profile">Profilim</string>
+    <string name="email">E-posta</string>
+    <string name="quick_access">Hızlı Erişim</string>
+    <string name="fees">Aidatlar</string>
+    <string name="water_meter">Su Sayaç</string>
+    <string name="payments">Ödemeler</string>
+    <string name="extra_payment">Ek Ödeme</string>
+    <string name="residents">Daire Sakinleri</string>
+    <string name="currency_format">%.2f ₺</string>
+    
+    <!-- Fees -->
+    <string name="export_to_excel">📊 Excel\'e Aktar</string>
+    <string name="no_fees_found">Aidat bulunamadı</string>
+    <string name="create_fees_for_all_units">📋 Tüm Dairelere Aidat</string>
+    <string name="unpaid">Ödemeyenler</string>
+    <string name="partially_paid">Kısmi Ödeyenler</string>
+    <string name="paid">Ödeyenler</string>
+    <string name="fee_status_paid">Ödendi</string>
+    <string name="fee_status_partially_paid">Kısmi Ödendi</string>
+    <string name="fee_status_unpaid">Ödenmedi</string>
+    <string name="unit_number_format">Daire: %1$s</string>
+    <string name="owner_name_format">Kişi: %1$s</string>
+    <string name="due_date_format">Son Ödeme: %1$s</string>
+    <string name="paid_amount_format">Ödenen: %1$s</string>
+    <string name="remaining_amount_format">Kalan: %1$s</string>
+    <string name="make_payment">Ödeme Yap</string>
+    <string name="unit_format">Daire %1$s</string>
+    <string name="unit_with_owner_format">Daire %1$s - %2$s</string>
+    <string name="unknown_unit">Daire: -</string>
+    <string name="unknown_owner">-</string>
+    <string name="unknown">Bilinmiyor</string>
+    
+    <!-- Fee Month Summary -->
+    <string name="unit_count_format">%1$d daire</string>
+    <string name="total_amount">Toplam Tutar:</string>
+    <string name="paid">Ödenen:</string>
+    <string name="remaining">Kalan:</string>
+    
+    <!-- Users -->
+    <string name="no_residents_added">Henüz daire sakini eklenmemiş</string>
+    <string name="add_resident_hint">Yeni daire sakini eklemek için + butonuna tıklayın</string>
+    <string name="role_admin">Yönetici</string>
+    <string name="role_resident">Daire Sakini</string>
+    <string name="role_auditor">Denetçi</string>
+    <string name="edit">Düzenle</string>
+    <string name="delete">Sil</string>
+    <string name="units_format">Daireler: %1$s</string>
+    <string name="total_area_format">Toplam Alan: %1$.2f m²</string>
+    <string name="area_format">Alan: - m²</string>
+    <string name="name">Ad Soyad</string>
+    <string name="phone">Telefon</string>
+    <string name="details">Detaylar</string>
+    <string name="no_data_found">Veri bulunamadı</string>
+    <string name="fees_tab">Aidatlar</string>
+    <string name="extra_payments_tab">Ek Ödemeler</string>
+    <string name="water_bills_tab">Su Faturaları</string>
+    <string name="payments_tab">Ödemeler</string>
+    
+    <!-- User Dialog -->
+    <string name="units_selection_hint">Daireler (Birden fazla seçebilirsiniz)</string>
+    <string name="cancel">İptal</string>
+    <string name="add">Ekle</string>
+    <string name="update">Güncelle</string>
+    <string name="please_fill_all_required_fields">Lütfen tüm zorunlu alanları doldurun</string>
+    <string name="please_select_block">Lütfen bir blok seçin</string>
+    <string name="please_select_at_least_one_unit">Lütfen en az bir daire seçin</string>
+    <string name="invalid_unit_selection">Geçersiz daire seçimi</string>
+    <string name="please_enter_name">Lütfen adı girin</string>
+    
+    <!-- Water Meter -->
+    <string name="water_meters_tab">Su Sayaçları</string>
+    <string name="water_bills_tab_title">Su Faturaları</string>
+    <string name="no_water_meter_found">Henüz su sayacı bulunmuyor</string>
+    <string name="add_water_meter_hint">Yeni su sayacı eklemek için + butonuna tıklayın</string>
+    <string name="no_water_bills_found">Henüz su faturası bulunmuyor</string>
+    <string name="water_bills_auto_created">Su sayacı okuması yapıldığında faturalar otomatik oluşturulur</string>
+    <string name="meter_number_format">Sayaç No: %1$s</string>
+    <string name="current_reading_format">Güncel Okuma: %1$.2f m³</string>
+    <string name="previous_reading_format">Önceki Okuma: %1$.2f m³</string>
+    <string name="consumption_format">Tüketim: %1$.2f m³</string>
+    <string name="unit_price_format">Birim Fiyat: %1$.2f ₺/m³</string>
+    <string name="last_reading_format">Son Okuma: %1$s</string>
+    <string name="enter_reading">Okuma Girişi Yap</string>
+    <string name="water_bill_status_paid">Ödendi</string>
+    <string name="water_bill_status_partially_paid">Kısmi Ödendi</string>
+    <string name="water_bill_status_unpaid">Ödenmedi</string>
+    <string name="consumption_label">Tüketim: %1$.2f m³</string>
+    
+    <!-- Extra Payments -->
+    <string name="no_extra_payments_found">Henüz ek ödeme bulunmuyor</string>
+    <string name="add_extra_payment_hint">Yeni ek ödeme eklemek için + butonuna tıklayın</string>
+    <string name="extra_payment_title">Ek Ödeme Başlığı</string>
+    <string name="description">Açıklama</string>
+    <string name="maintenance">Bakım</string>
+    <string name="installment_format">Taksit: %1$d/%2$d</string>
+    <string name="amount_label">Tutar: </string>
+    <string name="amount_format">%1$.0f ₺</string>
+    <string name="paid_format">Ödenen: %1$.0f ₺</string>
+    <string name="remaining_format">Kalan: %1$.0f ₺</string>
+    <string name="extra_payment_status_paid">Ödendi</string>
+    <string name="extra_payment_status_partially_paid">Kısmen Ödendi</string>
+    <string name="extra_payment_status_unpaid">Ödenmedi</string>
+    <string name="unit_info_format">Daire: %1$s</string>
+    <string name="all_apartments">Tüm Apartman</string>
+    
+    <!-- Payments -->
+    <string name="filter">Filtrele</string>
+    <string name="all">Tümü</string>
+    <string name="fee_payment">Aidat</string>
+    <string name="extra_payment_type">Ek Ödeme</string>
+    <string name="water_bill_payment">Su Faturası</string>
+    <string name="general">Genel</string>
+    <string name="no_payments_found">Henüz ödeme bulunmuyor</string>
+    <string name="payments_will_appear_here">Ödemeler burada görüntülenecek</string>
+    <string name="payment_type_fee">Aidat Ödemesi</string>
+    <string name="cash">Nakit</string>
+    <string name="description_label">Açıklama</string>
+    
+    <!-- Reports -->
+    <string name="summary_info">Özet Bilgiler</string>
+    <string name="total_unpaid_fees">Toplam Ödenmemiş Aidatlar</string>
+    <string name="total_unpaid_water_bills">Toplam Ödenmemiş Su Faturaları</string>
+    <string name="charts_and_detailed_reports">Grafikler ve Detaylı Raporlar</string>
+    <string name="chart_features_coming_soon">Grafik özellikleri yakında eklenecek</string>
+    
+    <!-- Notifications -->
+    <string name="mark_all_as_read">Tümünü Okundu İşaretle</string>
+    <string name="no_notifications">Henüz bildirim yok</string>
+    <string name="notification_title">Bildirim Başlığı</string>
+    <string name="notification_message_placeholder">Bildirim mesajı burada görünecek</string>
+    
+    <!-- Dialogs -->
+    <string name="create_extra_payment">Yeni Ek Ödeme Oluştur</string>
+    <string name="select_due_date">Son Ödeme Tarihi Seç</string>
+    <string name="create">Oluştur</string>
+    <string name="create_fees_for_all_units_title">Tüm Dairelere Aidat Oluştur</string>
+    <string name="create_fees_for_all_units_message">Tüm dairelere aynı ay/yıl için aidat oluşturulacak. Tutar, dairelerin arsa payına göre otomatik hesaplanacak.</string>
+    <string name="create_for_all_units">Tüm Dairelere Oluştur</string>
+    <string name="water_meter_reading_entry">Su Sayaç Okuma Girişi</string>
+    <string name="previous_reading_label">Önceki Okuma: %1$.2f m³</string>
+    <string name="save">Kaydet</string>
+    <string name="payment_entry">Ödeme Girişi</string>
+    <string name="create_fee">Yeni Aidat Oluştur</string>
+    
+    <!-- Auth -->
+    <string name="login">Giriş Yap</string>
+    <string name="register">Kayıt Ol</string>
+    <string name="already_have_account">Zaten hesabınız var mı? Giriş Yap</string>
+    <string name="no_account">Hesabınız yok mu? Kayıt Ol</string>
+    <string name="please_fill_all_fields">Lütfen tüm alanları doldurun</string>
+    
+    <!-- Error Messages -->
+    <string name="error_invalid_email">Geçersiz e-posta adresi</string>
+    <string name="error_wrong_password">Yanlış şifre</string>
+    <string name="error_user_not_found">Kullanıcı bulunamadı</string>
+    <string name="error_user_disabled">Bu kullanıcı devre dışı bırakılmış</string>
+    <string name="error_too_many_requests">Çok fazla deneme. Lütfen daha sonra tekrar deneyin</string>
+    <string name="error_email_already_in_use">Bu e-posta adresi zaten kullanılıyor</string>
+    <string name="error_weak_password">Şifre çok zayıf. En az 6 karakter olmalı</string>
+    <string name="error_network_request_failed">Ağ hatası. İnternet bağlantınızı kontrol edin</string>
+    <string name="error_auth_generic">Kimlik doğrulama hatası: %1$s</string>
+    <string name="error_sync">Hata: %1$s</string>
+    <string name="sync_completed">Senkronizasyon tamamlandı</string>
+    
+    <!-- Excel Import -->
+    <string name="units_to_import">%1$d daire içe aktarılacak</string>
+    <string name="rows_with_errors">%1$d satırda hata var</string>
+    <string name="errors">Hatalar:\n</string>
+    <string name="and_more_errors">… ve %1$d hata daha</string>
+    <string name="error_importing_units">Daireler içe aktarılırken hata: %1$s</string>
+    <string name="units_imported_successfully">Daireler başarıyla içe aktarıldı</string>
+    
+    <!-- Month Names -->
+    <string-array name="month_names">
+        <item>Ocak</item>
+        <item>Şubat</item>
+        <item>Mart</item>
+        <item>Nisan</item>
+        <item>Mayıs</item>
+        <item>Haziran</item>
+        <item>Temmuz</item>
+        <item>Ağustos</item>
+        <item>Eylül</item>
+        <item>Ekim</item>
+        <item>Kasım</item>
+        <item>Aralık</item>
+    </string-array>
+    <string name="month_january">Ocak</string>
+    <string name="month_february">Şubat</string>
+    <string name="month_march">Mart</string>
+    <string name="month_april">Nisan</string>
+    <string name="month_may">Mayıs</string>
+    <string name="month_june">Haziran</string>
+    <string name="month_july">Temmuz</string>
+    <string name="month_august">Ağustos</string>
+    <string name="month_september">Eylül</string>
+    <string name="month_october">Ekim</string>
+    <string name="month_november">Kasım</string>
+    <string name="month_december">Aralık</string>
+    
+    <!-- Common -->
+    <string name="arrow">→</string>
+    <string name="emoji_profile">👤</string>
+    <string name="emoji_money">💰</string>
+    <string name="emoji_water">🚰</string>
+    <string name="emoji_card">💳</string>
+    <string name="emoji_plus">➕</string>
+    <string name="emoji_chart">📊</string>
+    <string name="emoji_document">📄</string>
+    <string name="emoji_water_drop">💧</string>
 </resources>
-

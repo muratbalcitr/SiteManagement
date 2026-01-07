@@ -834,8 +834,12 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
       return DatabaseModule_ProvideNotificationDaoFactory.provideNotificationDao(provideAppDatabaseProvider.get());
     }
 
+    private UserUnitDao userUnitDao() {
+      return DatabaseModule_ProvideUserUnitDaoFactory.provideUserUnitDao(provideAppDatabaseProvider.get());
+    }
+
     private LocalDataSourceImpl localDataSourceImpl() {
-      return new LocalDataSourceImpl(userDao(), feeDao(), paymentDao(), waterMeterDao(), waterBillDao(), notificationDao(), unitDao(), blockDao());
+      return new LocalDataSourceImpl(userDao(), feeDao(), paymentDao(), waterMeterDao(), waterBillDao(), notificationDao(), unitDao(), blockDao(), userUnitDao());
     }
 
     private RemoteDataSourceImpl remoteDataSourceImpl() {
@@ -844,10 +848,6 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
 
     private ExtraPaymentDao extraPaymentDao() {
       return DatabaseModule_ProvideExtraPaymentDaoFactory.provideExtraPaymentDao(provideAppDatabaseProvider.get());
-    }
-
-    private UserUnitDao userUnitDao() {
-      return DatabaseModule_ProvideUserUnitDaoFactory.provideUserUnitDao(provideAppDatabaseProvider.get());
     }
 
     @SuppressWarnings("unchecked")

@@ -75,10 +75,10 @@ class UserDetailFragment : Fragment() {
     }
 
     private fun setupTabs() {
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Aidatlar"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Ek Ödemeler"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Su Faturaları"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Ödemeler"))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.fees_tab)))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.extra_payments_tab)))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.water_bills_tab)))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.payments_tab)))
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {

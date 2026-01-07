@@ -71,9 +71,9 @@ class FeesFragment : Fragment() {
     }
     
     private fun setupTabs() {
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Ödemeyenler"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Kısmi Ödeyenler"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Ödeyenler"))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.unpaid)))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.partially_paid)))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.paid)))
         
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {

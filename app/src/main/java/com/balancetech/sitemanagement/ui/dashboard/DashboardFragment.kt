@@ -167,7 +167,7 @@ class DashboardFragment : Fragment() {
                     
                     // Observe debt for this user's unit (or all if admin)
                     viewModel.getTotalDebt(unitId).collect { debt ->
-                        _binding?.totalDebtTextView?.text = String.format("%.2f ₺", debt)
+                        _binding?.totalDebtTextView?.text = String.format(getString(R.string.currency_format), debt)
                     }
                 }
             }
@@ -180,7 +180,21 @@ class DashboardFragment : Fragment() {
                     
                     // Observe credit for this user's unit (or all if admin)
                     viewModel.getTotalCredit(unitId).collect { credit ->
-                        _binding?.totalCreditTextView?.text = String.format("%.2f ₺", credit)
+                        _binding?.totalCreditTextView?.text = String.format(getString(R.string.currency_format), credit)
+                    }
+                }
+            }
+        }
+
+        // Observe remaining payment (filtered by user's unit if resident)
+        viewLifecycleOwner.lifecycleScope.launch {
+            authViewModel.currentUser.collect { user ->
+                user?.let {
+                    val unitId = if (it.role == UserRole.RESIDENT) it.unitId else null
+                    
+                    // Observe remaining payment for this user's unit (or all if admin)
+                    viewModel.getRemainingPayment(unitId).collect { remaining ->
+                        _binding?.remainingPaymentTextView?.text = String.format(getString(R.string.currency_format), remaining)
                     }
                 }
             }
@@ -193,15 +207,15 @@ class DashboardFragment : Fragment() {
                 when (state) {
                     is SyncState.Idle -> {
                         currentBinding.syncButton.isEnabled = true
-                        currentBinding.syncButton.text = "🔄 Firebase ile Senkronize Et"
+                        currentBinding.syncButton.text = getString(R.string.sync_to_server)
                     }
                     is SyncState.Syncing -> {
                         currentBinding.syncButton.isEnabled = false
-                        currentBinding.syncButton.text = "Senkronize ediliyor..."
+                        currentBinding.syncButton.text = getString(R.string.syncing)
                     }
                     is SyncState.Success -> {
                         currentBinding.syncButton.isEnabled = true
-                        currentBinding.syncButton.text = "🔄 Firebase ile Senkronize Et"
+                        currentBinding.syncButton.text = getString(R.string.sync_to_server)
                         Snackbar.make(
                             currentBinding.root,
                             state.message,
@@ -210,10 +224,10 @@ class DashboardFragment : Fragment() {
                     }
                     is SyncState.Error -> {
                         currentBinding.syncButton.isEnabled = true
-                        currentBinding.syncButton.text = "🔄 Firebase ile Senkronize Et"
+                        currentBinding.syncButton.text = getString(R.string.sync_to_server)
                         Snackbar.make(
                             currentBinding.root,
-                            "Hata: ${state.message}",
+                            getString(R.string.error_sync, state.message),
                             Snackbar.LENGTH_LONG
                         ).show()
                     }

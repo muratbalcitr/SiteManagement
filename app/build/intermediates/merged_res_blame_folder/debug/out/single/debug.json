@@ -20,10 +20,6 @@
         "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/navigation/nav_graph.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-merged_res-58:/layout_item_fee.xml.flat",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/item_fee.xml"
-    },
-    {
         "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/layout_fragment_register.xml.flat",
         "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_register.xml"
     },
@@ -36,12 +32,12 @@
         "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_login.xml"
     },
     {
-        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/layout_fragment_users.xml.flat",
-        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_users.xml"
-    },
-    {
         "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/layout_fragment_water_meter.xml.flat",
         "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_water_meter.xml"
+    },
+    {
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/layout_fragment_users.xml.flat",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_users.xml"
     },
     {
         "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/layout_item_fee.xml.flat",
@@ -82,6 +78,10 @@
     {
         "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/layout_fragment_payments.xml.flat",
         "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_payments.xml"
+    },
+    {
+        "merged": "com.balancetech.sitemanagement.app-merged_res-58:/layout_fragment_dashboard.xml.flat",
+        "source": "com.balancetech.sitemanagement.app-main-60:/layout/fragment_dashboard.xml"
     },
     {
         "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/drawable_ic_launcher.xml.flat",

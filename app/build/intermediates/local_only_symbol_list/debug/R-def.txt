@@ -107,6 +107,7 @@ id registerButton
 id registerFragment
 id registerTextView
 id remainingAmountText
+id remainingPaymentTextView
 id roleBadge
 id searchMenuItem
 id statusBadge
