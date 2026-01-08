@@ -157,14 +157,5 @@ Firebase Functions kurulumu için:
 3. `functions/` klasöründe `npm install` çalıştırın
 4. `.firebaserc` dosyasında proje ID'nizi güncelleyin
 5. `firebase deploy --only functions` ile deploy edin
-
-## Sonraki Adımlar
-
-1. ✅ RecyclerView adapter'ları ve liste ekranlarını tamamla
-2. ✅ Form ekranları (aidat oluşturma, su sayaç girişi, vb.)
-3. ✅ Ödeme girişi dialog/form ekranları
-4. ✅ Bildirim sistemi entegrasyonu
-5. ✅ Raporlama ekranları
-6. ✅ Firebase entegrasyonu
-7. ✅ Firebase Functions kurulumu
+ 
 
