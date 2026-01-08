@@ -123,8 +123,7 @@
                 android:layout_marginBottom="16dp"
                 android:text="@string/sync_to_server"
                 android:textSize="16sp"
-                app:icon="@android:drawable/ic_menu_upload"
-                app:iconGravity="textStart" />
+                 app:iconGravity="textStart" />
 
             <!-- Profile Card for Residents -->
             <com.google.android.material.card.MaterialCardView

@@ -24,16 +24,19 @@ import com.balancetech.sitemanagement.util.ExcelExportUtil
 import androidx.appcompat.widget.SearchView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import com.balancetech.sitemanagement.data.repository.SyncRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class FeesFragment : Fragment() {
     private var _binding: FragmentFeesBinding? = null
     private val binding get() = _binding!!
     private val viewModel: FeeViewModel by viewModels()
+    @Inject lateinit var syncRepository: SyncRepository
     private lateinit var adapter: FeeAdapter
     private lateinit var monthAdapter: FeeMonthAdapter
     private var currentFilter: PaymentStatus? = null
@@ -55,8 +58,26 @@ class FeesFragment : Fragment() {
         setupToolbar()
         setupTabs()
         setupRecyclerView()
+        syncFeesFromFirebase()
         observeViewModel()
         setupFab()
+    }
+    
+    private fun syncFeesFromFirebase() {
+        lifecycleScope.launch {
+            try {
+                // Sync units first (required for fees)
+                val unitsResult = syncRepository.syncFromFirebase("apt-001") // TODO: Get from current user
+                if (unitsResult.isSuccess) {
+                    // Units and fees are synced together in syncFromFirebase
+                    // The Flow will automatically update the UI
+                } else {
+                    android.util.Log.e("FeesFragment", "Error syncing fees: ${unitsResult.exceptionOrNull()?.message}")
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("FeesFragment", "Error syncing fees from Firebase: ${e.message}", e)
+            }
+        }
     }
     
     private fun setupToolbar() {

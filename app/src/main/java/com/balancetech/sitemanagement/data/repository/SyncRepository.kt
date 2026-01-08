@@ -156,20 +156,40 @@ class SyncRepository @Inject constructor(
         return try {
             val results = mutableListOf<String>()
             
-            // Sync users from remote
+            // IMPORTANT: Sync units FIRST before users and user_units
+            // This ensures foreign key constraints are satisfied
+            // Sync units from remote
+            try {
+                val remoteUnits = remoteDataSource.getUnitsByApartment(apartmentId)
+                if (remoteUnits.isNotEmpty()) {
+                    remoteUnits.forEach { localDataSource.insertUnit(it) }
+                    results.add("${remoteUnits.size} daire indirildi")
+                }
+            } catch (e: Exception) {
+                results.add("Daire indirme hatası: ${e.message}")
+            }
+            
+            // Sync users from remote (after units are synced)
             try {
                 val remoteUsers = remoteDataSource.getAllUsers()
                 if (remoteUsers.isNotEmpty()) {
                     localDataSource.insertUsers(remoteUsers)
                     
                     // Create UserUnit relationships from user.unitId (for backward compatibility)
+                    // This is done AFTER units are synced to satisfy foreign key constraints
                     val userUnits = mutableListOf<UserUnit>()
                     remoteUsers.forEach { user ->
                         if (user.unitId != null) {
-                            // Check if UserUnit already exists
-                            val existingUnitIds = userUnitDao.getUnitIdsByUserId(user.id).toSet()
-                            if (user.unitId !in existingUnitIds) {
-                                userUnits.add(UserUnit(userId = user.id, unitId = user.unitId))
+                            // Verify that the unit exists before creating UserUnit relationship
+                            val unitExists = localDataSource.getUnitById(user.unitId) != null
+                            if (unitExists) {
+                                // Check if UserUnit already exists
+                                val existingUnitIds = userUnitDao.getUnitIdsByUserId(user.id).toSet()
+                                if (user.unitId !in existingUnitIds) {
+                                    userUnits.add(UserUnit(userId = user.id, unitId = user.unitId))
+                                }
+                            } else {
+                                android.util.Log.w("SyncRepository", "Unit ${user.unitId} not found for user ${user.id}, skipping UserUnit relationship")
                             }
                         }
                     }
@@ -183,72 +203,147 @@ class SyncRepository @Inject constructor(
                 results.add("Kullanıcı indirme hatası: ${e.message}")
             }
             
-            // Sync units from remote
-            try {
-                val remoteUnits = remoteDataSource.getUnitsByApartment(apartmentId)
-                if (remoteUnits.isNotEmpty()) {
-                    remoteUnits.forEach { localDataSource.insertUnit(it) }
-                    results.add("${remoteUnits.size} daire indirildi")
-                }
-            } catch (e: Exception) {
-                results.add("Daire indirme hatası: ${e.message}")
-            }
+            // IMPORTANT: Sync order matters for foreign key constraints:
+            // 1. Units (already synced)
+            // 2. Users (already synced)
+            // 3. UserUnits (already synced)
+            // 4. WaterMeters (depends on Units)
+            // 5. Fees (depends on Units)
+            // 6. ExtraPayments (depends on Units)
+            // 7. WaterBills (depends on Units and WaterMeters)
+            // 8. Payments (depends on Units, Fees, ExtraPayments, WaterBills)
             
-            // Sync fees from remote
-            try {
-                val remoteFees = remoteDataSource.getAllFees()
-                if (remoteFees.isNotEmpty()) {
-                    localDataSource.insertFees(remoteFees)
-                    results.add("${remoteFees.size} aidat indirildi")
-                }
-            } catch (e: Exception) {
-                results.add("Aidat indirme hatası: ${e.message}")
-            }
-            
-            // Sync payments from remote
-            try {
-                val remotePayments = remoteDataSource.getAllPayments()
-                if (remotePayments.isNotEmpty()) {
-                    localDataSource.insertPayments(remotePayments)
-                    results.add("${remotePayments.size} ödeme indirildi")
-                }
-            } catch (e: Exception) {
-                results.add("Ödeme indirme hatası: ${e.message}")
-            }
-            
-            // Sync water meters from remote
+            // Sync water meters from remote (depends on Units)
             try {
                 val remoteWaterMeters = remoteDataSource.getAllWaterMeters()
                 if (remoteWaterMeters.isNotEmpty()) {
-                    localDataSource.insertWaterMeters(remoteWaterMeters)
-                    results.add("${remoteWaterMeters.size} su sayacı indirildi")
+                    // Verify units exist before inserting water meters
+                    val validWaterMeters = remoteWaterMeters.filter { waterMeter ->
+                        val unitExists = localDataSource.getUnitById(waterMeter.unitId) != null
+                        if (!unitExists) {
+                            android.util.Log.w("SyncRepository", "Unit ${waterMeter.unitId} not found for water meter ${waterMeter.id}, skipping")
+                        }
+                        unitExists
+                    }
+                    if (validWaterMeters.isNotEmpty()) {
+                        validWaterMeters.forEach { localDataSource.insertWaterMeter(it) }
+                        results.add("${validWaterMeters.size} su sayacı indirildi")
+                    }
                 }
             } catch (e: Exception) {
                 results.add("Su sayacı indirme hatası: ${e.message}")
             }
             
-            // Sync water bills from remote
+            // Sync fees from remote (depends on Units)
+            try {
+                val remoteFees = remoteDataSource.getAllFees()
+                if (remoteFees.isNotEmpty()) {
+                    // Verify units exist before inserting fees
+                    val validFees = remoteFees.filter { fee ->
+                         val unitExists = localDataSource.getUnitById(fee.unitId)!=null
+
+                        unitExists
+                    }
+                    if (validFees.isNotEmpty()) {
+                        localDataSource.insertFees(validFees)
+                        results.add("${validFees.size} aidat indirildi")
+                    }
+                }
+            } catch (e: Exception) {
+                results.add("Aidat indirme hatası: ${e.message}")
+            }
+            
+            // Sync extra payments from remote (depends on Units)
+            try {
+                val remoteExtraPayments = remoteDataSource.getAllExtraPayments(apartmentId)
+                if (remoteExtraPayments.isNotEmpty()) {
+                    // Verify units exist before inserting extra payments (unitId can be null for apartment-wide payments)
+                    val validExtraPayments = remoteExtraPayments.filter { extraPayment ->
+                        if (extraPayment.unitId != null) {
+                            val unitExists = localDataSource.getUnitById(extraPayment.unitId) != null
+                            if (!unitExists) {
+                                android.util.Log.w("SyncRepository", "Unit ${extraPayment.unitId} not found for extra payment ${extraPayment.id}, skipping")
+                            }
+                            unitExists
+                        } else {
+                            // Apartment-wide payment, no unit required
+                            true
+                        }
+                    }
+                    if (validExtraPayments.isNotEmpty()) {
+                        validExtraPayments.forEach { localDataSource.insertExtraPayment(it) }
+                        results.add("${validExtraPayments.size} ek ödeme indirildi")
+                    }
+                }
+            } catch (e: Exception) {
+                results.add("Ek ödeme indirme hatası: ${e.message}")
+            }
+            
+            // Sync water bills from remote (depends on Units and WaterMeters)
             try {
                 val remoteWaterBills = remoteDataSource.getAllWaterBills()
                 if (remoteWaterBills.isNotEmpty()) {
-                    localDataSource.insertWaterBills(remoteWaterBills)
-                    results.add("${remoteWaterBills.size} su faturası indirildi")
+                    // Verify units and water meters exist before inserting water bills
+                    val validWaterBills = remoteWaterBills.filter { waterBill ->
+                        val unitExists = localDataSource.getUnitById(waterBill.unitId) != null
+                        val waterMeterExists = localDataSource.getWaterMeterByUnit(waterBill.unitId) != null
+                        if (!unitExists) {
+                            android.util.Log.w("SyncRepository", "Unit ${waterBill.unitId} not found for water bill ${waterBill.id}, skipping")
+                        } else if (!waterMeterExists) {
+                            android.util.Log.w("SyncRepository", "Water meter not found for unit ${waterBill.unitId} in water bill ${waterBill.id}, skipping")
+                        }
+                        unitExists && waterMeterExists
+                    }
+                    if (validWaterBills.isNotEmpty()) {
+                        validWaterBills.forEach { localDataSource.insertWaterBill(it) }
+                        results.add("${validWaterBills.size} su faturası indirildi")
+                    }
                 }
             } catch (e: Exception) {
                 results.add("Su faturası indirme hatası: ${e.message}")
             }
             
-            // Sync extra payments from remote
+            // Sync payments from remote (depends on Units, Fees, ExtraPayments, WaterBills)
             try {
-                val remoteExtraPayments = remoteDataSource.getAllExtraPayments(apartmentId)
-                if (remoteExtraPayments.isNotEmpty()) {
-                    remoteExtraPayments.forEach { 
-                        localDataSource.insertExtraPayment(it) 
+                val remotePayments = remoteDataSource.getAllPayments()
+                if (remotePayments.isNotEmpty()) {
+                    // Verify dependencies exist before inserting payments
+                    val validPayments = remotePayments.filter { payment ->
+                        val unitExists = localDataSource.getUnitById(payment.unitId) != null
+                        if (!unitExists) {
+                            android.util.Log.w("SyncRepository", "Unit ${payment.unitId} not found for payment ${payment.id}, skipping")
+                            return@filter false
+                        }
+                        
+                        // Check optional dependencies
+                        if (payment.feeId != null) {
+                            val feeExists = localDataSource.getFeeById(payment.feeId) != null
+                            if (!feeExists) {
+                                android.util.Log.w("SyncRepository", "Fee ${payment.feeId} not found for payment ${payment.id}, skipping")
+                                return@filter false
+                            }
+                        }
+                        
+                        // ExtraPayment check is optional - if it doesn't exist, payment can still be valid
+                        // (ExtraPayment doesn't have foreign key constraint in Room)
+                        
+                        if (payment.waterBillId != null) {
+                            val waterBillExists = localDataSource.getWaterBillById(payment.waterBillId) != null
+                            if (!waterBillExists) {
+                                android.util.Log.w("SyncRepository", "Water bill ${payment.waterBillId} not found for payment ${payment.id}, skipping")
+                                return@filter false
+                            }
+                        }
+                        
+                        true
                     }
-                    results.add("${remoteExtraPayments.size} ek ödeme indirildi")
+                    if (validPayments.isNotEmpty()) {
+                        localDataSource.insertPayments(validPayments)
+                        results.add("${validPayments.size} ödeme indirildi")
+                    }
                 }
             } catch (e: Exception) {
-                results.add("Ek ödeme indirme hatası: ${e.message}")
+                results.add("Ödeme indirme hatası: ${e.message}")
             }
             
             // Sync notifications from remote (for current user)

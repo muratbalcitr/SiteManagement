@@ -130,8 +130,7 @@ public final class ApartmentDao_Impl implements ApartmentDao {
   }
 
   @Override
-  public Object insertApartment(final Apartment apartment,
-      final Continuation<? super Unit> $completion) {
+  public Object insertApartment(final Apartment apartment, final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -145,12 +144,11 @@ public final class ApartmentDao_Impl implements ApartmentDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
-  public Object deleteApartment(final Apartment apartment,
-      final Continuation<? super Unit> $completion) {
+  public Object deleteApartment(final Apartment apartment, final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -164,12 +162,11 @@ public final class ApartmentDao_Impl implements ApartmentDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
-  public Object updateApartment(final Apartment apartment,
-      final Continuation<? super Unit> $completion) {
+  public Object updateApartment(final Apartment apartment, final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -183,12 +180,11 @@ public final class ApartmentDao_Impl implements ApartmentDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
-  public Object getApartmentById(final String id,
-      final Continuation<? super Apartment> $completion) {
+  public Object getApartmentById(final String id, final Continuation<? super Apartment> arg1) {
     final String _sql = "SELECT * FROM apartments WHERE id = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -251,7 +247,7 @@ public final class ApartmentDao_Impl implements ApartmentDao {
           _statement.release();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override

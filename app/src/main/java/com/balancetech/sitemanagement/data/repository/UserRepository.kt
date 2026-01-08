@@ -65,10 +65,19 @@ class UserRepository @Inject constructor(
             val newUnitIds = unitIds.filter { it !in existingUnitIds }
             
             if (newUnitIds.isNotEmpty()) {
-                val userUnits = newUnitIds.map { unitId ->
-                    UserUnit(userId = existingUser.id, unitId = unitId)
+                // Verify that all units exist before creating UserUnit relationships
+                val validUserUnits = newUnitIds.mapNotNull { unitId ->
+                    val unitExists = localDataSource.getUnitById(unitId) != null
+                    if (unitExists) {
+                        UserUnit(userId = existingUser.id, unitId = unitId)
+                    } else {
+                        android.util.Log.w("UserRepository", "Unit $unitId not found, skipping UserUnit relationship")
+                        null
+                    }
                 }
-                userUnitDao.insertUserUnits(userUnits)
+                if (validUserUnits.isNotEmpty()) {
+                    userUnitDao.insertUserUnits(validUserUnits)
+                }
             }
             
             return Result.success(existingUser)
@@ -95,11 +104,20 @@ class UserRepository @Inject constructor(
         localDataSource.insertUser(user)
 
         // Create user-unit relationships
+        // Verify that all units exist before creating UserUnit relationships
         if (unitIds.isNotEmpty()) {
-            val userUnits = unitIds.map { unitId ->
-                UserUnit(userId = userId, unitId = unitId)
+            val validUserUnits = unitIds.mapNotNull { unitId ->
+                val unitExists = localDataSource.getUnitById(unitId) != null
+                if (unitExists) {
+                    UserUnit(userId = userId, unitId = unitId)
+                } else {
+                    android.util.Log.w("UserRepository", "Unit $unitId not found, skipping UserUnit relationship")
+                    null
+                }
             }
-            userUnitDao.insertUserUnits(userUnits)
+            if (validUserUnits.isNotEmpty()) {
+                userUnitDao.insertUserUnits(validUserUnits)
+            }
         }
 
         // Then sync to Firebase
@@ -145,15 +163,24 @@ class UserRepository @Inject constructor(
         localDataSource.updateUser(user)
 
         // Update user-unit relationships if provided
+        // Verify that all units exist before creating UserUnit relationships
         if (unitIds != null) {
             // Delete existing relationships
             userUnitDao.deleteAllUserUnits(user.id)
             // Create new relationships
             if (unitIds.isNotEmpty()) {
-                val userUnits = unitIds.map { unitId ->
-                    UserUnit(userId = user.id, unitId = unitId)
+                val validUserUnits = unitIds.mapNotNull { unitId ->
+                    val unitExists = localDataSource.getUnitById(unitId) != null
+                    if (unitExists) {
+                        UserUnit(userId = user.id, unitId = unitId)
+                    } else {
+                        android.util.Log.w("UserRepository", "Unit $unitId not found, skipping UserUnit relationship")
+                        null
+                    }
                 }
-                userUnitDao.insertUserUnits(userUnits)
+                if (validUserUnits.isNotEmpty()) {
+                    userUnitDao.insertUserUnits(validUserUnits)
+                }
             }
         }
 

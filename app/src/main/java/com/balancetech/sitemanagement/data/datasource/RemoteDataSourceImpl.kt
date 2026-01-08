@@ -28,7 +28,9 @@ class RemoteDataSourceImpl @Inject constructor(
     override suspend fun getUserByEmail(email: String): User? {
         return try {
             val snapshot = usersCollection.whereEqualTo("email", email).limit(1).get().await()
-            snapshot.documents.firstOrNull()?.toObject(User::class.java)
+            snapshot.documents.firstOrNull()?.let { doc ->
+                docToUser(doc)
+            }
         } catch (e: Exception) {
             null
         }
@@ -36,9 +38,67 @@ class RemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getAllUsers(): List<User> {
         return try {
-            usersCollection.get().await().toObjects(User::class.java)
+            usersCollection.get().await().documents.mapNotNull { doc ->
+                docToUser(doc)
+            }
         } catch (e: Exception) {
             emptyList()
+        }
+    }
+    
+    private fun docToUser(doc: com.google.firebase.firestore.DocumentSnapshot): User? {
+        return try {
+            val data = doc.data ?: return null
+            val roleString = data["role"] as? String ?: "RESIDENT"
+            val role = try {
+                com.balancetech.sitemanagement.data.model.UserRole.valueOf(roleString)
+            } catch (e: Exception) {
+                com.balancetech.sitemanagement.data.model.UserRole.RESIDENT
+            }
+            
+            User(
+                id = doc.id,
+                email = data["email"] as? String ?: "",
+                password = data["password"] as? String ?: "",
+                name = data["name"] as? String ?: "",
+                phone = data["phone"] as? String,
+                role = role,
+                apartmentId = data["apartmentId"] as? String,
+                unitId = data["unitId"] as? String,
+                createdAt = (data["createdAt"] as? Long) ?: System.currentTimeMillis(),
+                isActive = (data["isActive"] as? Boolean) ?: true
+            )
+        } catch (e: Exception) {
+            null
+        }
+    }
+    
+    private fun docToFee(doc: com.google.firebase.firestore.DocumentSnapshot): Fee? {
+        return try {
+            val data = doc.data ?: return null
+            val statusString = data["status"] as? String ?: "UNPAID"
+            val status = try {
+                com.balancetech.sitemanagement.data.model.PaymentStatus.valueOf(statusString)
+            } catch (e: Exception) {
+                com.balancetech.sitemanagement.data.model.PaymentStatus.UNPAID
+            }
+            
+            Fee(
+                id = doc.id,
+                apartmentId = data["apartmentId"] as? String ?: "",
+                unitId = data["unitId"] as? String ?: "",
+                month = (data["month"] as? Number)?.toInt() ?: 1,
+                year = (data["year"] as? Number)?.toInt() ?: 2024,
+                amount = (data["amount"] as? Number)?.toDouble() ?: 0.0,
+                paidAmount = (data["paidAmount"] as? Number)?.toDouble() ?: 0.0,
+                status = status,
+                dueDate = (data["dueDate"] as? Long) ?: System.currentTimeMillis(),
+                createdAt = (data["createdAt"] as? Long) ?: System.currentTimeMillis(),
+                updatedAt = (data["updatedAt"] as? Long) ?: System.currentTimeMillis()
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error converting document to Fee: ${e.message}", e)
+            null
         }
     }
 
@@ -63,29 +123,46 @@ class RemoteDataSourceImpl @Inject constructor(
     // Fee operations
     override suspend fun getFeesByUnit(unitId: String): List<Fee> {
         return try {
+            // Fetch without orderBy to avoid index requirement, sort in memory
             feesCollection
                 .whereEqualTo("unitId", unitId)
-                .orderBy("year", Query.Direction.DESCENDING)
-                .orderBy("month", Query.Direction.DESCENDING)
                 .get()
                 .await()
-                .toObjects(Fee::class.java)
+                .documents
+                .mapNotNull { doc -> docToFee(doc) }
+                .sortedWith(compareByDescending<Fee> { it.year }
+                    .thenByDescending { it.month })
         } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error fetching fees by unit: ${e.message}", e)
             emptyList()
         }
     }
 
     override suspend fun getFeesByMonth(apartmentId: String, month: Int, year: Int): List<Fee> {
         return try {
+            // Use apartmentId and year filter, then filter by month in memory
+            // This avoids the need for a composite index on (apartmentId, month, year)
             feesCollection
                 .whereEqualTo("apartmentId", apartmentId)
-                .whereEqualTo("month", month)
                 .whereEqualTo("year", year)
                 .get()
                 .await()
-                .toObjects(Fee::class.java)
+                .documents
+                .mapNotNull { doc -> docToFee(doc) }
+                .filter { it.month == month }
         } catch (e: Exception) {
-            emptyList()
+            // If the query still fails, try without filters and filter in memory
+            try {
+                feesCollection
+                    .whereEqualTo("apartmentId", apartmentId)
+                    .get()
+                    .await()
+                    .documents
+                    .mapNotNull { doc -> docToFee(doc) }
+                    .filter { it.month == month && it.year == year }
+            } catch (e2: Exception) {
+                emptyList()
+            }
         }
     }
 
@@ -96,7 +173,8 @@ class RemoteDataSourceImpl @Inject constructor(
                 .whereEqualTo("status", status.name)
                 .get()
                 .await()
-                .toObjects(Fee::class.java)
+                .documents
+                .mapNotNull { doc -> docToFee(doc) }
         } catch (e: Exception) {
             emptyList()
         }
@@ -104,20 +182,29 @@ class RemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getAllFees(): List<Fee> {
         return try {
+            // Fetch all fees without orderBy to avoid index requirement
+            // Sort in memory instead
             feesCollection
-                .orderBy("year", Query.Direction.DESCENDING)
-                .orderBy("month", Query.Direction.DESCENDING)
                 .get()
                 .await()
-                .toObjects(Fee::class.java)
+                .documents
+                .mapNotNull { doc -> docToFee(doc) }
+                .sortedWith(compareByDescending<Fee> { it.year }
+                    .thenByDescending { it.month })
         } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error fetching all fees: ${e.message}", e)
             emptyList()
         }
     }
 
     override suspend fun getFeeById(id: String): Fee? {
         return try {
-            feesCollection.document(id).get().await().toObject(Fee::class.java)
+            val doc = feesCollection.document(id).get().await()
+            if (doc.exists()) {
+                docToFee(doc)
+            } else {
+                null
+            }
         } catch (e: Exception) {
             null
         }

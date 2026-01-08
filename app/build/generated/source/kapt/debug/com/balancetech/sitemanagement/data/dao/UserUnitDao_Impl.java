@@ -99,8 +99,7 @@ public final class UserUnitDao_Impl implements UserUnitDao {
   }
 
   @Override
-  public Object insertUserUnit(final UserUnit userUnit,
-      final Continuation<? super Unit> $completion) {
+  public Object insertUserUnit(final UserUnit userUnit, final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -114,12 +113,12 @@ public final class UserUnitDao_Impl implements UserUnitDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
   public Object insertUserUnits(final List<UserUnit> userUnits,
-      final Continuation<? super Unit> $completion) {
+      final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -133,12 +132,11 @@ public final class UserUnitDao_Impl implements UserUnitDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
-  public Object deleteUserUnit(final UserUnit userUnit,
-      final Continuation<? super Unit> $completion) {
+  public Object deleteUserUnit(final UserUnit userUnit, final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -152,12 +150,12 @@ public final class UserUnitDao_Impl implements UserUnitDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
   public Object deleteUserUnit(final String userId, final String unitId,
-      final Continuation<? super Unit> $completion) {
+      final Continuation<? super Unit> arg2) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -188,12 +186,11 @@ public final class UserUnitDao_Impl implements UserUnitDao {
           __preparedStmtOfDeleteUserUnit.release(_stmt);
         }
       }
-    }, $completion);
+    }, arg2);
   }
 
   @Override
-  public Object deleteAllUserUnits(final String userId,
-      final Continuation<? super Unit> $completion) {
+  public Object deleteAllUserUnits(final String userId, final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -218,7 +215,7 @@ public final class UserUnitDao_Impl implements UserUnitDao {
           __preparedStmtOfDeleteAllUserUnits.release(_stmt);
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
@@ -333,7 +330,7 @@ public final class UserUnitDao_Impl implements UserUnitDao {
 
   @Override
   public Object getUnitIdsByUserId(final String userId,
-      final Continuation<? super List<String>> $completion) {
+      final Continuation<? super List<String>> arg1) {
     final String _sql = "SELECT unitId FROM user_units WHERE userId = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -365,12 +362,12 @@ public final class UserUnitDao_Impl implements UserUnitDao {
           _statement.release();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
   public Object getUserIdsByUnitId(final String unitId,
-      final Continuation<? super List<String>> $completion) {
+      final Continuation<? super List<String>> arg1) {
     final String _sql = "SELECT userId FROM user_units WHERE unitId = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -402,7 +399,7 @@ public final class UserUnitDao_Impl implements UserUnitDao {
           _statement.release();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @NonNull

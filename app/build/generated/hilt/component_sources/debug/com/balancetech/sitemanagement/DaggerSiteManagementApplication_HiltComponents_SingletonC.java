@@ -71,6 +71,7 @@ import com.balancetech.sitemanagement.ui.dialog.PaymentEntryDialogFragment;
 import com.balancetech.sitemanagement.ui.dialog.WaterMeterReadingDialogFragment;
 import com.balancetech.sitemanagement.ui.extrapayments.ExtraPaymentsFragment;
 import com.balancetech.sitemanagement.ui.fees.FeesFragment;
+import com.balancetech.sitemanagement.ui.fees.FeesFragment_MembersInjector;
 import com.balancetech.sitemanagement.ui.notifications.NotificationsFragment;
 import com.balancetech.sitemanagement.ui.payments.PaymentsFragment;
 import com.balancetech.sitemanagement.ui.reports.ReportsFragment;
@@ -99,6 +100,7 @@ import com.balancetech.sitemanagement.ui.viewmodel.WaterMeterViewModel_HiltModul
 import com.balancetech.sitemanagement.ui.watermeter.WaterMeterFragment;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
@@ -486,6 +488,7 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
 
     @Override
     public void injectFeesFragment(FeesFragment feesFragment) {
+      injectFeesFragment2(feesFragment);
     }
 
     @Override
@@ -520,6 +523,12 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
     @Override
     public ViewWithFragmentComponentBuilder viewWithFragmentComponentBuilder() {
       return new ViewWithFragmentCBuilder(singletonCImpl, activityRetainedCImpl, activityCImpl, fragmentCImpl);
+    }
+
+    @CanIgnoreReturnValue
+    private FeesFragment injectFeesFragment2(FeesFragment instance) {
+      FeesFragment_MembersInjector.injectSyncRepository(instance, singletonCImpl.provideSyncRepositoryProvider.get());
+      return instance;
     }
   }
 

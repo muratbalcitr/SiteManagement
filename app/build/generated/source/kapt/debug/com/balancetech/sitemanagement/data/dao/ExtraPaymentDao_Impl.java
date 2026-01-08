@@ -162,7 +162,7 @@ public final class ExtraPaymentDao_Impl implements ExtraPaymentDao {
 
   @Override
   public Object insertExtraPayment(final ExtraPayment extraPayment,
-      final Continuation<? super Unit> $completion) {
+      final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -176,12 +176,12 @@ public final class ExtraPaymentDao_Impl implements ExtraPaymentDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
   public Object deleteExtraPayment(final ExtraPayment extraPayment,
-      final Continuation<? super Unit> $completion) {
+      final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -195,12 +195,12 @@ public final class ExtraPaymentDao_Impl implements ExtraPaymentDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
   public Object updateExtraPayment(final ExtraPayment extraPayment,
-      final Continuation<? super Unit> $completion) {
+      final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -214,12 +214,12 @@ public final class ExtraPaymentDao_Impl implements ExtraPaymentDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
   public Object getExtraPaymentById(final String id,
-      final Continuation<? super ExtraPayment> $completion) {
+      final Continuation<? super ExtraPayment> arg1) {
     final String _sql = "SELECT * FROM extra_payments WHERE id = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -309,7 +309,7 @@ public final class ExtraPaymentDao_Impl implements ExtraPaymentDao {
           _statement.release();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override

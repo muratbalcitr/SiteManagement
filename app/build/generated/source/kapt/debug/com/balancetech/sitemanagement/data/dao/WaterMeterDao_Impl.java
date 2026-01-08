@@ -131,7 +131,7 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
 
   @Override
   public Object insertWaterMeter(final WaterMeter waterMeter,
-      final Continuation<? super Unit> $completion) {
+      final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -145,12 +145,12 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
   public Object deleteWaterMeter(final WaterMeter waterMeter,
-      final Continuation<? super Unit> $completion) {
+      final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -164,12 +164,12 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
   public Object updateWaterMeter(final WaterMeter waterMeter,
-      final Continuation<? super Unit> $completion) {
+      final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -183,12 +183,11 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
-  public Object getWaterMeterById(final String id,
-      final Continuation<? super WaterMeter> $completion) {
+  public Object getWaterMeterById(final String id, final Continuation<? super WaterMeter> arg1) {
     final String _sql = "SELECT * FROM water_meters WHERE id = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -252,12 +251,12 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
           _statement.release();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
   public Object getWaterMeterByUnit(final String unitId,
-      final Continuation<? super WaterMeter> $completion) {
+      final Continuation<? super WaterMeter> arg1) {
     final String _sql = "SELECT * FROM water_meters WHERE unitId = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -321,7 +320,7 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
           _statement.release();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
