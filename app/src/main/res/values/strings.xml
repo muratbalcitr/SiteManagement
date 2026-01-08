@@ -44,7 +44,6 @@
     <!-- Fee Month Summary -->
     <string name="unit_count_format">%1$d daire</string>
     <string name="total_amount">Toplam Tutar:</string>
-    <string name="paid">Ödenen:</string>
     <string name="remaining">Kalan:</string>
     
     <!-- Users -->

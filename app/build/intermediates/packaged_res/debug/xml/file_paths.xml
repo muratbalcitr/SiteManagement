@@ -2,6 +2,7 @@
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
     <external-files-path name="exports" path="exports/" />
     <files-path name="files" path="." />
+    <files-path name="internal_exports" path="exports/" />
 </paths>
 
 

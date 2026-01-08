@@ -7,13 +7,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.balancetech.sitemanagement.R;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import java.lang.NullPointerException;
@@ -28,13 +29,13 @@ public final class FragmentFeesBinding implements ViewBinding {
   public final FloatingActionButton addFeeFab;
 
   @NonNull
-  public final MaterialButton createFeesForAllButton;
+  public final AppBarLayout appBarLayout;
+
+  @NonNull
+  public final ConstraintLayout constraint;
 
   @NonNull
   public final TextView emptyState;
-
-  @NonNull
-  public final MaterialButton exportButton;
 
   @NonNull
   public final RecyclerView feesRecyclerView;
@@ -46,15 +47,15 @@ public final class FragmentFeesBinding implements ViewBinding {
   public final MaterialToolbar toolbar;
 
   private FragmentFeesBinding(@NonNull CoordinatorLayout rootView,
-      @NonNull FloatingActionButton addFeeFab, @NonNull MaterialButton createFeesForAllButton,
-      @NonNull TextView emptyState, @NonNull MaterialButton exportButton,
+      @NonNull FloatingActionButton addFeeFab, @NonNull AppBarLayout appBarLayout,
+      @NonNull ConstraintLayout constraint, @NonNull TextView emptyState,
       @NonNull RecyclerView feesRecyclerView, @NonNull TabLayout tabLayout,
       @NonNull MaterialToolbar toolbar) {
     this.rootView = rootView;
     this.addFeeFab = addFeeFab;
-    this.createFeesForAllButton = createFeesForAllButton;
+    this.appBarLayout = appBarLayout;
+    this.constraint = constraint;
     this.emptyState = emptyState;
-    this.exportButton = exportButton;
     this.feesRecyclerView = feesRecyclerView;
     this.tabLayout = tabLayout;
     this.toolbar = toolbar;
@@ -93,21 +94,21 @@ public final class FragmentFeesBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.createFeesForAllButton;
-      MaterialButton createFeesForAllButton = ViewBindings.findChildViewById(rootView, id);
-      if (createFeesForAllButton == null) {
+      id = R.id.appBarLayout;
+      AppBarLayout appBarLayout = ViewBindings.findChildViewById(rootView, id);
+      if (appBarLayout == null) {
+        break missingId;
+      }
+
+      id = R.id.constraint;
+      ConstraintLayout constraint = ViewBindings.findChildViewById(rootView, id);
+      if (constraint == null) {
         break missingId;
       }
 
       id = R.id.emptyState;
       TextView emptyState = ViewBindings.findChildViewById(rootView, id);
       if (emptyState == null) {
-        break missingId;
-      }
-
-      id = R.id.exportButton;
-      MaterialButton exportButton = ViewBindings.findChildViewById(rootView, id);
-      if (exportButton == null) {
         break missingId;
       }
 
@@ -129,8 +130,8 @@ public final class FragmentFeesBinding implements ViewBinding {
         break missingId;
       }
 
-      return new FragmentFeesBinding((CoordinatorLayout) rootView, addFeeFab,
-          createFeesForAllButton, emptyState, exportButton, feesRecyclerView, tabLayout, toolbar);
+      return new FragmentFeesBinding((CoordinatorLayout) rootView, addFeeFab, appBarLayout,
+          constraint, emptyState, feesRecyclerView, tabLayout, toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

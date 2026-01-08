@@ -21,6 +21,7 @@ import com.balancetech.sitemanagement.ui.dialog.CreateFeeDialogFragment
 import com.balancetech.sitemanagement.ui.dialog.PaymentEntryDialogFragment
 import com.balancetech.sitemanagement.ui.viewmodel.FeeViewModel
 import com.balancetech.sitemanagement.util.ExcelExportUtil
+import androidx.appcompat.widget.SearchView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,6 +38,7 @@ class FeesFragment : Fragment() {
     private lateinit var monthAdapter: FeeMonthAdapter
     private var currentFilter: PaymentStatus? = null
     private var isMonthView: Boolean = true // Default to month view
+    private var searchQuery: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,6 +71,24 @@ class FeesFragment : Fragment() {
             }
         }
         
+        // Setup search view
+        val searchMenuItem = binding.toolbar.menu.findItem(R.id.action_search)
+        val searchView = searchMenuItem?.actionView as? SearchView
+        searchView?.let {
+            it.queryHint = "Daire, sahip adı veya ay ara..."
+            it.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    performSearch(query ?: "")
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    performSearch(newText ?: "")
+                    return true
+                }
+            })
+        }
+        
         // Setup toolbar menu item clicks
         binding.toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
@@ -83,6 +103,11 @@ class FeesFragment : Fragment() {
                 else -> false
             }
         }
+    }
+    
+    private fun performSearch(query: String) {
+        searchQuery = query.trim().lowercase()
+        observeViewModel()
     }
     
     private fun setupTabs() {
@@ -146,7 +171,11 @@ class FeesFragment : Fragment() {
         binding.toolbar.setNavigationIcon( android.R.drawable.arrow_down_float)
         
         lifecycleScope.launch {
-            val filteredFees = if (currentFilter != null) {
+            // Get units for search
+            val allUnits = viewModel.getAllUnits("apt-001") // TODO: Get from current user
+            val unitsMap = allUnits.associateBy { it.id }
+            
+            var filteredFees = if (currentFilter != null) {
                 summary.fees.filter { fee ->
                     when (currentFilter) {
                         PaymentStatus.UNPAID -> {
@@ -168,6 +197,30 @@ class FeesFragment : Fragment() {
             } else {
                 summary.fees
             }
+            
+            // Apply search filter
+            if (searchQuery.isNotEmpty()) {
+                val query = searchQuery.lowercase()
+                val monthNames = arrayOf(
+                    "ocak", "şubat", "mart", "nisan", "mayıs", "haziran",
+                    "temmuz", "ağustos", "eylül", "ekim", "kasım", "aralık"
+                )
+                
+                filteredFees = filteredFees.filter { fee ->
+                    val unit = unitsMap[fee.unitId]
+                    val unitNumber = unit?.unitNumber?.lowercase() ?: ""
+                    val ownerName = unit?.ownerName?.lowercase() ?: ""
+                    val monthName = monthNames.getOrNull(fee.month - 1) ?: ""
+                    val year = fee.year.toString()
+                    
+                    unitNumber.contains(query) ||
+                    ownerName.contains(query) ||
+                    monthName.contains(query) ||
+                    year.contains(query) ||
+                    fee.unitId.lowercase().contains(query)
+                }
+            }
+            
             adapter.submitList(filteredFees)
             binding.emptyState.visibility = if (filteredFees.isEmpty()) View.VISIBLE else View.GONE
         }
@@ -175,9 +228,16 @@ class FeesFragment : Fragment() {
 
     private fun observeViewModel() {
         lifecycleScope.launch {
+            // Get units for search
+            val allUnits = viewModel.getAllUnits("apt-001") // TODO: Get from current user
+            val unitsMap = allUnits.associateBy { it.id }
+            
             viewModel.getAllFees().map { fees ->
+                var filtered = fees
+                
+                // Apply status filter
                 currentFilter?.let { filter ->
-                    fees.filter { fee ->
+                    filtered = filtered.filter { fee ->
                         when (filter) {
                             PaymentStatus.UNPAID -> {
                                 // Ödemeyenler: Status UNPAID veya paidAmount < amount
@@ -194,7 +254,32 @@ class FeesFragment : Fragment() {
                             }
                         }
                     }
-                } ?: fees
+                }
+                
+                // Apply search filter
+                if (searchQuery.isNotEmpty()) {
+                    val query = searchQuery.lowercase()
+                    val monthNames = arrayOf(
+                        "ocak", "şubat", "mart", "nisan", "mayıs", "haziran",
+                        "temmuz", "ağustos", "eylül", "ekim", "kasım", "aralık"
+                    )
+                    
+                    filtered = filtered.filter { fee ->
+                        val unit = unitsMap[fee.unitId]
+                        val unitNumber = unit?.unitNumber?.lowercase() ?: ""
+                        val ownerName = unit?.ownerName?.lowercase() ?: ""
+                        val monthName = monthNames.getOrNull(fee.month - 1) ?: ""
+                        val year = fee.year.toString()
+                        
+                        unitNumber.contains(query) ||
+                        ownerName.contains(query) ||
+                        monthName.contains(query) ||
+                        year.contains(query) ||
+                        fee.unitId.lowercase().contains(query)
+                    }
+                }
+                
+                filtered
             }.collect { filteredFees ->
                 if (isMonthView) {
                     // Group fees by month and year

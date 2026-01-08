@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.balancetech.sitemanagement.R
 import com.balancetech.sitemanagement.data.entity.Unit as UnitEntity
 import com.balancetech.sitemanagement.data.entity.User
 import com.balancetech.sitemanagement.data.model.UserRole
