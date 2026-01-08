@@ -236,20 +236,44 @@ class SyncRepository @Inject constructor(
             
             // Sync fees from remote (depends on Units)
             try {
+                android.util.Log.d("SyncRepository", "Starting fees sync from Firebase...")
                 val remoteFees = remoteDataSource.getAllFees()
+                android.util.Log.d("SyncRepository", "Fetched ${remoteFees.size} fees from Firebase")
+                
                 if (remoteFees.isNotEmpty()) {
+                    // Get all unit IDs that exist locally
+                    val allUnits = localDataSource.getUnitsByApartment(apartmentId)
+                    val existingUnitIds = allUnits.map { it.id }.toSet()
+                    android.util.Log.d("SyncRepository", "Found ${existingUnitIds.size} units locally")
+                    
                     // Verify units exist before inserting fees
                     val validFees = remoteFees.filter { fee ->
-                         val unitExists = localDataSource.getUnitById(fee.unitId)!=null
-
+                        val unitExists = existingUnitIds.contains(fee.unitId)
+                        if (!unitExists) {
+                            android.util.Log.w("SyncRepository", "Unit ${fee.unitId} not found for fee ${fee.id} (unitNumber might be different), skipping")
+                        } else {
+                            android.util.Log.d("SyncRepository", "Fee ${fee.id} is valid for unit ${fee.unitId}")
+                        }
                         unitExists
                     }
+                    
+                    android.util.Log.d("SyncRepository", "Valid fees: ${validFees.size} out of ${remoteFees.size}")
+                    
                     if (validFees.isNotEmpty()) {
                         localDataSource.insertFees(validFees)
                         results.add("${validFees.size} aidat indirildi")
+                        android.util.Log.d("SyncRepository", "Successfully inserted ${validFees.size} fees")
+                    } else {
+                        android.util.Log.w("SyncRepository", "No valid fees to insert. Check if units are synced first.")
+                        results.add("Aidat indirilemedi: Daireler önce senkronize edilmeli")
                     }
+                } else {
+                    android.util.Log.w("SyncRepository", "No fees found in Firebase")
+                    results.add("Firebase'de aidat bulunamadı")
                 }
             } catch (e: Exception) {
+                android.util.Log.e("SyncRepository", "Error syncing fees: ${e.message}", e)
+                e.printStackTrace()
                 results.add("Aidat indirme hatası: ${e.message}")
             }
             

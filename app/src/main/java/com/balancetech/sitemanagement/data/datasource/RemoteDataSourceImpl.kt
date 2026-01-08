@@ -6,6 +6,7 @@ import com.balancetech.sitemanagement.data.model.PaymentStatus
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.Timestamp
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -76,6 +77,18 @@ class RemoteDataSourceImpl @Inject constructor(
     private fun docToFee(doc: com.google.firebase.firestore.DocumentSnapshot): Fee? {
         return try {
             val data = doc.data ?: return null
+            
+            // Handle Timestamp conversion
+            fun getLongValue(key: String): Long {
+                val value = data[key]
+                return when (value) {
+                    is Long -> value
+                    is Timestamp -> value.toDate().time
+                    is Number -> value.toLong()
+                    else -> System.currentTimeMillis()
+                }
+            }
+            
             val statusString = data["status"] as? String ?: "UNPAID"
             val status = try {
                 com.balancetech.sitemanagement.data.model.PaymentStatus.valueOf(statusString)
@@ -83,7 +96,7 @@ class RemoteDataSourceImpl @Inject constructor(
                 com.balancetech.sitemanagement.data.model.PaymentStatus.UNPAID
             }
             
-            Fee(
+            val fee = Fee(
                 id = doc.id,
                 apartmentId = data["apartmentId"] as? String ?: "",
                 unitId = data["unitId"] as? String ?: "",
@@ -92,12 +105,180 @@ class RemoteDataSourceImpl @Inject constructor(
                 amount = (data["amount"] as? Number)?.toDouble() ?: 0.0,
                 paidAmount = (data["paidAmount"] as? Number)?.toDouble() ?: 0.0,
                 status = status,
+                dueDate = getLongValue("dueDate"),
+                createdAt = getLongValue("createdAt"),
+                updatedAt = getLongValue("updatedAt")
+            )
+            
+            android.util.Log.d("RemoteDataSource", "Converted fee: ${fee.id}, unitId: ${fee.unitId}, month: ${fee.month}, year: ${fee.year}")
+            fee
+        } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error converting document to Fee (docId: ${doc.id}): ${e.message}", e)
+            android.util.Log.e("RemoteDataSource", "Document data: ${doc.data}")
+            null
+        }
+    }
+    
+    private fun docToUnit(doc: com.google.firebase.firestore.DocumentSnapshot): UnitEntity? {
+        return try {
+            val data = doc.data ?: return null
+            val ownerTypeString = data["ownerType"] as? String ?: "OWNER"
+            val ownerType = try {
+                com.balancetech.sitemanagement.data.model.OwnerType.valueOf(ownerTypeString)
+            } catch (e: Exception) {
+                com.balancetech.sitemanagement.data.model.OwnerType.OWNER
+            }
+            
+            UnitEntity(
+                id = doc.id,
+                apartmentId = data["apartmentId"] as? String ?: "",
+                blockId = data["blockId"] as? String,
+                unitNumber = data["unitNumber"] as? String ?: "",
+                floor = (data["floor"] as? Number)?.toInt() ?: 0,
+                area = (data["area"] as? Number)?.toDouble() ?: 0.0,
+                landShare = (data["landShare"] as? Number)?.toDouble() ?: 0.0,
+                ownerType = ownerType,
+                ownerName = data["ownerName"] as? String,
+                ownerPhone = data["ownerPhone"] as? String,
+                createdAt = (data["createdAt"] as? Long) ?: System.currentTimeMillis(),
+                isActive = (data["isActive"] as? Boolean) ?: true
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error converting document to Unit: ${e.message}", e)
+            null
+        }
+    }
+    
+    private fun docToPayment(doc: com.google.firebase.firestore.DocumentSnapshot): Payment? {
+        return try {
+            val data = doc.data ?: return null
+            
+            Payment(
+                id = doc.id,
+                unitId = data["unitId"] as? String ?: "",
+                feeId = data["feeId"] as? String,
+                extraPaymentId = data["extraPaymentId"] as? String,
+                waterBillId = data["waterBillId"] as? String,
+                amount = (data["amount"] as? Number)?.toDouble() ?: 0.0,
+                paymentDate = (data["paymentDate"] as? Long) ?: System.currentTimeMillis(),
+                paymentMethod = data["paymentMethod"] as? String ?: "cash",
+                description = data["description"] as? String,
+                createdBy = data["createdBy"] as? String ?: "",
+                createdAt = (data["createdAt"] as? Long) ?: System.currentTimeMillis()
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error converting document to Payment: ${e.message}", e)
+            null
+        }
+    }
+    
+    private fun docToWaterMeter(doc: com.google.firebase.firestore.DocumentSnapshot): WaterMeter? {
+        return try {
+            val data = doc.data ?: return null
+            
+            WaterMeter(
+                id = doc.id,
+                unitId = data["unitId"] as? String ?: "",
+                meterNumber = data["meterNumber"] as? String ?: "",
+                previousReading = (data["previousReading"] as? Number)?.toDouble() ?: 0.0,
+                currentReading = (data["currentReading"] as? Number)?.toDouble() ?: 0.0,
+                unitPrice = (data["unitPrice"] as? Number)?.toDouble() ?: 0.0,
+                lastReadingDate = (data["lastReadingDate"] as? Long) ?: System.currentTimeMillis(),
+                createdAt = (data["createdAt"] as? Long) ?: System.currentTimeMillis()
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error converting document to WaterMeter: ${e.message}", e)
+            null
+        }
+    }
+    
+    private fun docToWaterBill(doc: com.google.firebase.firestore.DocumentSnapshot): WaterBill? {
+        return try {
+            val data = doc.data ?: return null
+            val statusString = data["status"] as? String ?: "UNPAID"
+            val status = try {
+                com.balancetech.sitemanagement.data.model.PaymentStatus.valueOf(statusString)
+            } catch (e: Exception) {
+                com.balancetech.sitemanagement.data.model.PaymentStatus.UNPAID
+            }
+            
+            WaterBill(
+                id = doc.id,
+                unitId = data["unitId"] as? String ?: "",
+                waterMeterId = data["waterMeterId"] as? String ?: "",
+                month = (data["month"] as? Number)?.toInt() ?: 1,
+                year = (data["year"] as? Number)?.toInt() ?: 2024,
+                previousReading = (data["previousReading"] as? Number)?.toDouble() ?: 0.0,
+                currentReading = (data["currentReading"] as? Number)?.toDouble() ?: 0.0,
+                consumption = (data["consumption"] as? Number)?.toDouble() ?: 0.0,
+                unitPrice = (data["unitPrice"] as? Number)?.toDouble() ?: 0.0,
+                amount = (data["amount"] as? Number)?.toDouble() ?: 0.0,
+                sharedAmount = (data["sharedAmount"] as? Number)?.toDouble() ?: 0.0,
+                totalAmount = (data["totalAmount"] as? Number)?.toDouble() ?: 0.0,
+                paidAmount = (data["paidAmount"] as? Number)?.toDouble() ?: 0.0,
+                status = status,
+                dueDate = (data["dueDate"] as? Long) ?: System.currentTimeMillis(),
+                createdAt = (data["createdAt"] as? Long) ?: System.currentTimeMillis()
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error converting document to WaterBill: ${e.message}", e)
+            null
+        }
+    }
+    
+    private fun docToExtraPayment(doc: com.google.firebase.firestore.DocumentSnapshot): ExtraPayment? {
+        return try {
+            val data = doc.data ?: return null
+            val typeString = data["type"] as? String ?: "OTHER"
+            val type = try {
+                com.balancetech.sitemanagement.data.model.ExtraPaymentType.valueOf(typeString)
+            } catch (e: Exception) {
+                com.balancetech.sitemanagement.data.model.ExtraPaymentType.OTHER
+            }
+            val statusString = data["status"] as? String ?: "UNPAID"
+            val status = try {
+                com.balancetech.sitemanagement.data.model.PaymentStatus.valueOf(statusString)
+            } catch (e: Exception) {
+                com.balancetech.sitemanagement.data.model.PaymentStatus.UNPAID
+            }
+            
+            ExtraPayment(
+                id = doc.id,
+                apartmentId = data["apartmentId"] as? String ?: "",
+                unitId = data["unitId"] as? String,
+                title = data["title"] as? String ?: "",
+                description = data["description"] as? String,
+                amount = (data["amount"] as? Number)?.toDouble() ?: 0.0,
+                type = type,
+                installmentCount = (data["installmentCount"] as? Number)?.toInt() ?: 1,
+                currentInstallment = (data["currentInstallment"] as? Number)?.toInt() ?: 1,
+                paidAmount = (data["paidAmount"] as? Number)?.toDouble() ?: 0.0,
+                status = status,
                 dueDate = (data["dueDate"] as? Long) ?: System.currentTimeMillis(),
                 createdAt = (data["createdAt"] as? Long) ?: System.currentTimeMillis(),
                 updatedAt = (data["updatedAt"] as? Long) ?: System.currentTimeMillis()
             )
         } catch (e: Exception) {
-            android.util.Log.e("RemoteDataSource", "Error converting document to Fee: ${e.message}", e)
+            android.util.Log.e("RemoteDataSource", "Error converting document to ExtraPayment: ${e.message}", e)
+            null
+        }
+    }
+    
+    private fun docToNotification(doc: com.google.firebase.firestore.DocumentSnapshot): Notification? {
+        return try {
+            val data = doc.data ?: return null
+            
+            Notification(
+                id = doc.id,
+                userId = data["userId"] as? String ?: "",
+                title = data["title"] as? String ?: "",
+                message = data["message"] as? String ?: "",
+                type = data["type"] as? String ?: "",
+                isRead = (data["isRead"] as? Boolean) ?: false,
+                createdAt = (data["createdAt"] as? Long) ?: System.currentTimeMillis()
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error converting document to Notification: ${e.message}", e)
             null
         }
     }
@@ -182,17 +363,26 @@ class RemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getAllFees(): List<Fee> {
         return try {
+            android.util.Log.d("RemoteDataSource", "Fetching all fees from Firebase...")
             // Fetch all fees without orderBy to avoid index requirement
             // Sort in memory instead
-            feesCollection
-                .get()
-                .await()
-                .documents
-                .mapNotNull { doc -> docToFee(doc) }
-                .sortedWith(compareByDescending<Fee> { it.year }
-                    .thenByDescending { it.month })
+            val snapshot = feesCollection.get().await()
+            android.util.Log.d("RemoteDataSource", "Fetched ${snapshot.documents.size} fee documents from Firebase")
+            
+            val fees = snapshot.documents.mapNotNull { doc ->
+                val fee = docToFee(doc)
+                if (fee == null) {
+                    android.util.Log.w("RemoteDataSource", "Failed to convert fee document: ${doc.id}")
+                }
+                fee
+            }
+            
+            android.util.Log.d("RemoteDataSource", "Successfully converted ${fees.size} fees")
+            fees.sortedWith(compareByDescending<Fee> { it.year }
+                .thenByDescending { it.month })
         } catch (e: Exception) {
             android.util.Log.e("RemoteDataSource", "Error fetching all fees: ${e.message}", e)
+            e.printStackTrace()
             emptyList()
         }
     }
@@ -246,11 +436,13 @@ class RemoteDataSourceImpl @Inject constructor(
         return try {
             paymentsCollection
                 .whereEqualTo("unitId", unitId)
-                .orderBy("paymentDate", Query.Direction.DESCENDING)
                 .get()
                 .await()
-                .toObjects(Payment::class.java)
+                .documents
+                .mapNotNull { doc -> docToPayment(doc) }
+                .sortedByDescending { it.paymentDate }
         } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error fetching payments by unit: ${e.message}", e)
             emptyList()
         }
     }
@@ -261,8 +453,10 @@ class RemoteDataSourceImpl @Inject constructor(
                 .whereEqualTo("feeId", feeId)
                 .get()
                 .await()
-                .toObjects(Payment::class.java)
+                .documents
+                .mapNotNull { doc -> docToPayment(doc) }
         } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error fetching payments by fee: ${e.message}", e)
             emptyList()
         }
     }
@@ -270,11 +464,13 @@ class RemoteDataSourceImpl @Inject constructor(
     override suspend fun getAllPayments(): List<Payment> {
         return try {
             paymentsCollection
-                .orderBy("paymentDate", Query.Direction.DESCENDING)
                 .get()
                 .await()
-                .toObjects(Payment::class.java)
+                .documents
+                .mapNotNull { doc -> docToPayment(doc) }
+                .sortedByDescending { it.paymentDate }
         } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error fetching all payments: ${e.message}", e)
             emptyList()
         }
     }
@@ -291,8 +487,13 @@ class RemoteDataSourceImpl @Inject constructor(
     // Water Meter operations
     override suspend fun getAllWaterMeters(): List<WaterMeter> {
         return try {
-            waterMetersCollection.get().await().toObjects(WaterMeter::class.java)
+            waterMetersCollection
+                .get()
+                .await()
+                .documents
+                .mapNotNull { doc -> docToWaterMeter(doc) }
         } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error fetching all water meters: ${e.message}", e)
             emptyList()
         }
     }
@@ -305,8 +506,9 @@ class RemoteDataSourceImpl @Inject constructor(
                 .get()
                 .await()
                 .documents.firstOrNull()
-                ?.toObject(WaterMeter::class.java)
+                ?.let { doc -> docToWaterMeter(doc) }
         } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error fetching water meter by unit: ${e.message}", e)
             null
         }
     }
@@ -325,20 +527,28 @@ class RemoteDataSourceImpl @Inject constructor(
         return try {
             waterBillsCollection
                 .whereEqualTo("unitId", unitId)
-                .orderBy("year", Query.Direction.DESCENDING)
-                .orderBy("month", Query.Direction.DESCENDING)
                 .get()
                 .await()
-                .toObjects(WaterBill::class.java)
+                .documents
+                .mapNotNull { doc -> docToWaterBill(doc) }
+                .sortedWith(compareByDescending<WaterBill> { it.year }
+                    .thenByDescending { it.month })
         } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error fetching water bills by unit: ${e.message}", e)
             emptyList()
         }
     }
 
     override suspend fun getWaterBillById(id: String): WaterBill? {
         return try {
-            waterBillsCollection.document(id).get().await().toObject(WaterBill::class.java)
+            val doc = waterBillsCollection.document(id).get().await()
+            if (doc.exists()) {
+                docToWaterBill(doc)
+            } else {
+                null
+            }
         } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error fetching water bill by id: ${e.message}", e)
             null
         }
     }
@@ -346,12 +556,14 @@ class RemoteDataSourceImpl @Inject constructor(
     override suspend fun getAllWaterBills(): List<WaterBill> {
         return try {
             waterBillsCollection
-                .orderBy("year", Query.Direction.DESCENDING)
-                .orderBy("month", Query.Direction.DESCENDING)
                 .get()
                 .await()
-                .toObjects(WaterBill::class.java)
+                .documents
+                .mapNotNull { doc -> docToWaterBill(doc) }
+                .sortedWith(compareByDescending<WaterBill> { it.year }
+                    .thenByDescending { it.month })
         } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error fetching all water bills: ${e.message}", e)
             emptyList()
         }
     }
@@ -379,11 +591,13 @@ class RemoteDataSourceImpl @Inject constructor(
         return try {
             notificationsCollection
                 .whereEqualTo("userId", userId)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .await()
-                .toObjects(Notification::class.java)
+                .documents
+                .mapNotNull { doc -> docToNotification(doc) }
+                .sortedByDescending { it.createdAt }
         } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error fetching notifications by user: ${e.message}", e)
             emptyList()
         }
     }
@@ -393,11 +607,13 @@ class RemoteDataSourceImpl @Inject constructor(
             notificationsCollection
                 .whereEqualTo("userId", userId)
                 .whereEqualTo("isRead", false)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .await()
-                .toObjects(Notification::class.java)
+                .documents
+                .mapNotNull { doc -> docToNotification(doc) }
+                .sortedByDescending { it.createdAt }
         } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error fetching unread notifications: ${e.message}", e)
             emptyList()
         }
     }
@@ -455,7 +671,8 @@ class RemoteDataSourceImpl @Inject constructor(
                 .whereEqualTo("isActive", true)
                 .get()
                 .await()
-                .toObjects(UnitEntity::class.java)
+                .documents
+                .mapNotNull { doc -> docToUnit(doc) }
         } catch (e: Exception) {
             emptyList()
         }
@@ -463,7 +680,12 @@ class RemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getUnitById(id: String): UnitEntity? {
         return try {
-            unitsCollection.document(id).get().await().toObject(UnitEntity::class.java)
+            val doc = unitsCollection.document(id).get().await()
+            if (doc.exists()) {
+                docToUnit(doc)
+            } else {
+                null
+            }
         } catch (e: Exception) {
             null
         }
@@ -492,11 +714,13 @@ class RemoteDataSourceImpl @Inject constructor(
         return try {
             extraPaymentsCollection
                 .whereEqualTo("apartmentId", apartmentId)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .await()
-                .toObjects(ExtraPayment::class.java)
+                .documents
+                .mapNotNull { doc -> docToExtraPayment(doc) }
+                .sortedByDescending { it.createdAt }
         } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error fetching extra payments: ${e.message}", e)
             emptyList()
         }
     }
