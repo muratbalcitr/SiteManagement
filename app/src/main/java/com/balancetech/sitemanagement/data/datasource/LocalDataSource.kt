@@ -13,6 +13,7 @@ interface LocalDataSource {
     suspend fun getUserByEmail(email: String): User?
     suspend fun getUserById(id: String): User?
     suspend fun insertUser(user: User)
+    suspend fun insertUsers(users: List<User>)
     suspend fun getCurrentUser(): User?
     fun getAllActiveUsers(): Flow<List<User>>
     fun getUsersByRole(role: com.balancetech.sitemanagement.data.model.UserRole): Flow<List<User>>
@@ -35,17 +36,20 @@ interface LocalDataSource {
     fun getPaymentsByFee(feeId: String): Flow<List<Payment>>
     fun getAllPayments(): Flow<List<Payment>>
     suspend fun insertPayment(payment: Payment)
+    suspend fun insertPayments(payments: List<Payment>)
     
     // Water Meter operations
     fun getAllWaterMeters(): Flow<List<WaterMeter>>
     suspend fun getWaterMeterByUnit(unitId: String): WaterMeter?
     suspend fun insertWaterMeter(waterMeter: WaterMeter)
+    suspend fun insertWaterMeters(waterMeters: List<WaterMeter>)
     suspend fun updateWaterMeter(waterMeter: WaterMeter)
     
     // Water Bill operations
     fun getWaterBillsByUnit(unitId: String): Flow<List<WaterBill>>
     suspend fun getWaterBillById(id: String): WaterBill?
     suspend fun insertWaterBill(waterBill: WaterBill)
+    suspend fun insertWaterBills(waterBills: List<WaterBill>)
     suspend fun updateWaterBill(waterBill: WaterBill)
     
     // Notification operations
@@ -65,5 +69,8 @@ interface LocalDataSource {
     fun getBlocksByApartment(apartmentId: String): Flow<List<Block>>
     suspend fun insertBlock(block: Block)
     suspend fun insertUnit(unit: UnitEntity)
+    
+    // Extra Payment operations
+    suspend fun insertExtraPayment(extraPayment: com.balancetech.sitemanagement.data.entity.ExtraPayment)
 }
 

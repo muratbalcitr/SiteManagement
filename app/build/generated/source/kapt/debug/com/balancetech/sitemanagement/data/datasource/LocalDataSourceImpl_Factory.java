@@ -1,6 +1,7 @@
 package com.balancetech.sitemanagement.data.datasource;
 
 import com.balancetech.sitemanagement.data.dao.BlockDao;
+import com.balancetech.sitemanagement.data.dao.ExtraPaymentDao;
 import com.balancetech.sitemanagement.data.dao.FeeDao;
 import com.balancetech.sitemanagement.data.dao.NotificationDao;
 import com.balancetech.sitemanagement.data.dao.PaymentDao;
@@ -48,11 +49,14 @@ public final class LocalDataSourceImpl_Factory implements Factory<LocalDataSourc
 
   private final Provider<UserUnitDao> userUnitDaoProvider;
 
+  private final Provider<ExtraPaymentDao> extraPaymentDaoProvider;
+
   public LocalDataSourceImpl_Factory(Provider<UserDao> userDaoProvider,
       Provider<FeeDao> feeDaoProvider, Provider<PaymentDao> paymentDaoProvider,
       Provider<WaterMeterDao> waterMeterDaoProvider, Provider<WaterBillDao> waterBillDaoProvider,
       Provider<NotificationDao> notificationDaoProvider, Provider<UnitDao> unitDaoProvider,
-      Provider<BlockDao> blockDaoProvider, Provider<UserUnitDao> userUnitDaoProvider) {
+      Provider<BlockDao> blockDaoProvider, Provider<UserUnitDao> userUnitDaoProvider,
+      Provider<ExtraPaymentDao> extraPaymentDaoProvider) {
     this.userDaoProvider = userDaoProvider;
     this.feeDaoProvider = feeDaoProvider;
     this.paymentDaoProvider = paymentDaoProvider;
@@ -62,25 +66,27 @@ public final class LocalDataSourceImpl_Factory implements Factory<LocalDataSourc
     this.unitDaoProvider = unitDaoProvider;
     this.blockDaoProvider = blockDaoProvider;
     this.userUnitDaoProvider = userUnitDaoProvider;
+    this.extraPaymentDaoProvider = extraPaymentDaoProvider;
   }
 
   @Override
   public LocalDataSourceImpl get() {
-    return newInstance(userDaoProvider.get(), feeDaoProvider.get(), paymentDaoProvider.get(), waterMeterDaoProvider.get(), waterBillDaoProvider.get(), notificationDaoProvider.get(), unitDaoProvider.get(), blockDaoProvider.get(), userUnitDaoProvider.get());
+    return newInstance(userDaoProvider.get(), feeDaoProvider.get(), paymentDaoProvider.get(), waterMeterDaoProvider.get(), waterBillDaoProvider.get(), notificationDaoProvider.get(), unitDaoProvider.get(), blockDaoProvider.get(), userUnitDaoProvider.get(), extraPaymentDaoProvider.get());
   }
 
   public static LocalDataSourceImpl_Factory create(Provider<UserDao> userDaoProvider,
       Provider<FeeDao> feeDaoProvider, Provider<PaymentDao> paymentDaoProvider,
       Provider<WaterMeterDao> waterMeterDaoProvider, Provider<WaterBillDao> waterBillDaoProvider,
       Provider<NotificationDao> notificationDaoProvider, Provider<UnitDao> unitDaoProvider,
-      Provider<BlockDao> blockDaoProvider, Provider<UserUnitDao> userUnitDaoProvider) {
-    return new LocalDataSourceImpl_Factory(userDaoProvider, feeDaoProvider, paymentDaoProvider, waterMeterDaoProvider, waterBillDaoProvider, notificationDaoProvider, unitDaoProvider, blockDaoProvider, userUnitDaoProvider);
+      Provider<BlockDao> blockDaoProvider, Provider<UserUnitDao> userUnitDaoProvider,
+      Provider<ExtraPaymentDao> extraPaymentDaoProvider) {
+    return new LocalDataSourceImpl_Factory(userDaoProvider, feeDaoProvider, paymentDaoProvider, waterMeterDaoProvider, waterBillDaoProvider, notificationDaoProvider, unitDaoProvider, blockDaoProvider, userUnitDaoProvider, extraPaymentDaoProvider);
   }
 
   public static LocalDataSourceImpl newInstance(UserDao userDao, FeeDao feeDao,
       PaymentDao paymentDao, WaterMeterDao waterMeterDao, WaterBillDao waterBillDao,
-      NotificationDao notificationDao, UnitDao unitDao, BlockDao blockDao,
-      UserUnitDao userUnitDao) {
-    return new LocalDataSourceImpl(userDao, feeDao, paymentDao, waterMeterDao, waterBillDao, notificationDao, unitDao, blockDao, userUnitDao);
+      NotificationDao notificationDao, UnitDao unitDao, BlockDao blockDao, UserUnitDao userUnitDao,
+      ExtraPaymentDao extraPaymentDao) {
+    return new LocalDataSourceImpl(userDao, feeDao, paymentDao, waterMeterDao, waterBillDao, notificationDao, unitDao, blockDao, userUnitDao, extraPaymentDao);
   }
 }

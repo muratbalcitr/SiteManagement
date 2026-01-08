@@ -34,6 +34,14 @@ class RemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun getAllUsers(): List<User> {
+        return try {
+            usersCollection.get().await().toObjects(User::class.java)
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
     override suspend fun createUser(user: User): Result<User> {
         return try {
             usersCollection.document(user.id).set(user).await()
@@ -248,6 +256,19 @@ class RemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun getAllWaterBills(): List<WaterBill> {
+        return try {
+            waterBillsCollection
+                .orderBy("year", Query.Direction.DESCENDING)
+                .orderBy("month", Query.Direction.DESCENDING)
+                .get()
+                .await()
+                .toObjects(WaterBill::class.java)
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
     override suspend fun createWaterBill(waterBill: WaterBill): Result<WaterBill> {
         return try {
             waterBillsCollection.document(waterBill.id).set(waterBill).await()
@@ -380,6 +401,19 @@ class RemoteDataSourceImpl @Inject constructor(
     }
 
     // Extra Payment operations
+    override suspend fun getAllExtraPayments(apartmentId: String): List<ExtraPayment> {
+        return try {
+            extraPaymentsCollection
+                .whereEqualTo("apartmentId", apartmentId)
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .get()
+                .await()
+                .toObjects(ExtraPayment::class.java)
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
     override suspend fun createExtraPayment(extraPayment: ExtraPayment): Result<ExtraPayment> {
         return try {
             extraPaymentsCollection.document(extraPayment.id).set(extraPayment).await()

@@ -17,13 +17,17 @@ class LocalDataSourceImpl @Inject constructor(
     private val notificationDao: NotificationDao,
     private val unitDao: UnitDao,
     private val blockDao: com.balancetech.sitemanagement.data.dao.BlockDao,
-    private val userUnitDao: UserUnitDao
+    private val userUnitDao: UserUnitDao,
+    private val extraPaymentDao: ExtraPaymentDao
 ) : LocalDataSource {
     
     // User operations
     override suspend fun getUserByEmail(email: String): User? = userDao.getUserByEmail(email)
     override suspend fun getUserById(id: String): User? = userDao.getUserById(id)
     override suspend fun insertUser(user: User) = userDao.insertUser(user)
+    override suspend fun insertUsers(users: List<User>) {
+        users.forEach { userDao.insertUser(it) }
+    }
     override suspend fun getCurrentUser(): User? = userDao.getCurrentUser()
     override fun getAllActiveUsers(): Flow<List<User>> = userDao.getAllActiveUsers()
     override fun getUsersByRole(role: com.balancetech.sitemanagement.data.model.UserRole): Flow<List<User>> = userDao.getUsersByRole(role)
@@ -48,17 +52,26 @@ class LocalDataSourceImpl @Inject constructor(
     override fun getPaymentsByFee(feeId: String): Flow<List<Payment>> = paymentDao.getPaymentsByFee(feeId)
     override fun getAllPayments(): Flow<List<Payment>> = paymentDao.getAllPayments()
     override suspend fun insertPayment(payment: Payment) = paymentDao.insertPayment(payment)
+    override suspend fun insertPayments(payments: List<Payment>) {
+        payments.forEach { paymentDao.insertPayment(it) }
+    }
     
     // Water Meter operations
     override fun getAllWaterMeters(): Flow<List<WaterMeter>> = waterMeterDao.getAllWaterMeters()
     override suspend fun getWaterMeterByUnit(unitId: String): WaterMeter? = waterMeterDao.getWaterMeterByUnit(unitId)
     override suspend fun insertWaterMeter(waterMeter: WaterMeter) = waterMeterDao.insertWaterMeter(waterMeter)
+    override suspend fun insertWaterMeters(waterMeters: List<WaterMeter>) {
+        waterMeters.forEach { waterMeterDao.insertWaterMeter(it) }
+    }
     override suspend fun updateWaterMeter(waterMeter: WaterMeter) = waterMeterDao.updateWaterMeter(waterMeter)
     
     // Water Bill operations
     override fun getWaterBillsByUnit(unitId: String): Flow<List<WaterBill>> = waterBillDao.getWaterBillsByUnit(unitId)
     override suspend fun getWaterBillById(id: String): WaterBill? = waterBillDao.getWaterBillById(id)
     override suspend fun insertWaterBill(waterBill: WaterBill) = waterBillDao.insertWaterBill(waterBill)
+    override suspend fun insertWaterBills(waterBills: List<WaterBill>) {
+        waterBills.forEach { waterBillDao.insertWaterBill(it) }
+    }
     override suspend fun updateWaterBill(waterBill: WaterBill) = waterBillDao.updateWaterBill(waterBill)
     
     // Notification operations
@@ -78,5 +91,9 @@ class LocalDataSourceImpl @Inject constructor(
     override fun getBlocksByApartment(apartmentId: String): Flow<List<Block>> = blockDao.getBlocksByApartment(apartmentId)
     override suspend fun insertBlock(block: Block) = blockDao.insertBlock(block)
     override suspend fun insertUnit(unit: UnitEntity) = unitDao.insertUnit(unit)
+    
+    // Extra Payment operations
+    override suspend fun insertExtraPayment(extraPayment: com.balancetech.sitemanagement.data.entity.ExtraPayment) = 
+        extraPaymentDao.insertExtraPayment(extraPayment)
 }
 

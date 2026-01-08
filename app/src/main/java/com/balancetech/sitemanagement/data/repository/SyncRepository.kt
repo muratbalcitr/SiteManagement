@@ -124,9 +124,31 @@ class SyncRepository @Inject constructor(
     /**
      * Sync data from Firebase to local
      */
-    suspend fun syncFromFirebase(): Result<String> {
+    suspend fun syncFromFirebase(apartmentId: String = "apt-001"): Result<String> {
         return try {
             val results = mutableListOf<String>()
+            
+            // Sync users from remote
+            try {
+                val remoteUsers = remoteDataSource.getAllUsers()
+                if (remoteUsers.isNotEmpty()) {
+                    localDataSource.insertUsers(remoteUsers)
+                    results.add("${remoteUsers.size} kullanıcı indirildi")
+                }
+            } catch (e: Exception) {
+                results.add("Kullanıcı indirme hatası: ${e.message}")
+            }
+            
+            // Sync units from remote
+            try {
+                val remoteUnits = remoteDataSource.getUnitsByApartment(apartmentId)
+                if (remoteUnits.isNotEmpty()) {
+                    remoteUnits.forEach { localDataSource.insertUnit(it) }
+                    results.add("${remoteUnits.size} daire indirildi")
+                }
+            } catch (e: Exception) {
+                results.add("Daire indirme hatası: ${e.message}")
+            }
             
             // Sync fees from remote
             try {
@@ -137,6 +159,66 @@ class SyncRepository @Inject constructor(
                 }
             } catch (e: Exception) {
                 results.add("Aidat indirme hatası: ${e.message}")
+            }
+            
+            // Sync payments from remote
+            try {
+                val remotePayments = remoteDataSource.getAllPayments()
+                if (remotePayments.isNotEmpty()) {
+                    localDataSource.insertPayments(remotePayments)
+                    results.add("${remotePayments.size} ödeme indirildi")
+                }
+            } catch (e: Exception) {
+                results.add("Ödeme indirme hatası: ${e.message}")
+            }
+            
+            // Sync water meters from remote
+            try {
+                val remoteWaterMeters = remoteDataSource.getAllWaterMeters()
+                if (remoteWaterMeters.isNotEmpty()) {
+                    localDataSource.insertWaterMeters(remoteWaterMeters)
+                    results.add("${remoteWaterMeters.size} su sayacı indirildi")
+                }
+            } catch (e: Exception) {
+                results.add("Su sayacı indirme hatası: ${e.message}")
+            }
+            
+            // Sync water bills from remote
+            try {
+                val remoteWaterBills = remoteDataSource.getAllWaterBills()
+                if (remoteWaterBills.isNotEmpty()) {
+                    localDataSource.insertWaterBills(remoteWaterBills)
+                    results.add("${remoteWaterBills.size} su faturası indirildi")
+                }
+            } catch (e: Exception) {
+                results.add("Su faturası indirme hatası: ${e.message}")
+            }
+            
+            // Sync extra payments from remote
+            try {
+                val remoteExtraPayments = remoteDataSource.getAllExtraPayments(apartmentId)
+                if (remoteExtraPayments.isNotEmpty()) {
+                    remoteExtraPayments.forEach { 
+                        localDataSource.insertExtraPayment(it) 
+                    }
+                    results.add("${remoteExtraPayments.size} ek ödeme indirildi")
+                }
+            } catch (e: Exception) {
+                results.add("Ek ödeme indirme hatası: ${e.message}")
+            }
+            
+            // Sync notifications from remote (for current user)
+            try {
+                val currentUser = localDataSource.getCurrentUser()
+                if (currentUser != null) {
+                    val remoteNotifications = remoteDataSource.getNotificationsByUser(currentUser.id)
+                    if (remoteNotifications.isNotEmpty()) {
+                        remoteNotifications.forEach { localDataSource.insertNotification(it) }
+                        results.add("${remoteNotifications.size} bildirim indirildi")
+                    }
+                }
+            } catch (e: Exception) {
+                results.add("Bildirim indirme hatası: ${e.message}")
             }
             
             val message = if (results.isEmpty()) {

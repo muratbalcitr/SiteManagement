@@ -1,6 +1,7 @@
 package com.balancetech.sitemanagement.di;
 
 import com.balancetech.sitemanagement.data.dao.PaymentDao;
+import com.balancetech.sitemanagement.data.datasource.LocalDataSource;
 import com.balancetech.sitemanagement.data.repository.PaymentRepository;
 import com.balancetech.sitemanagement.data.service.FirebaseFunctionsService;
 import dagger.internal.DaggerGenerated;
@@ -29,25 +30,30 @@ public final class RepositoryModule_ProvidePaymentRepositoryFactory implements F
 
   private final Provider<FirebaseFunctionsService> functionsServiceProvider;
 
+  private final Provider<LocalDataSource> localDataSourceProvider;
+
   public RepositoryModule_ProvidePaymentRepositoryFactory(Provider<PaymentDao> paymentDaoProvider,
-      Provider<FirebaseFunctionsService> functionsServiceProvider) {
+      Provider<FirebaseFunctionsService> functionsServiceProvider,
+      Provider<LocalDataSource> localDataSourceProvider) {
     this.paymentDaoProvider = paymentDaoProvider;
     this.functionsServiceProvider = functionsServiceProvider;
+    this.localDataSourceProvider = localDataSourceProvider;
   }
 
   @Override
   public PaymentRepository get() {
-    return providePaymentRepository(paymentDaoProvider.get(), functionsServiceProvider.get());
+    return providePaymentRepository(paymentDaoProvider.get(), functionsServiceProvider.get(), localDataSourceProvider.get());
   }
 
   public static RepositoryModule_ProvidePaymentRepositoryFactory create(
       Provider<PaymentDao> paymentDaoProvider,
-      Provider<FirebaseFunctionsService> functionsServiceProvider) {
-    return new RepositoryModule_ProvidePaymentRepositoryFactory(paymentDaoProvider, functionsServiceProvider);
+      Provider<FirebaseFunctionsService> functionsServiceProvider,
+      Provider<LocalDataSource> localDataSourceProvider) {
+    return new RepositoryModule_ProvidePaymentRepositoryFactory(paymentDaoProvider, functionsServiceProvider, localDataSourceProvider);
   }
 
   public static PaymentRepository providePaymentRepository(PaymentDao paymentDao,
-      FirebaseFunctionsService functionsService) {
-    return Preconditions.checkNotNullFromProvides(RepositoryModule.INSTANCE.providePaymentRepository(paymentDao, functionsService));
+      FirebaseFunctionsService functionsService, LocalDataSource localDataSource) {
+    return Preconditions.checkNotNullFromProvides(RepositoryModule.INSTANCE.providePaymentRepository(paymentDao, functionsService, localDataSource));
   }
 }

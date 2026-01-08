@@ -1,6 +1,8 @@
 package com.balancetech.sitemanagement
 
 import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
 import com.balancetech.sitemanagement.data.dao.BlockDao
 import com.balancetech.sitemanagement.data.dao.UnitDao
 import com.balancetech.sitemanagement.util.DatabaseSeedUtil
@@ -16,6 +18,13 @@ import kotlinx.coroutines.launch
 class SiteManagementApplication : Application() {
     
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val prefs: SharedPreferences by lazy {
+        getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+    }
+    
+    companion object {
+        private const val PREF_FIRST_LAUNCH = "is_first_launch"
+    }
     
     override fun onCreate() {
         super.onCreate()
@@ -38,6 +47,24 @@ class SiteManagementApplication : Application() {
                     android.util.Log.e("DatabaseSeed", "Error: ${result.exceptionOrNull()?.message}")
                 }
             }
+            
+            // Sync data from Firebase on first launch
+            val isFirstLaunch = prefs.getBoolean(PREF_FIRST_LAUNCH, true)
+            if (isFirstLaunch) {
+                try {
+                    val syncRepository = entryPoint.syncRepository()
+                    val result = syncRepository.syncFromFirebase("apt-001")
+                    if (result.isSuccess) {
+                        android.util.Log.d("SyncRepository", "İlk açılış senkronizasyonu: ${result.getOrNull()}")
+                    } else {
+                        android.util.Log.e("SyncRepository", "Senkronizasyon hatası: ${result.exceptionOrNull()?.message}")
+                    }
+                    // Mark as not first launch
+                    prefs.edit().putBoolean(PREF_FIRST_LAUNCH, false).apply()
+                } catch (e: Exception) {
+                    android.util.Log.e("SyncRepository", "Senkronizasyon hatası: ${e.message}", e)
+                }
+            }
         }
     }
     
@@ -46,5 +73,6 @@ class SiteManagementApplication : Application() {
     interface DatabaseSeedEntryPoint {
         fun blockDao(): BlockDao
         fun unitDao(): UnitDao
+        fun syncRepository(): com.balancetech.sitemanagement.data.repository.SyncRepository
     }
 }

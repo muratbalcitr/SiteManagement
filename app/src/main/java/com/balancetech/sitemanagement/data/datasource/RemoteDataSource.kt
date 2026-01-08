@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface RemoteDataSource {
     // User operations
     suspend fun getUserByEmail(email: String): User?
+    suspend fun getAllUsers(): List<User>
     suspend fun createUser(user: User): Result<User>
     suspend fun updateUser(user: User): Result<User>
     
@@ -37,6 +38,7 @@ interface RemoteDataSource {
     
     // Water Bill operations
     suspend fun getWaterBillsByUnit(unitId: String): List<WaterBill>
+    suspend fun getAllWaterBills(): List<WaterBill>
     suspend fun getWaterBillById(id: String): WaterBill?
     suspend fun createWaterBill(waterBill: WaterBill): Result<WaterBill>
     suspend fun updateWaterBill(waterBill: WaterBill): Result<WaterBill>
@@ -56,6 +58,7 @@ interface RemoteDataSource {
     suspend fun updateUnit(unit: UnitEntity): Result<UnitEntity>
     
     // Extra Payment operations
+    suspend fun getAllExtraPayments(apartmentId: String): List<ExtraPayment>
     suspend fun createExtraPayment(extraPayment: ExtraPayment): Result<ExtraPayment>
     suspend fun updateExtraPayment(extraPayment: ExtraPayment): Result<ExtraPayment>
     
