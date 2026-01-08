@@ -82,7 +82,8 @@ class WaterMeterFragment : Fragment() {
             },
             onReadingClick = { waterMeter ->
                 showReadingDialog(waterMeter.unitId, waterMeter.currentReading)
-            }
+            },
+            localDataSource = viewModel.localDataSource
         )
         
         binding.waterMeterRecyclerView.apply {
@@ -108,9 +109,17 @@ class WaterMeterFragment : Fragment() {
 
     private fun setupFab() {
         binding.addWaterMeterFab.setOnClickListener {
-            // TODO: Show dialog to add new water meter
-            Snackbar.make(binding.root, "Su sayacı ekleme özelliği yakında eklenecek", Snackbar.LENGTH_SHORT).show()
+            showAddWaterMeterDialog()
         }
+    }
+    
+    private fun showAddWaterMeterDialog() {
+        com.balancetech.sitemanagement.ui.dialog.AddWaterMeterDialogFragment().apply {
+            setOnWaterMeterAddedListener {
+                // Refresh list - adapter will update automatically via Flow
+                Snackbar.make(binding.root, "Su sayacı eklendi", Snackbar.LENGTH_SHORT).show()
+            }
+        }.show(parentFragmentManager, "AddWaterMeterDialog")
     }
 
     private fun observeViewModel() {

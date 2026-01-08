@@ -12,7 +12,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WaterMeterViewModel @Inject constructor(
-    private val waterMeterRepository: WaterMeterRepository
+    private val waterMeterRepository: WaterMeterRepository,
+    val localDataSource: com.balancetech.sitemanagement.data.datasource.LocalDataSource
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<WaterMeterUiState>(WaterMeterUiState.Idle)
     val uiState: StateFlow<WaterMeterUiState> = _uiState.asStateFlow()
@@ -67,6 +68,10 @@ class WaterMeterViewModel @Inject constructor(
                 WaterMeterUiState.Error(result.exceptionOrNull()?.message ?: "Failed to record payment")
             }
         }
+    }
+    
+    suspend fun getAllUnits(apartmentId: String): List<com.balancetech.sitemanagement.data.entity.Unit> {
+        return localDataSource.getUnitsByApartment(apartmentId)
     }
 }
 

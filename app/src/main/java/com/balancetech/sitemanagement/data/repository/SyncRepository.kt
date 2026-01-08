@@ -5,7 +5,9 @@ import com.balancetech.sitemanagement.data.datasource.LocalDataSource
 import com.balancetech.sitemanagement.data.datasource.RemoteDataSource
 import com.balancetech.sitemanagement.data.entity.UserUnit
 import com.balancetech.sitemanagement.data.service.FirebaseFunctionsService
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,7 +16,8 @@ class SyncRepository @Inject constructor(
     private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource,
     private val userUnitDao: UserUnitDao,
-    private val functionsService: FirebaseFunctionsService
+    private val functionsService: FirebaseFunctionsService,
+    private val firestore: FirebaseFirestore
 ) {
     /**
      * Sync all local data to Firebase
@@ -23,18 +26,71 @@ class SyncRepository @Inject constructor(
         return try {
             val results = mutableListOf<String>()
             
-            // Sync fees
+            // Sync fees - Use updateFee for all fees to ensure paid status is properly synced
+            // updateFee uses set() which creates or updates the document
             try {
                 val fees = localDataSource.getAllFees().first()
                 if (fees.isNotEmpty()) {
-                    val result = remoteDataSource.createFees(fees)
-                    if (result.isSuccess) {
-                        results.add("${fees.size} aidat senkronize edildi")
-                    } else {
-                        results.add("Aidat senkronizasyonu hatası: ${result.exceptionOrNull()?.message}")
+                    var successCount = 0
+                    var errorCount = 0
+                    val errors = mutableListOf<String>()
+                    
+                    // Use batch for efficiency, but update each fee individually to ensure status is synced
+                    val batch = firestore.batch()
+                    val feesCollection = firestore.collection("fees")
+                    
+                    fees.forEach { fee ->
+                        try {
+                            // Use set() which creates or updates - this ensures paid status is synced
+                            batch.set(feesCollection.document(fee.id), fee)
+                            android.util.Log.d("SyncRepository", "Queued fee ${fee.id} for sync (status: ${fee.status}, paidAmount: ${fee.paidAmount}, amount: ${fee.amount})")
+                        } catch (e: Exception) {
+                            errorCount++
+                            val errorMsg = "Fee ${fee.id}: ${e.message}"
+                            errors.add(errorMsg)
+                            android.util.Log.e("SyncRepository", errorMsg, e)
+                        }
+                    }
+                    
+                    // Commit batch
+                    try {
+                        batch.commit().await()
+                        successCount = fees.size - errorCount
+                        android.util.Log.d("SyncRepository", "Successfully synced $successCount fees to Firebase")
+                    } catch (e: Exception) {
+                        android.util.Log.e("SyncRepository", "Error committing fees batch: ${e.message}", e)
+                        // Fallback: try individual updates
+                        fees.forEach { fee ->
+                            try {
+                                val result = remoteDataSource.updateFee(fee)
+                                if (result.isSuccess) {
+                                    successCount++
+                                } else {
+                                    errorCount++
+                                    errors.add("Fee ${fee.id}: ${result.exceptionOrNull()?.message}")
+                                }
+                            } catch (e2: Exception) {
+                                errorCount++
+                                errors.add("Fee ${fee.id}: ${e2.message}")
+                            }
+                        }
+                    }
+                    
+                    if (successCount > 0) {
+                        results.add("$successCount aidat senkronize edildi")
+                    }
+                    if (errorCount > 0) {
+                        results.add("$errorCount aidat senkronize edilemedi")
+                        if (errors.size <= 5) {
+                            errors.forEach { results.add("  - $it") }
+                        } else {
+                            errors.take(5).forEach { results.add("  - $it") }
+                            results.add("  - ... ve ${errors.size - 5} hata daha")
+                        }
                     }
                 }
             } catch (e: Exception) {
+                android.util.Log.e("SyncRepository", "Error syncing fees: ${e.message}", e)
                 results.add("Aidat senkronizasyonu hatası: ${e.message}")
             }
             
@@ -175,18 +231,39 @@ class SyncRepository @Inject constructor(
                 if (remoteUsers.isNotEmpty()) {
                     localDataSource.insertUsers(remoteUsers)
                     
+                    // Get all units to create a mapping by unitNumber and by ID
+                    val allUnits = localDataSource.getUnitsByApartment(apartmentId)
+                    val unitByIdMap = allUnits.associateBy { it.id }
+                    val unitByNumberMap = allUnits.associateBy { it.unitNumber.uppercase() }
+                    
                     // Create UserUnit relationships from user.unitId (for backward compatibility)
                     // This is done AFTER units are synced to satisfy foreign key constraints
                     val userUnits = mutableListOf<UserUnit>()
                     remoteUsers.forEach { user ->
                         if (user.unitId != null) {
-                            // Verify that the unit exists before creating UserUnit relationship
-                            val unitExists = localDataSource.getUnitById(user.unitId) != null
-                            if (unitExists) {
+                            // Try to find unit by ID first
+                            var foundUnit = unitByIdMap[user.unitId]
+                            
+                            // If not found by ID, try to find by unitNumber (extract from unitId format)
+                            if (foundUnit == null) {
+                                // Try to extract unitNumber from unitId (e.g., "unit-block-a-6-A18" -> "A18")
+                                val unitNumberMatch = Regex("([A-Z]\\d+)$").find(user.unitId.uppercase())
+                                if (unitNumberMatch != null) {
+                                    val unitNumber = unitNumberMatch.groupValues[1]
+                                    foundUnit = unitByNumberMap[unitNumber]
+                                    if (foundUnit != null) {
+                                        android.util.Log.d("SyncRepository", "Matched user unitId ${user.unitId} to unit ${foundUnit.id} by unitNumber ${unitNumber}")
+                                    }
+                                }
+                            }
+                            
+                            val unit = foundUnit
+                            if (unit != null) {
                                 // Check if UserUnit already exists
                                 val existingUnitIds = userUnitDao.getUnitIdsByUserId(user.id).toSet()
-                                if (user.unitId !in existingUnitIds) {
-                                    userUnits.add(UserUnit(userId = user.id, unitId = user.unitId))
+                                if (unit.id !in existingUnitIds) {
+                                    userUnits.add(UserUnit(userId = user.id, unitId = unit.id))
+                                    android.util.Log.d("SyncRepository", "Created UserUnit relationship: user ${user.id} -> unit ${unit.id}")
                                 }
                             } else {
                                 android.util.Log.w("SyncRepository", "Unit ${user.unitId} not found for user ${user.id}, skipping UserUnit relationship")
@@ -195,11 +272,13 @@ class SyncRepository @Inject constructor(
                     }
                     if (userUnits.isNotEmpty()) {
                         userUnitDao.insertUserUnits(userUnits)
+                        android.util.Log.d("SyncRepository", "Created ${userUnits.size} UserUnit relationships")
                     }
                     
                     results.add("${remoteUsers.size} kullanıcı indirildi")
                 }
             } catch (e: Exception) {
+                android.util.Log.e("SyncRepository", "Error syncing users: ${e.message}", e)
                 results.add("Kullanıcı indirme hatası: ${e.message}")
             }
             
@@ -241,20 +320,63 @@ class SyncRepository @Inject constructor(
                 android.util.Log.d("SyncRepository", "Fetched ${remoteFees.size} fees from Firebase")
                 
                 if (remoteFees.isNotEmpty()) {
-                    // Get all unit IDs that exist locally
+                    // Get all units to create a mapping by ID and by unitNumber
                     val allUnits = localDataSource.getUnitsByApartment(apartmentId)
-                    val existingUnitIds = allUnits.map { it.id }.toSet()
-                    android.util.Log.d("SyncRepository", "Found ${existingUnitIds.size} units locally")
+                    val unitByIdMap = allUnits.associateBy { it.id }
+                    val unitByNumberMap = allUnits.associateBy { it.unitNumber.uppercase() }
+                    android.util.Log.d("SyncRepository", "Found ${allUnits.size} units locally")
                     
-                    // Verify units exist before inserting fees
-                    val validFees = remoteFees.filter { fee ->
-                        val unitExists = existingUnitIds.contains(fee.unitId)
-                        if (!unitExists) {
-                            android.util.Log.w("SyncRepository", "Unit ${fee.unitId} not found for fee ${fee.id} (unitNumber might be different), skipping")
+                    // Map fees to correct unit IDs
+                    val validFees = remoteFees.mapNotNull { fee ->
+                        // Try to find unit by ID first
+                        val unitById = unitByIdMap[fee.unitId]
+                        
+                        // If not found by ID, try to find by unitNumber (extract from fee ID or unitId)
+                        val unitByNumberFromUnitId = if (unitById == null) {
+                            // Try to extract unitNumber from fee.unitId (e.g., "unit-block-b-10-B29" -> "B29")
+                            val unitNumberMatch = Regex("([A-Z]\\d+)$").find(fee.unitId.uppercase())
+                            if (unitNumberMatch != null) {
+                                val unitNumber = unitNumberMatch.groupValues[1]
+                                unitByNumberMap[unitNumber]
+                            } else {
+                                null
+                            }
                         } else {
-                            android.util.Log.d("SyncRepository", "Fee ${fee.id} is valid for unit ${fee.unitId}")
+                            null
                         }
-                        unitExists
+                        
+                        // If still not found, try to extract from fee.id (e.g., "b29-1-2026" -> "B29")
+                        val unitByNumberFromFeeId = if (unitById == null && unitByNumberFromUnitId == null) {
+                            val feeIdMatch = Regex("^([a-z]\\d+)", RegexOption.IGNORE_CASE).find(fee.id)
+                            if (feeIdMatch != null) {
+                                val unitNumber = feeIdMatch.groupValues[1].uppercase()
+                                unitByNumberMap[unitNumber]
+                            } else {
+                                null
+                            }
+                        } else {
+                            null
+                        }
+                        
+                        // Use the first non-null unit found
+                        val unit = unitById ?: unitByNumberFromUnitId ?: unitByNumberFromFeeId
+                        
+                        if (unit != null) {
+                            // Log which method found the unit
+                            when {
+                                unitById != null -> android.util.Log.d("SyncRepository", "Matched fee ${fee.id} to unit ${unit.id} by unitId")
+                                unitByNumberFromUnitId != null -> android.util.Log.d("SyncRepository", "Matched fee unitId ${fee.unitId} to unit ${unit.id} by unitNumber")
+                                unitByNumberFromFeeId != null -> android.util.Log.d("SyncRepository", "Matched fee ${fee.id} to unit ${unit.id} by unitNumber from fee.id")
+                            }
+                            
+                            // Update fee with correct unitId
+                            val correctedFee = fee.copy(unitId = unit.id)
+                            android.util.Log.d("SyncRepository", "Fee ${fee.id} mapped to unit ${unit.id}")
+                            correctedFee
+                        } else {
+                            android.util.Log.w("SyncRepository", "Unit not found for fee ${fee.id} (unitId: ${fee.unitId}), skipping")
+                            null
+                        }
                     }
                     
                     android.util.Log.d("SyncRepository", "Valid fees: ${validFees.size} out of ${remoteFees.size}")
