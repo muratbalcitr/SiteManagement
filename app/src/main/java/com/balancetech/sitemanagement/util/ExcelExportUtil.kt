@@ -172,12 +172,30 @@ object ExcelExportUtil {
     
     private fun createFile(context: Context, fileName: String): File {
         val directory = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // Android 10+ uses MediaStore
-            context.getExternalFilesDir(null) ?: context.filesDir
+            // Android 10+ uses app-specific external files directory
+            val externalDir = context.getExternalFilesDir(null)
+            if (externalDir != null) {
+                File(externalDir, "exports").apply {
+                    if (!exists()) mkdirs()
+                }
+            } else {
+                // Fallback to internal files directory
+                File(context.filesDir, "exports").apply {
+                    if (!exists()) mkdirs()
+                }
+            }
         } else {
             // Android 9 and below
-            File(context.getExternalFilesDir(null), "exports").apply {
-                if (!exists()) mkdirs()
+            val externalDir = context.getExternalFilesDir(null)
+            if (externalDir != null) {
+                File(externalDir, "exports").apply {
+                    if (!exists()) mkdirs()
+                }
+            } else {
+                // Fallback to internal files directory
+                File(context.filesDir, "exports").apply {
+                    if (!exists()) mkdirs()
+                }
             }
         }
         
@@ -185,10 +203,21 @@ object ExcelExportUtil {
     }
     
     private fun getFileUri(context: Context, file: File): Uri {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            FileProvider.getUriForFile(context, FILE_PROVIDER_AUTHORITY, file)
-        } else {
-            Uri.fromFile(file)
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                // Use FileProvider for Android 7.0+
+                FileProvider.getUriForFile(context, FILE_PROVIDER_AUTHORITY, file)
+            } else {
+                // For older versions, use file:// URI
+                Uri.fromFile(file)
+            }
+        } catch (e: IllegalArgumentException) {
+            // FileProvider path mismatch - try to get URI from file path
+            android.util.Log.e("ExcelExportUtil", "FileProvider error: ${e.message}. File path: ${file.absolutePath}", e)
+            throw IllegalStateException("Dosya yolu FileProvider yapılandırmasıyla eşleşmiyor. Lütfen file_paths.xml dosyasını kontrol edin.", e)
+        } catch (e: Exception) {
+            android.util.Log.e("ExcelExportUtil", "Error getting file URI: ${e.message}", e)
+            throw e
         }
     }
     

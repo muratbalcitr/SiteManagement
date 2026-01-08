@@ -68,6 +68,21 @@ class FeesFragment : Fragment() {
                 observeViewModel()
             }
         }
+        
+        // Setup toolbar menu item clicks
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_export_excel -> {
+                    exportToExcel()
+                    true
+                }
+                R.id.action_create_fees_for_all -> {
+                    showCreateFeesForAllUnitsDialog()
+                    true
+                }
+                else -> false
+            }
+        }
     }
     
     private fun setupTabs() {
@@ -224,14 +239,6 @@ class FeesFragment : Fragment() {
         binding.addFeeFab.setOnClickListener {
             showCreateFeeDialog()
         }
-        
-        binding.createFeesForAllButton?.setOnClickListener {
-            showCreateFeesForAllUnitsDialog()
-        }
-        
-        binding.exportButton.setOnClickListener {
-            exportToExcel()
-        }
     }
     
     private fun showCreateFeesForAllUnitsDialog() {
@@ -254,9 +261,14 @@ class FeesFragment : Fragment() {
                 
                 // Get units for mapping
                 val unitsMap = mutableMapOf<String, UnitEntity>()
-                val allUnits = viewModel.getAllUnits("apt-001") // TODO: Get from current user
-                allUnits.forEach { unit ->
-                    unitsMap[unit.id] = unit
+                try {
+                    val allUnits = viewModel.getAllUnits("apt-001") // TODO: Get from current user
+                    allUnits.forEach { unit ->
+                        unitsMap[unit.id] = unit
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.e("FeesFragment", "Error getting units: ${e.message}", e)
+                    // Continue even if units can't be loaded - fees will show with N/A for unit info
                 }
                 
                 val result = ExcelExportUtil.exportFeesToExcel(requireContext(), fees, unitsMap)
@@ -264,14 +276,24 @@ class FeesFragment : Fragment() {
                 if (result.isSuccess) {
                     val uri = result.getOrNull()
                     if (uri != null) {
-                        shareFile(uri)
-                        Snackbar.make(binding.root, "Excel dosyası oluşturuldu", Snackbar.LENGTH_SHORT).show()
+                        try {
+                            shareFile(uri)
+                            Snackbar.make(binding.root, "Excel dosyası oluşturuldu", Snackbar.LENGTH_SHORT).show()
+                        } catch (e: Exception) {
+                            android.util.Log.e("FeesFragment", "Error sharing file: ${e.message}", e)
+                            Snackbar.make(binding.root, "Dosya oluşturuldu ancak paylaşılamadı: ${e.message}", Snackbar.LENGTH_LONG).show()
+                        }
+                    } else {
+                        Snackbar.make(binding.root, "Dosya URI oluşturulamadı", Snackbar.LENGTH_LONG).show()
                     }
                 } else {
-                    Snackbar.make(binding.root, "Hata: ${result.exceptionOrNull()?.message}", Snackbar.LENGTH_LONG).show()
+                    val exception = result.exceptionOrNull()
+                    android.util.Log.e("FeesFragment", "Error exporting to Excel: ${exception?.message}", exception)
+                    Snackbar.make(binding.root, "Hata: ${exception?.message ?: "Bilinmeyen hata"}", Snackbar.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
-                Snackbar.make(binding.root, "Hata: ${e.message}", Snackbar.LENGTH_LONG).show()
+                android.util.Log.e("FeesFragment", "Error in exportToExcel: ${e.message}", e)
+                Snackbar.make(binding.root, "Hata: ${e.message ?: "Bilinmeyen hata"}", Snackbar.LENGTH_LONG).show()
             }
         }
     }
