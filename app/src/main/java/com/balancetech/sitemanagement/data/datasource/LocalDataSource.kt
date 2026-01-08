@@ -67,6 +67,7 @@ interface LocalDataSource {
     
     // Block operations
     fun getBlocksByApartment(apartmentId: String): Flow<List<Block>>
+    suspend fun getBlockById(id: String): Block?
     suspend fun insertBlock(block: Block)
     suspend fun insertUnit(unit: UnitEntity)
     

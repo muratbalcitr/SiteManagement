@@ -38,13 +38,18 @@ class PaymentRepository(
         extraPaymentId: String? = null,
         waterBillId: String? = null
     ): Result<Payment> {
-        // Get unit information to create documentId based on unit number
+        // Get unit and block information to create documentId
         val unit = localDataSource.getUnitById(unitId)
         val unitNumber = unit?.unitNumber ?: unitId // Fallback to unitId if unit not found
+        val blockId = unit?.blockId
         
-        // Create documentId: unitNumber_timestamp (e.g., "A1_1705321234567")
-        val timestamp = System.currentTimeMillis()
-        val paymentId = "${unitNumber}_$timestamp"
+        // Create documentId: unit-block-{blockId}-{unitNumber} (e.g., "unit-block-b-8-B23")
+        val paymentId = if (blockId != null) {
+            "unit-block-$blockId-$unitNumber"
+        } else {
+            // Fallback if blockId is null
+            "unit-block-unknown-$unitNumber"
+        }
         
         val payment = Payment(
             id = paymentId,

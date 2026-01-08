@@ -47,10 +47,10 @@ class SyncRepository @Inject constructor(
                         // Get unit to create correct paymentId format
                         val unit = localDataSource.getUnitById(payment.unitId)
                         val unitNumber = unit?.unitNumber ?: payment.unitId
+                        val blockId = unit?.blockId ?: "unknown"
                         
-                        // Create paymentId in correct format: unitNumber_timestamp
-                        val timestamp = payment.paymentDate.takeIf { it > 0 } ?: payment.createdAt.takeIf { it > 0 } ?: System.currentTimeMillis()
-                        val paymentId = "${unitNumber}_$timestamp"
+                        // Create paymentId in correct format: unit-block-{blockId}-{unitNumber}
+                        val paymentId = "unit-block-$blockId-$unitNumber"
                         
                         // Use Firebase Functions to sync payment with correct documentId
                         val result = functionsService.recordPayment(

@@ -133,9 +133,9 @@ class DashboardFragment : Fragment() {
             }
         }
 
-        // Sync button
+        // Sync button - Download data from Firebase and update screen
         binding.syncButton.setOnClickListener {
-            viewModel.syncToFirebase()
+            viewModel.syncFromFirebase("apt-001")
         }
 
         // Load current user info for profile card
@@ -221,6 +221,8 @@ class DashboardFragment : Fragment() {
                             state.message,
                             Snackbar.LENGTH_LONG
                         ).show()
+                        // Refresh dashboard data after successful sync
+                        // Flow'lar otomatik olarak güncellenecek çünkü veriler değişti
                     }
                     is SyncState.Error -> {
                         currentBinding.syncButton.isEnabled = true

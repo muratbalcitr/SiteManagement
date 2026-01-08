@@ -784,13 +784,13 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
 
     private Provider<RemoteDataSource> provideRemoteDataSourceProvider;
 
-    private Provider<SyncRepository> provideSyncRepositoryProvider;
-
-    private Provider<AuthRepository> provideAuthRepositoryProvider;
-
     private Provider<FirebaseFunctions> provideFirebaseFunctionsProvider;
 
     private Provider<FirebaseFunctionsService> provideFirebaseFunctionsServiceProvider;
+
+    private Provider<SyncRepository> provideSyncRepositoryProvider;
+
+    private Provider<AuthRepository> provideAuthRepositoryProvider;
 
     private Provider<FeeRepository> provideFeeRepositoryProvider;
 
@@ -857,11 +857,11 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
       this.provideFirebaseFirestoreProvider = DoubleCheck.provider(new SwitchingProvider<FirebaseFirestore>(singletonCImpl, 4));
       this.provideFirebaseAuthProvider = DoubleCheck.provider(new SwitchingProvider<FirebaseAuth>(singletonCImpl, 5));
       this.provideRemoteDataSourceProvider = DoubleCheck.provider(new SwitchingProvider<RemoteDataSource>(singletonCImpl, 3));
+      this.provideFirebaseFunctionsProvider = DoubleCheck.provider(new SwitchingProvider<FirebaseFunctions>(singletonCImpl, 7));
+      this.provideFirebaseFunctionsServiceProvider = DoubleCheck.provider(new SwitchingProvider<FirebaseFunctionsService>(singletonCImpl, 6));
       this.provideSyncRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<SyncRepository>(singletonCImpl, 1));
-      this.provideAuthRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<AuthRepository>(singletonCImpl, 6));
-      this.provideFirebaseFunctionsProvider = DoubleCheck.provider(new SwitchingProvider<FirebaseFunctions>(singletonCImpl, 9));
-      this.provideFirebaseFunctionsServiceProvider = DoubleCheck.provider(new SwitchingProvider<FirebaseFunctionsService>(singletonCImpl, 8));
-      this.provideFeeRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<FeeRepository>(singletonCImpl, 7));
+      this.provideAuthRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<AuthRepository>(singletonCImpl, 8));
+      this.provideFeeRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<FeeRepository>(singletonCImpl, 9));
       this.providePaymentRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<PaymentRepository>(singletonCImpl, 10));
       this.provideExtraPaymentRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<ExtraPaymentRepository>(singletonCImpl, 11));
       this.provideWaterMeterRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<WaterMeterRepository>(singletonCImpl, 12));
@@ -922,7 +922,7 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
           return (T) DatabaseModule_ProvideAppDatabaseFactory.provideAppDatabase(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
           case 1: // com.balancetech.sitemanagement.data.repository.SyncRepository 
-          return (T) RepositoryModule_ProvideSyncRepositoryFactory.provideSyncRepository(singletonCImpl.provideLocalDataSourceProvider.get(), singletonCImpl.provideRemoteDataSourceProvider.get(), singletonCImpl.userUnitDao());
+          return (T) RepositoryModule_ProvideSyncRepositoryFactory.provideSyncRepository(singletonCImpl.provideLocalDataSourceProvider.get(), singletonCImpl.provideRemoteDataSourceProvider.get(), singletonCImpl.userUnitDao(), singletonCImpl.provideFirebaseFunctionsServiceProvider.get());
 
           case 2: // com.balancetech.sitemanagement.data.datasource.LocalDataSource 
           return (T) DataSourceModule_ProvideLocalDataSourceFactory.provideLocalDataSource(singletonCImpl.localDataSourceImpl());
@@ -936,17 +936,17 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
           case 5: // com.google.firebase.auth.FirebaseAuth 
           return (T) FirebaseModule_ProvideFirebaseAuthFactory.provideFirebaseAuth();
 
-          case 6: // com.balancetech.sitemanagement.data.repository.AuthRepository 
-          return (T) RepositoryModule_ProvideAuthRepositoryFactory.provideAuthRepository(singletonCImpl.userDao(), singletonCImpl.provideFirebaseAuthProvider.get(), singletonCImpl.provideLocalDataSourceProvider.get(), singletonCImpl.provideRemoteDataSourceProvider.get());
-
-          case 7: // com.balancetech.sitemanagement.data.repository.FeeRepository 
-          return (T) RepositoryModule_ProvideFeeRepositoryFactory.provideFeeRepository(singletonCImpl.feeDao(), singletonCImpl.unitDao(), singletonCImpl.provideLocalDataSourceProvider.get(), singletonCImpl.provideRemoteDataSourceProvider.get(), singletonCImpl.provideFirebaseFunctionsServiceProvider.get(), singletonCImpl.userDao());
-
-          case 8: // com.balancetech.sitemanagement.data.service.FirebaseFunctionsService 
+          case 6: // com.balancetech.sitemanagement.data.service.FirebaseFunctionsService 
           return (T) FirebaseModule_ProvideFirebaseFunctionsServiceFactory.provideFirebaseFunctionsService(singletonCImpl.provideFirebaseFunctionsProvider.get());
 
-          case 9: // com.google.firebase.functions.FirebaseFunctions 
+          case 7: // com.google.firebase.functions.FirebaseFunctions 
           return (T) FirebaseModule_ProvideFirebaseFunctionsFactory.provideFirebaseFunctions();
+
+          case 8: // com.balancetech.sitemanagement.data.repository.AuthRepository 
+          return (T) RepositoryModule_ProvideAuthRepositoryFactory.provideAuthRepository(singletonCImpl.userDao(), singletonCImpl.provideFirebaseAuthProvider.get(), singletonCImpl.provideLocalDataSourceProvider.get(), singletonCImpl.provideRemoteDataSourceProvider.get());
+
+          case 9: // com.balancetech.sitemanagement.data.repository.FeeRepository 
+          return (T) RepositoryModule_ProvideFeeRepositoryFactory.provideFeeRepository(singletonCImpl.feeDao(), singletonCImpl.unitDao(), singletonCImpl.provideLocalDataSourceProvider.get(), singletonCImpl.provideRemoteDataSourceProvider.get(), singletonCImpl.provideFirebaseFunctionsServiceProvider.get(), singletonCImpl.userDao());
 
           case 10: // com.balancetech.sitemanagement.data.repository.PaymentRepository 
           return (T) RepositoryModule_ProvidePaymentRepositoryFactory.providePaymentRepository(singletonCImpl.paymentDao(), singletonCImpl.provideFirebaseFunctionsServiceProvider.get(), singletonCImpl.provideLocalDataSourceProvider.get());

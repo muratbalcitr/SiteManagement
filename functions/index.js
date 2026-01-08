@@ -192,15 +192,15 @@ exports.recordPayment = functions.https.onCall(async (data, context) => {
       );
     }
 
-    // Use provided paymentId (based on unit number) or generate one
-    // paymentId must be in format: unitNumber_timestamp
+    // Use provided paymentId (based on unit and block) or generate one
+    // paymentId must be in format: unit-block-{blockId}-{unitNumber}
     let finalPaymentId = paymentId;
     
-    // Validate paymentId format: should be unitNumber_timestamp
+    // Validate paymentId format: should be unit-block-{blockId}-{unitNumber}
     // If paymentId is not provided or not in correct format, generate a new one
     if (!finalPaymentId || finalPaymentId.trim() === "" || 
-        !finalPaymentId.includes("_") || finalPaymentId.split("_").length !== 2) {
-      // Get unit to create paymentId based on unit number
+        !finalPaymentId.startsWith("unit-block-")) {
+      // Get unit to create paymentId based on unit and block
       const unitDoc = await db.collection("units").doc(unitId).get();
       if (!unitDoc.exists) {
         throw new functions.https.HttpsError(
@@ -210,8 +210,9 @@ exports.recordPayment = functions.https.onCall(async (data, context) => {
       }
       const unit = unitDoc.data();
       const unitNumber = unit?.unitNumber || unitId;
-      const timestamp = Date.now();
-      finalPaymentId = `${unitNumber}_${timestamp}`;
+      const blockId = unit?.blockId || "unknown";
+      
+      finalPaymentId = `unit-block-${blockId}-${unitNumber}`;
       
       if (paymentId && paymentId.trim() !== "") {
         console.warn(`Invalid paymentId format: ${paymentId}, regenerated as: ${finalPaymentId}`);
@@ -257,7 +258,7 @@ exports.recordPayment = functions.https.onCall(async (data, context) => {
 
 /**
  * HTTP Cloud Function - Migrate Payment Document IDs
- * Migrates all payment document IDs to unitNumber_timestamp format
+ * Migrates all payment document IDs to unit-block-{blockId}-{unitNumber} format
  * WARNING: This function should be run once and with caution
  */
 exports.migratePaymentDocumentIds = functions.https.onCall(async (data, context) => {
@@ -280,6 +281,7 @@ exports.migratePaymentDocumentIds = functions.https.onCall(async (data, context)
     let migratedCount = 0;
     let errorCount = 0;
     const errors = [];
+    const paymentIdCounter = new Map(); // Track payment count per unit for uniqueness
     
     for (const paymentDoc of payments) {
       try {
@@ -287,15 +289,10 @@ exports.migratePaymentDocumentIds = functions.https.onCall(async (data, context)
         const currentDocId = paymentDoc.id;
         const unitId = payment.unitId;
         
-        // Skip if already in correct format (unitNumber_timestamp)
-        if (currentDocId.includes("_") && currentDocId.split("_").length === 2) {
-          const parts = currentDocId.split("_");
-          const timestampPart = parts[1];
-          // Check if second part is a valid timestamp (13 digits)
-          if (timestampPart && timestampPart.length === 13 && /^\d+$/.test(timestampPart)) {
-            console.log(`Skipping payment ${currentDocId} - already in correct format`);
-            continue;
-          }
+        // Skip if already in correct format (unit-block-{blockId}-{unitNumber})
+        if (currentDocId.startsWith("unit-block-")) {
+          console.log(`Skipping payment ${currentDocId} - already in correct format`);
+          continue;
         }
         
         // Get unit information
@@ -316,29 +313,19 @@ exports.migratePaymentDocumentIds = functions.https.onCall(async (data, context)
         
         const unit = unitDoc.data();
         const unitNumber = unit?.unitNumber || unitId;
+        const blockId = unit?.blockId || "unknown";
         
-        // Use paymentDate or createdAt as timestamp, fallback to current time
-        let timestamp = Date.now();
-        if (payment.paymentDate) {
-          // If paymentDate is a Timestamp, convert to milliseconds
-          if (payment.paymentDate.toMillis) {
-            timestamp = payment.paymentDate.toMillis();
-          } else if (payment.paymentDate._seconds) {
-            timestamp = payment.paymentDate._seconds * 1000;
-          } else if (typeof payment.paymentDate === "number") {
-            timestamp = payment.paymentDate;
-          }
-        } else if (payment.createdAt) {
-          if (payment.createdAt.toMillis) {
-            timestamp = payment.createdAt.toMillis();
-          } else if (payment.createdAt._seconds) {
-            timestamp = payment.createdAt._seconds * 1000;
-          } else if (typeof payment.createdAt === "number") {
-            timestamp = payment.createdAt;
-          }
-        }
+        // Create base document ID
+        let baseDocId = `unit-block-${blockId}-${unitNumber}`;
         
-        const newDocId = `${unitNumber}_${timestamp}`;
+        // Check if this ID already exists (for same unit payments)
+        const existingCount = paymentIdCounter.get(baseDocId) || 0;
+        paymentIdCounter.set(baseDocId, existingCount + 1);
+        
+        // If multiple payments for same unit, add counter to make unique
+        const newDocId = existingCount > 0 
+            ? `${baseDocId}-${existingCount}`
+            : baseDocId;
         
         // Skip if new ID is same as current
         if (newDocId === currentDocId) {
@@ -349,11 +336,12 @@ exports.migratePaymentDocumentIds = functions.https.onCall(async (data, context)
         console.log(`Migrating payment ${currentDocId} -> ${newDocId}`);
         
         if (!dryRun) {
-          // Check if new document ID already exists
+          // Check if new document ID already exists in database
           const existingDoc = await db.collection("payments").doc(newDocId).get();
           if (existingDoc.exists) {
-            // If exists, add a small random number to make it unique
-            const uniqueDocId = `${newDocId}_${Math.floor(Math.random() * 1000)}`;
+            // If exists, add timestamp to make it unique
+            const timestamp = Date.now();
+            const uniqueDocId = `${baseDocId}-${timestamp}`;
             console.log(`Document ID ${newDocId} exists, using ${uniqueDocId} instead`);
             
             // Create new document with updated ID

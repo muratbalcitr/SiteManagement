@@ -89,6 +89,7 @@ class LocalDataSourceImpl @Inject constructor(
     
     // Block operations
     override fun getBlocksByApartment(apartmentId: String): Flow<List<Block>> = blockDao.getBlocksByApartment(apartmentId)
+    override suspend fun getBlockById(id: String): Block? = blockDao.getBlockById(id)
     override suspend fun insertBlock(block: Block) = blockDao.insertBlock(block)
     override suspend fun insertUnit(unit: UnitEntity) = unitDao.insertUnit(unit)
     

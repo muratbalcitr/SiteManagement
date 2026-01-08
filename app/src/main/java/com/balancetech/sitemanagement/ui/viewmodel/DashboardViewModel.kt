@@ -117,6 +117,18 @@ class DashboardViewModel @Inject constructor(
             }
         }
     }
+    
+    fun syncFromFirebase(apartmentId: String = "apt-001") {
+        viewModelScope.launch {
+            _syncState.value = SyncState.Syncing
+            val result = syncRepository.syncFromFirebase(apartmentId)
+            _syncState.value = if (result.isSuccess) {
+                SyncState.Success(result.getOrNull() ?: "Veriler indirildi")
+            } else {
+                SyncState.Error(result.exceptionOrNull()?.message ?: "Veri indirme hatası")
+            }
+        }
+    }
 }
 
 sealed class DashboardUiState {
