@@ -69,9 +69,10 @@ object RepositoryModule {
     fun provideSyncRepository(
         localDataSource: LocalDataSource,
         remoteDataSource: RemoteDataSource,
-        userUnitDao: UserUnitDao
+        userUnitDao: UserUnitDao,
+        functionsService: com.balancetech.sitemanagement.data.service.FirebaseFunctionsService
     ): SyncRepository {
-        return SyncRepository(localDataSource, remoteDataSource, userUnitDao)
+        return SyncRepository(localDataSource, remoteDataSource, userUnitDao, functionsService)
     }
 
     @Provides

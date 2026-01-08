@@ -193,14 +193,29 @@ exports.recordPayment = functions.https.onCall(async (data, context) => {
     }
 
     // Use provided paymentId (based on unit number) or generate one
+    // paymentId must be in format: unitNumber_timestamp
     let finalPaymentId = paymentId;
-    if (!finalPaymentId) {
+    
+    // Validate paymentId format: should be unitNumber_timestamp
+    // If paymentId is not provided or not in correct format, generate a new one
+    if (!finalPaymentId || finalPaymentId.trim() === "" || 
+        !finalPaymentId.includes("_") || finalPaymentId.split("_").length !== 2) {
       // Get unit to create paymentId based on unit number
       const unitDoc = await db.collection("units").doc(unitId).get();
+      if (!unitDoc.exists) {
+        throw new functions.https.HttpsError(
+            "not-found",
+            `Unit with id ${unitId} not found`,
+        );
+      }
       const unit = unitDoc.data();
       const unitNumber = unit?.unitNumber || unitId;
       const timestamp = Date.now();
       finalPaymentId = `${unitNumber}_${timestamp}`;
+      
+      if (paymentId && paymentId.trim() !== "") {
+        console.warn(`Invalid paymentId format: ${paymentId}, regenerated as: ${finalPaymentId}`);
+      }
     }
 
     const payment = {
@@ -235,6 +250,159 @@ exports.recordPayment = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError(
         "internal",
         "Failed to record payment",
+        error.message,
+    );
+  }
+});
+
+/**
+ * HTTP Cloud Function - Migrate Payment Document IDs
+ * Migrates all payment document IDs to unitNumber_timestamp format
+ * WARNING: This function should be run once and with caution
+ */
+exports.migratePaymentDocumentIds = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+        "unauthenticated",
+        "User must be authenticated",
+    );
+  }
+
+  try {
+    const {dryRun = true} = data; // Default to dry run for safety
+    
+    console.log(`Starting payment migration (dryRun: ${dryRun})...`);
+    
+    // Get all payments
+    const paymentsSnapshot = await db.collection("payments").get();
+    const payments = paymentsSnapshot.docs;
+    
+    let migratedCount = 0;
+    let errorCount = 0;
+    const errors = [];
+    
+    for (const paymentDoc of payments) {
+      try {
+        const payment = paymentDoc.data();
+        const currentDocId = paymentDoc.id;
+        const unitId = payment.unitId;
+        
+        // Skip if already in correct format (unitNumber_timestamp)
+        if (currentDocId.includes("_") && currentDocId.split("_").length === 2) {
+          const parts = currentDocId.split("_");
+          const timestampPart = parts[1];
+          // Check if second part is a valid timestamp (13 digits)
+          if (timestampPart && timestampPart.length === 13 && /^\d+$/.test(timestampPart)) {
+            console.log(`Skipping payment ${currentDocId} - already in correct format`);
+            continue;
+          }
+        }
+        
+        // Get unit information
+        if (!unitId) {
+          console.warn(`Payment ${currentDocId} has no unitId, skipping...`);
+          errorCount++;
+          errors.push(`Payment ${currentDocId}: No unitId`);
+          continue;
+        }
+        
+        const unitDoc = await db.collection("units").doc(unitId).get();
+        if (!unitDoc.exists) {
+          console.warn(`Unit ${unitId} not found for payment ${currentDocId}, skipping...`);
+          errorCount++;
+          errors.push(`Payment ${currentDocId}: Unit ${unitId} not found`);
+          continue;
+        }
+        
+        const unit = unitDoc.data();
+        const unitNumber = unit?.unitNumber || unitId;
+        
+        // Use paymentDate or createdAt as timestamp, fallback to current time
+        let timestamp = Date.now();
+        if (payment.paymentDate) {
+          // If paymentDate is a Timestamp, convert to milliseconds
+          if (payment.paymentDate.toMillis) {
+            timestamp = payment.paymentDate.toMillis();
+          } else if (payment.paymentDate._seconds) {
+            timestamp = payment.paymentDate._seconds * 1000;
+          } else if (typeof payment.paymentDate === "number") {
+            timestamp = payment.paymentDate;
+          }
+        } else if (payment.createdAt) {
+          if (payment.createdAt.toMillis) {
+            timestamp = payment.createdAt.toMillis();
+          } else if (payment.createdAt._seconds) {
+            timestamp = payment.createdAt._seconds * 1000;
+          } else if (typeof payment.createdAt === "number") {
+            timestamp = payment.createdAt;
+          }
+        }
+        
+        const newDocId = `${unitNumber}_${timestamp}`;
+        
+        // Skip if new ID is same as current
+        if (newDocId === currentDocId) {
+          console.log(`Payment ${currentDocId} already has correct ID, skipping...`);
+          continue;
+        }
+        
+        console.log(`Migrating payment ${currentDocId} -> ${newDocId}`);
+        
+        if (!dryRun) {
+          // Check if new document ID already exists
+          const existingDoc = await db.collection("payments").doc(newDocId).get();
+          if (existingDoc.exists) {
+            // If exists, add a small random number to make it unique
+            const uniqueDocId = `${newDocId}_${Math.floor(Math.random() * 1000)}`;
+            console.log(`Document ID ${newDocId} exists, using ${uniqueDocId} instead`);
+            
+            // Create new document with updated ID
+            await db.collection("payments").doc(uniqueDocId).set({
+              ...payment,
+              id: uniqueDocId,
+            });
+            
+            // Delete old document
+            await db.collection("payments").doc(currentDocId).delete();
+          } else {
+            // Create new document with updated ID
+            await db.collection("payments").doc(newDocId).set({
+              ...payment,
+              id: newDocId,
+            });
+            
+            // Delete old document
+            await db.collection("payments").doc(currentDocId).delete();
+          }
+        }
+        
+        migratedCount++;
+      } catch (error) {
+        console.error(`Error migrating payment ${paymentDoc.id}:`, error);
+        errorCount++;
+        errors.push(`Payment ${paymentDoc.id}: ${error.message}`);
+      }
+    }
+    
+    const result = {
+      success: true,
+      totalPayments: payments.length,
+      migratedCount,
+      errorCount,
+      errors: errors.slice(0, 10), // Return first 10 errors
+      dryRun,
+      message: dryRun
+          ? `Dry run completed. ${migratedCount} payments would be migrated.`
+          : `Migration completed. ${migratedCount} payments migrated.`,
+    };
+    
+    console.log("Migration result:", result);
+    return result;
+  } catch (error) {
+    console.error("Error migrating payment document IDs:", error);
+    throw new functions.https.HttpsError(
+        "internal",
+        "Failed to migrate payment document IDs",
         error.message,
     );
   }

@@ -4,6 +4,7 @@ import com.balancetech.sitemanagement.data.dao.UserUnitDao
 import com.balancetech.sitemanagement.data.datasource.LocalDataSource
 import com.balancetech.sitemanagement.data.datasource.RemoteDataSource
 import com.balancetech.sitemanagement.data.entity.UserUnit
+import com.balancetech.sitemanagement.data.service.FirebaseFunctionsService
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -12,7 +13,8 @@ import javax.inject.Singleton
 class SyncRepository @Inject constructor(
     private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource,
-    private val userUnitDao: UserUnitDao
+    private val userUnitDao: UserUnitDao,
+    private val functionsService: FirebaseFunctionsService
 ) {
     /**
      * Sync all local data to Firebase
@@ -36,14 +38,37 @@ class SyncRepository @Inject constructor(
                 results.add("Aidat senkronizasyonu hatası: ${e.message}")
             }
             
-            // Sync payments
+            // Sync payments - Use Firebase Functions to ensure correct documentId format
             try {
                 val payments = localDataSource.getAllPayments().first()
                 var successCount = 0
                 payments.forEach { payment ->
-                    val result = remoteDataSource.createPayment(payment)
-                    if (result.isSuccess) {
-                        successCount++
+                    try {
+                        // Get unit to create correct paymentId format
+                        val unit = localDataSource.getUnitById(payment.unitId)
+                        val unitNumber = unit?.unitNumber ?: payment.unitId
+                        
+                        // Create paymentId in correct format: unitNumber_timestamp
+                        val timestamp = payment.paymentDate.takeIf { it > 0 } ?: payment.createdAt.takeIf { it > 0 } ?: System.currentTimeMillis()
+                        val paymentId = "${unitNumber}_$timestamp"
+                        
+                        // Use Firebase Functions to sync payment with correct documentId
+                        val result = functionsService.recordPayment(
+                            unitId = payment.unitId,
+                            amount = payment.amount,
+                            paymentMethod = payment.paymentMethod,
+                            description = payment.description,
+                            feeId = payment.feeId,
+                            extraPaymentId = payment.extraPaymentId,
+                            waterBillId = payment.waterBillId,
+                            paymentId = paymentId
+                        )
+                        if (result.isSuccess) {
+                            successCount++
+                        }
+                    } catch (e: Exception) {
+                        // Log individual payment error but continue
+                        android.util.Log.e("SyncRepository", "Error syncing payment ${payment.id}: ${e.message}")
                     }
                 }
                 if (successCount > 0) {
