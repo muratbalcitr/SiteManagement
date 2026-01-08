@@ -19,6 +19,7 @@ id action_export_excel
 id action_loginFragment_to_dashboardFragment
 id action_loginFragment_to_registerFragment
 id action_registerFragment_to_loginFragment
+id action_search
 id action_usersFragment_to_userDetailFragment
 id addButton
 id addExtraPaymentFab

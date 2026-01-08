@@ -93,7 +93,8 @@ class FirebaseFunctionsService @Inject constructor(
         description: String? = null,
         feeId: String? = null,
         extraPaymentId: String? = null,
-        waterBillId: String? = null
+        waterBillId: String? = null,
+        paymentId: String? = null
     ): Result<Map<String, Any?>> {
         return try {
             val data = hashMapOf(
@@ -103,7 +104,8 @@ class FirebaseFunctionsService @Inject constructor(
                 "description" to description,
                 "feeId" to feeId,
                 "extraPaymentId" to extraPaymentId,
-                "waterBillId" to waterBillId
+                "waterBillId" to waterBillId,
+                "paymentId" to paymentId
             ).filterValues { it != null }
             
             val result = functions.getHttpsCallable("recordPayment")

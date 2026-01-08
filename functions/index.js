@@ -182,6 +182,7 @@ exports.recordPayment = functions.https.onCall(async (data, context) => {
       feeId,
       extraPaymentId,
       waterBillId,
+      paymentId,
     } = data;
 
     if (!unitId || !amount || !paymentMethod) {
@@ -191,9 +192,19 @@ exports.recordPayment = functions.https.onCall(async (data, context) => {
       );
     }
 
-    const paymentId = db.collection("payments").doc().id;
+    // Use provided paymentId (based on unit number) or generate one
+    let finalPaymentId = paymentId;
+    if (!finalPaymentId) {
+      // Get unit to create paymentId based on unit number
+      const unitDoc = await db.collection("units").doc(unitId).get();
+      const unit = unitDoc.data();
+      const unitNumber = unit?.unitNumber || unitId;
+      const timestamp = Date.now();
+      finalPaymentId = `${unitNumber}_${timestamp}`;
+    }
+
     const payment = {
-      id: paymentId,
+      id: finalPaymentId,
       unitId,
       feeId: feeId || null,
       extraPaymentId: extraPaymentId || null,
@@ -206,7 +217,7 @@ exports.recordPayment = functions.https.onCall(async (data, context) => {
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     };
 
-    await db.collection("payments").doc(paymentId).set(payment);
+    await db.collection("payments").doc(finalPaymentId).set(payment);
 
     // Update fee status if payment is for a fee
     if (feeId) {
@@ -218,7 +229,7 @@ exports.recordPayment = functions.https.onCall(async (data, context) => {
       await updateWaterBillPaymentStatus(waterBillId, amount);
     }
 
-    return {success: true, paymentId, payment};
+    return {success: true, paymentId: finalPaymentId, payment};
   } catch (error) {
     console.error("Error recording payment:", error);
     throw new functions.https.HttpsError(

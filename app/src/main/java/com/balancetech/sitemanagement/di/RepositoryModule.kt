@@ -43,9 +43,10 @@ object RepositoryModule {
     @Singleton
     fun providePaymentRepository(
         paymentDao: PaymentDao,
-        functionsService: com.balancetech.sitemanagement.data.service.FirebaseFunctionsService
+        functionsService: com.balancetech.sitemanagement.data.service.FirebaseFunctionsService,
+        localDataSource: LocalDataSource
     ): PaymentRepository {
-        return PaymentRepository(paymentDao, functionsService)
+        return PaymentRepository(paymentDao, functionsService, localDataSource)
     }
 
     @Provides

@@ -3249,6 +3249,7 @@ int id action_mode_bar 0x7f080048
 int id action_mode_bar_stub 0x7f080049
 int id action_mode_close_button 0x7f08004a
 int id action_registerFragment_to_loginFragment 0x7f08004b
+int id action_search 0x7f080293
 int id action_text 0x7f08004c
 int id action_usersFragment_to_userDetailFragment 0x7f08004d
 int id actions 0x7f08004e
