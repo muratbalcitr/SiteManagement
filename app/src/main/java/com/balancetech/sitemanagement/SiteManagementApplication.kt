@@ -50,20 +50,27 @@ class SiteManagementApplication : Application() {
             
             // Sync data from Firebase on first launch
             val isFirstLaunch = prefs.getBoolean(PREF_FIRST_LAUNCH, true)
+            android.util.Log.d("SyncRepository", "İlk açılış kontrolü: $isFirstLaunch")
             if (isFirstLaunch) {
                 try {
+                    android.util.Log.d("SyncRepository", "Senkronizasyon başlatılıyor...")
                     val syncRepository = entryPoint.syncRepository()
                     val result = syncRepository.syncFromFirebase("apt-001")
                     if (result.isSuccess) {
-                        android.util.Log.d("SyncRepository", "İlk açılış senkronizasyonu: ${result.getOrNull()}")
+                        android.util.Log.d("SyncRepository", "İlk açılış senkronizasyonu başarılı: ${result.getOrNull()}")
                     } else {
                         android.util.Log.e("SyncRepository", "Senkronizasyon hatası: ${result.exceptionOrNull()?.message}")
+                        result.exceptionOrNull()?.printStackTrace()
                     }
                     // Mark as not first launch
                     prefs.edit().putBoolean(PREF_FIRST_LAUNCH, false).apply()
+                    android.util.Log.d("SyncRepository", "İlk açılış flag'i false olarak işaretlendi")
                 } catch (e: Exception) {
                     android.util.Log.e("SyncRepository", "Senkronizasyon hatası: ${e.message}", e)
+                    e.printStackTrace()
                 }
+            } else {
+                android.util.Log.d("SyncRepository", "İlk açılış değil, senkronizasyon atlanıyor")
             }
         }
     }

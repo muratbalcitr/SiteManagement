@@ -1,7 +1,9 @@
 package com.balancetech.sitemanagement.data.repository
 
+import com.balancetech.sitemanagement.data.dao.UserUnitDao
 import com.balancetech.sitemanagement.data.datasource.LocalDataSource
 import com.balancetech.sitemanagement.data.datasource.RemoteDataSource
+import com.balancetech.sitemanagement.data.entity.UserUnit
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -9,7 +11,8 @@ import javax.inject.Singleton
 @Singleton
 class SyncRepository @Inject constructor(
     private val localDataSource: LocalDataSource,
-    private val remoteDataSource: RemoteDataSource
+    private val remoteDataSource: RemoteDataSource,
+    private val userUnitDao: UserUnitDao
 ) {
     /**
      * Sync all local data to Firebase
@@ -133,6 +136,22 @@ class SyncRepository @Inject constructor(
                 val remoteUsers = remoteDataSource.getAllUsers()
                 if (remoteUsers.isNotEmpty()) {
                     localDataSource.insertUsers(remoteUsers)
+                    
+                    // Create UserUnit relationships from user.unitId (for backward compatibility)
+                    val userUnits = mutableListOf<UserUnit>()
+                    remoteUsers.forEach { user ->
+                        if (user.unitId != null) {
+                            // Check if UserUnit already exists
+                            val existingUnitIds = userUnitDao.getUnitIdsByUserId(user.id).toSet()
+                            if (user.unitId !in existingUnitIds) {
+                                userUnits.add(UserUnit(userId = user.id, unitId = user.unitId))
+                            }
+                        }
+                    }
+                    if (userUnits.isNotEmpty()) {
+                        userUnitDao.insertUserUnits(userUnits)
+                    }
+                    
                     results.add("${remoteUsers.size} kullanıcı indirildi")
                 }
             } catch (e: Exception) {

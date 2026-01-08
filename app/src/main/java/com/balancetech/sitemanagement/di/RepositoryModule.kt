@@ -68,9 +68,10 @@ object RepositoryModule {
     @Singleton
     fun provideSyncRepository(
         localDataSource: LocalDataSource,
-        remoteDataSource: RemoteDataSource
+        remoteDataSource: RemoteDataSource,
+        userUnitDao: UserUnitDao
     ): SyncRepository {
-        return SyncRepository(localDataSource, remoteDataSource)
+        return SyncRepository(localDataSource, remoteDataSource, userUnitDao)
     }
 
     @Provides
