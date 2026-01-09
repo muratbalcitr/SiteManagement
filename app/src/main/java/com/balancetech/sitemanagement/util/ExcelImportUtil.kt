@@ -298,19 +298,12 @@ object ExcelImportUtil {
         }
         
         val unitNumber = values[0].trim()
+        val unitOwner = values[1].trim()
         // Daire İsmi (values[1]) - bilgilendirme amaçlı, kullanılmıyor
-        val meterNumber = if (values.size >= 3) {
-            values[2].trim() // Yeni format: Daire Numarası, Daire İsmi, Sayaç Numarası
-        } else {
-            values[1].trim() // Eski format: Daire Numarası, Sayaç Numarası
-        }
-        val unitPrice = if (values.size >= 4) {
-            values[3].trim().toDoubleOrNull() ?: 0.0 // Yeni format
-        } else if (values.size >= 3) {
-            values[2].trim().toDoubleOrNull() ?: 0.0 // Eski format
-        } else {
-            0.0
-        }
+        val meterNumber = values[2].trim() // Yeni format: Daire Numarası, Daire İsmi, Sayaç Numarası
+
+        val unitPrice = values[3].trim().toDoubleOrNull() ?: 0.0 // Yeni format
+
         
         if (meterNumber.isEmpty()) {
             throw Exception("Sayaç numarası boş olamaz")

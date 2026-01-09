@@ -36,34 +36,40 @@ public final class SyncRepository_Factory implements Factory<SyncRepository> {
 
   private final Provider<FirebaseFirestore> firestoreProvider;
 
+  private final Provider<PaymentRepository> paymentRepositoryProvider;
+
   public SyncRepository_Factory(Provider<LocalDataSource> localDataSourceProvider,
       Provider<RemoteDataSource> remoteDataSourceProvider,
       Provider<UserUnitDao> userUnitDaoProvider,
       Provider<FirebaseFunctionsService> functionsServiceProvider,
-      Provider<FirebaseFirestore> firestoreProvider) {
+      Provider<FirebaseFirestore> firestoreProvider,
+      Provider<PaymentRepository> paymentRepositoryProvider) {
     this.localDataSourceProvider = localDataSourceProvider;
     this.remoteDataSourceProvider = remoteDataSourceProvider;
     this.userUnitDaoProvider = userUnitDaoProvider;
     this.functionsServiceProvider = functionsServiceProvider;
     this.firestoreProvider = firestoreProvider;
+    this.paymentRepositoryProvider = paymentRepositoryProvider;
   }
 
   @Override
   public SyncRepository get() {
-    return newInstance(localDataSourceProvider.get(), remoteDataSourceProvider.get(), userUnitDaoProvider.get(), functionsServiceProvider.get(), firestoreProvider.get());
+    return newInstance(localDataSourceProvider.get(), remoteDataSourceProvider.get(), userUnitDaoProvider.get(), functionsServiceProvider.get(), firestoreProvider.get(), paymentRepositoryProvider.get());
   }
 
   public static SyncRepository_Factory create(Provider<LocalDataSource> localDataSourceProvider,
       Provider<RemoteDataSource> remoteDataSourceProvider,
       Provider<UserUnitDao> userUnitDaoProvider,
       Provider<FirebaseFunctionsService> functionsServiceProvider,
-      Provider<FirebaseFirestore> firestoreProvider) {
-    return new SyncRepository_Factory(localDataSourceProvider, remoteDataSourceProvider, userUnitDaoProvider, functionsServiceProvider, firestoreProvider);
+      Provider<FirebaseFirestore> firestoreProvider,
+      Provider<PaymentRepository> paymentRepositoryProvider) {
+    return new SyncRepository_Factory(localDataSourceProvider, remoteDataSourceProvider, userUnitDaoProvider, functionsServiceProvider, firestoreProvider, paymentRepositoryProvider);
   }
 
   public static SyncRepository newInstance(LocalDataSource localDataSource,
       RemoteDataSource remoteDataSource, UserUnitDao userUnitDao,
-      FirebaseFunctionsService functionsService, FirebaseFirestore firestore) {
-    return new SyncRepository(localDataSource, remoteDataSource, userUnitDao, functionsService, firestore);
+      FirebaseFunctionsService functionsService, FirebaseFirestore firestore,
+      PaymentRepository paymentRepository) {
+    return new SyncRepository(localDataSource, remoteDataSource, userUnitDao, functionsService, firestore, paymentRepository);
   }
 }

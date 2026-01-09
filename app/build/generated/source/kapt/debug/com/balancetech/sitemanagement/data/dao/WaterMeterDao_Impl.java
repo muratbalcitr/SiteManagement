@@ -45,7 +45,7 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `water_meters` (`id`,`unitId`,`meterNumber`,`previousReading`,`currentReading`,`unitPrice`,`lastReadingDate`,`createdAt`) VALUES (?,?,?,?,?,?,?,?)";
+        return "INSERT OR REPLACE INTO `water_meters` (`id`,`unitId`,`meterNumber`,`previousReading`,`currentReading`,`unitPrice`,`lastReadingDate`,`createdAt`,`unitOwner`) VALUES (?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -71,6 +71,11 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
         statement.bindDouble(6, entity.getUnitPrice());
         statement.bindLong(7, entity.getLastReadingDate());
         statement.bindLong(8, entity.getCreatedAt());
+        if (entity.getUnitOwner() == null) {
+          statement.bindNull(9);
+        } else {
+          statement.bindString(9, entity.getUnitOwner());
+        }
       }
     };
     this.__deletionAdapterOfWaterMeter = new EntityDeletionOrUpdateAdapter<WaterMeter>(__db) {
@@ -94,7 +99,7 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `water_meters` SET `id` = ?,`unitId` = ?,`meterNumber` = ?,`previousReading` = ?,`currentReading` = ?,`unitPrice` = ?,`lastReadingDate` = ?,`createdAt` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `water_meters` SET `id` = ?,`unitId` = ?,`meterNumber` = ?,`previousReading` = ?,`currentReading` = ?,`unitPrice` = ?,`lastReadingDate` = ?,`createdAt` = ?,`unitOwner` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -120,10 +125,15 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
         statement.bindDouble(6, entity.getUnitPrice());
         statement.bindLong(7, entity.getLastReadingDate());
         statement.bindLong(8, entity.getCreatedAt());
-        if (entity.getId() == null) {
+        if (entity.getUnitOwner() == null) {
           statement.bindNull(9);
         } else {
-          statement.bindString(9, entity.getId());
+          statement.bindString(9, entity.getUnitOwner());
+        }
+        if (entity.getId() == null) {
+          statement.bindNull(10);
+        } else {
+          statement.bindString(10, entity.getId());
         }
       }
     };
@@ -131,7 +141,7 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
 
   @Override
   public Object insertWaterMeter(final WaterMeter waterMeter,
-      final Continuation<? super Unit> arg1) {
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -145,12 +155,12 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
   public Object deleteWaterMeter(final WaterMeter waterMeter,
-      final Continuation<? super Unit> arg1) {
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -164,12 +174,12 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
   public Object updateWaterMeter(final WaterMeter waterMeter,
-      final Continuation<? super Unit> arg1) {
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -183,11 +193,12 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object getWaterMeterById(final String id, final Continuation<? super WaterMeter> arg1) {
+  public Object getWaterMeterById(final String id,
+      final Continuation<? super WaterMeter> $completion) {
     final String _sql = "SELECT * FROM water_meters WHERE id = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -211,6 +222,7 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
           final int _cursorIndexOfUnitPrice = CursorUtil.getColumnIndexOrThrow(_cursor, "unitPrice");
           final int _cursorIndexOfLastReadingDate = CursorUtil.getColumnIndexOrThrow(_cursor, "lastReadingDate");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "createdAt");
+          final int _cursorIndexOfUnitOwner = CursorUtil.getColumnIndexOrThrow(_cursor, "unitOwner");
           final WaterMeter _result;
           if (_cursor.moveToFirst()) {
             final String _tmpId;
@@ -241,7 +253,13 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
             _tmpLastReadingDate = _cursor.getLong(_cursorIndexOfLastReadingDate);
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
-            _result = new WaterMeter(_tmpId,_tmpUnitId,_tmpMeterNumber,_tmpPreviousReading,_tmpCurrentReading,_tmpUnitPrice,_tmpLastReadingDate,_tmpCreatedAt);
+            final String _tmpUnitOwner;
+            if (_cursor.isNull(_cursorIndexOfUnitOwner)) {
+              _tmpUnitOwner = null;
+            } else {
+              _tmpUnitOwner = _cursor.getString(_cursorIndexOfUnitOwner);
+            }
+            _result = new WaterMeter(_tmpId,_tmpUnitId,_tmpMeterNumber,_tmpPreviousReading,_tmpCurrentReading,_tmpUnitPrice,_tmpLastReadingDate,_tmpCreatedAt,_tmpUnitOwner);
           } else {
             _result = null;
           }
@@ -251,12 +269,12 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
           _statement.release();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
   public Object getWaterMeterByUnit(final String unitId,
-      final Continuation<? super WaterMeter> arg1) {
+      final Continuation<? super WaterMeter> $completion) {
     final String _sql = "SELECT * FROM water_meters WHERE unitId = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -280,6 +298,7 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
           final int _cursorIndexOfUnitPrice = CursorUtil.getColumnIndexOrThrow(_cursor, "unitPrice");
           final int _cursorIndexOfLastReadingDate = CursorUtil.getColumnIndexOrThrow(_cursor, "lastReadingDate");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "createdAt");
+          final int _cursorIndexOfUnitOwner = CursorUtil.getColumnIndexOrThrow(_cursor, "unitOwner");
           final WaterMeter _result;
           if (_cursor.moveToFirst()) {
             final String _tmpId;
@@ -310,7 +329,13 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
             _tmpLastReadingDate = _cursor.getLong(_cursorIndexOfLastReadingDate);
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
-            _result = new WaterMeter(_tmpId,_tmpUnitId,_tmpMeterNumber,_tmpPreviousReading,_tmpCurrentReading,_tmpUnitPrice,_tmpLastReadingDate,_tmpCreatedAt);
+            final String _tmpUnitOwner;
+            if (_cursor.isNull(_cursorIndexOfUnitOwner)) {
+              _tmpUnitOwner = null;
+            } else {
+              _tmpUnitOwner = _cursor.getString(_cursorIndexOfUnitOwner);
+            }
+            _result = new WaterMeter(_tmpId,_tmpUnitId,_tmpMeterNumber,_tmpPreviousReading,_tmpCurrentReading,_tmpUnitPrice,_tmpLastReadingDate,_tmpCreatedAt,_tmpUnitOwner);
           } else {
             _result = null;
           }
@@ -320,7 +345,7 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
           _statement.release();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
@@ -341,6 +366,7 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
           final int _cursorIndexOfUnitPrice = CursorUtil.getColumnIndexOrThrow(_cursor, "unitPrice");
           final int _cursorIndexOfLastReadingDate = CursorUtil.getColumnIndexOrThrow(_cursor, "lastReadingDate");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "createdAt");
+          final int _cursorIndexOfUnitOwner = CursorUtil.getColumnIndexOrThrow(_cursor, "unitOwner");
           final List<WaterMeter> _result = new ArrayList<WaterMeter>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final WaterMeter _item;
@@ -372,7 +398,13 @@ public final class WaterMeterDao_Impl implements WaterMeterDao {
             _tmpLastReadingDate = _cursor.getLong(_cursorIndexOfLastReadingDate);
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
-            _item = new WaterMeter(_tmpId,_tmpUnitId,_tmpMeterNumber,_tmpPreviousReading,_tmpCurrentReading,_tmpUnitPrice,_tmpLastReadingDate,_tmpCreatedAt);
+            final String _tmpUnitOwner;
+            if (_cursor.isNull(_cursorIndexOfUnitOwner)) {
+              _tmpUnitOwner = null;
+            } else {
+              _tmpUnitOwner = _cursor.getString(_cursorIndexOfUnitOwner);
+            }
+            _item = new WaterMeter(_tmpId,_tmpUnitId,_tmpMeterNumber,_tmpPreviousReading,_tmpCurrentReading,_tmpUnitPrice,_tmpLastReadingDate,_tmpCreatedAt,_tmpUnitOwner);
             _result.add(_item);
           }
           return _result;

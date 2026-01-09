@@ -58,7 +58,9 @@ class WaterMeterRepository @Inject constructor(
                 id = documentId, // Use unitNumber as document ID
                 unitId = unitId,
                 meterNumber = meterNumber,
-                unitPrice = unitPrice
+                unitPrice = unitPrice,
+                unitOwner = unit.ownerName.toString(),
+                createdAt = System.currentTimeMillis()
             )
         }
         // Save to local first

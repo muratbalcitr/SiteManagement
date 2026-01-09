@@ -18,9 +18,7 @@ local.properties
 .firebase/
 firebase-debug.log
 firestore-debug.log
-ui-debug.log
-
-# Functions
+ui-debug.log# Functions
 functions/node_modules/
 functions/.env
 functions/*.log

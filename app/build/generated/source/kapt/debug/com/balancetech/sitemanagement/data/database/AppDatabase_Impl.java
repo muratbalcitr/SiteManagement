@@ -87,12 +87,12 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_user_units_userId_unitId` ON `user_units` (`userId`, `unitId`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `fees` (`id` TEXT NOT NULL, `apartmentId` TEXT NOT NULL, `unitId` TEXT NOT NULL, `month` INTEGER NOT NULL, `year` INTEGER NOT NULL, `amount` REAL NOT NULL, `paidAmount` REAL NOT NULL, `status` TEXT NOT NULL, `dueDate` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `extra_payments` (`id` TEXT NOT NULL, `apartmentId` TEXT NOT NULL, `unitId` TEXT, `title` TEXT NOT NULL, `description` TEXT, `amount` REAL NOT NULL, `type` TEXT NOT NULL, `installmentCount` INTEGER NOT NULL, `currentInstallment` INTEGER NOT NULL, `paidAmount` REAL NOT NULL, `status` TEXT NOT NULL, `dueDate` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
-        db.execSQL("CREATE TABLE IF NOT EXISTS `water_meters` (`id` TEXT NOT NULL, `unitId` TEXT NOT NULL, `meterNumber` TEXT NOT NULL, `previousReading` REAL NOT NULL, `currentReading` REAL NOT NULL, `unitPrice` REAL NOT NULL, `lastReadingDate` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `water_meters` (`id` TEXT NOT NULL, `unitId` TEXT NOT NULL, `meterNumber` TEXT NOT NULL, `previousReading` REAL NOT NULL, `currentReading` REAL NOT NULL, `unitPrice` REAL NOT NULL, `lastReadingDate` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `unitOwner` TEXT, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `water_bills` (`id` TEXT NOT NULL, `unitId` TEXT NOT NULL, `waterMeterId` TEXT NOT NULL, `month` INTEGER NOT NULL, `year` INTEGER NOT NULL, `previousReading` REAL NOT NULL, `currentReading` REAL NOT NULL, `consumption` REAL NOT NULL, `unitPrice` REAL NOT NULL, `amount` REAL NOT NULL, `wastewaterAmount` REAL NOT NULL, `environmentalTax` REAL NOT NULL, `vat` REAL NOT NULL, `sharedAmount` REAL NOT NULL, `totalAmount` REAL NOT NULL, `paidAmount` REAL NOT NULL, `status` TEXT NOT NULL, `dueDate` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `payments` (`id` TEXT NOT NULL, `unitId` TEXT NOT NULL, `feeId` TEXT, `extraPaymentId` TEXT, `waterBillId` TEXT, `amount` REAL NOT NULL, `paymentDate` INTEGER NOT NULL, `paymentMethod` TEXT NOT NULL, `description` TEXT, `createdBy` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `notifications` (`id` TEXT NOT NULL, `userId` TEXT NOT NULL, `title` TEXT NOT NULL, `message` TEXT NOT NULL, `type` TEXT NOT NULL, `isRead` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fcdeb215fc6a63be2fe27e83aa85f2e8')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e9feda84c5200fbaf8558aa2b2aef715')");
       }
 
       @Override
@@ -290,7 +290,7 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoExtraPayments + "\n"
                   + " Found:\n" + _existingExtraPayments);
         }
-        final HashMap<String, TableInfo.Column> _columnsWaterMeters = new HashMap<String, TableInfo.Column>(8);
+        final HashMap<String, TableInfo.Column> _columnsWaterMeters = new HashMap<String, TableInfo.Column>(9);
         _columnsWaterMeters.put("id", new TableInfo.Column("id", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsWaterMeters.put("unitId", new TableInfo.Column("unitId", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsWaterMeters.put("meterNumber", new TableInfo.Column("meterNumber", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -299,6 +299,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         _columnsWaterMeters.put("unitPrice", new TableInfo.Column("unitPrice", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsWaterMeters.put("lastReadingDate", new TableInfo.Column("lastReadingDate", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsWaterMeters.put("createdAt", new TableInfo.Column("createdAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsWaterMeters.put("unitOwner", new TableInfo.Column("unitOwner", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysWaterMeters = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesWaterMeters = new HashSet<TableInfo.Index>(0);
         final TableInfo _infoWaterMeters = new TableInfo("water_meters", _columnsWaterMeters, _foreignKeysWaterMeters, _indicesWaterMeters);
@@ -377,7 +378,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "fcdeb215fc6a63be2fe27e83aa85f2e8", "ce495d3fb8eee855e7d32dfdc7ca5702");
+    }, "e9feda84c5200fbaf8558aa2b2aef715", "0a25ccc24555679577b3ee99cf65daa2");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;

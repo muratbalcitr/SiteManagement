@@ -13,5 +13,7 @@ data class WaterMeter(
     val currentReading: Double = 0.0, // Güncel okuma
     val unitPrice: Double = 0.0, // m³ birim fiyat
     val lastReadingDate: Long = System.currentTimeMillis(),
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val unitOwner: String? = null, // Daire Adı
+
 )

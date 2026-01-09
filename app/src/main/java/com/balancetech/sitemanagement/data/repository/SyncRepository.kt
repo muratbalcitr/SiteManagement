@@ -92,16 +92,21 @@ class SyncRepository @Inject constructor(
                         }
                     }
                     
-                    // Check for PAID fees without payment records and create them
+                    // Check for PAID fees and ensure payment records match paidAmount
+                    // Calculate paidAmount from actual payment records to avoid duplicates
                     try {
                         val paidFees = fees.filter { it.status == PaymentStatus.PAID && it.paidAmount > 0 }
                         var createdPaymentCount = 0
+                        var correctedCount = 0
                         val currentUser = localDataSource.getCurrentUser()
                         val createdBy = currentUser?.id ?: "system"
                         
                         paidFees.forEach { fee ->
-                            // Check if payment record exists for this fee
+                            // Get actual payment records for this fee
                             val existingPayments = paymentRepository.getPaymentsByFee(fee.id).first()
+                            val actualPaidAmount = existingPayments.sumOf { it.amount }
+                            
+                            // If no payment records exist, create one
                             if (existingPayments.isEmpty()) {
                                 // Create payment record for this fee
                                 try {
@@ -120,11 +125,34 @@ class SyncRepository @Inject constructor(
                                 } catch (e: Exception) {
                                     android.util.Log.e("SyncRepository", "Error creating payment for fee ${fee.id}: ${e.message}", e)
                                 }
+                            } else if (actualPaidAmount != fee.paidAmount) {
+                                // Payment records exist but paidAmount doesn't match
+                                // Correct paidAmount based on actual payment records
+                                try {
+                                    val correctedFee = fee.copy(
+                                        paidAmount = actualPaidAmount,
+                                        status = when {
+                                            actualPaidAmount >= fee.amount -> PaymentStatus.PAID
+                                            actualPaidAmount > 0 -> PaymentStatus.PARTIALLY_PAID
+                                            else -> PaymentStatus.UNPAID
+                                        },
+                                        updatedAt = System.currentTimeMillis()
+                                    )
+                                    localDataSource.updateFee(correctedFee)
+                                    remoteDataSource.updateFee(correctedFee)
+                                    correctedCount++
+                                    android.util.Log.d("SyncRepository", "Corrected fee ${fee.id}: paidAmount ${fee.paidAmount} -> ${actualPaidAmount}")
+                                } catch (e: Exception) {
+                                    android.util.Log.e("SyncRepository", "Error correcting fee ${fee.id}: ${e.message}", e)
+                                }
                             }
                         }
                         
                         if (createdPaymentCount > 0) {
                             results.add("$createdPaymentCount eksik ödeme kaydı oluşturuldu (PAID aidatlar için)")
+                        }
+                        if (correctedCount > 0) {
+                            results.add("$correctedCount aidatın ödenen tutarı düzeltildi (payment kayıtlarına göre)")
                         }
                     } catch (e: Exception) {
                         android.util.Log.e("SyncRepository", "Error checking paid fees for payment records: ${e.message}", e)

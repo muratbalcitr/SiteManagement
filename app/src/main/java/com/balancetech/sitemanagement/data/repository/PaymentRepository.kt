@@ -43,12 +43,14 @@ class PaymentRepository(
         val unitNumber = unit?.unitNumber ?: unitId // Fallback to unitId if unit not found
         val blockId = unit?.blockId
         
-        // Create documentId: unit-block-{blockId}-{unitNumber} (e.g., "unit-block-b-8-B23")
+        // Create unique documentId: unit-block-{blockId}-{unitNumber}-{timestamp}
+        // Add timestamp to ensure uniqueness for multiple payments from same unit
+        val timestamp = System.currentTimeMillis()
         val paymentId = if (blockId != null) {
-            "unit-block-$blockId-$unitNumber"
+            "unit-block-$blockId-$unitNumber-$timestamp"
         } else {
             // Fallback if blockId is null
-            "unit-block-unknown-$unitNumber"
+            "unit-block-unknown-$unitNumber-$timestamp"
         }
         
         val payment = Payment(

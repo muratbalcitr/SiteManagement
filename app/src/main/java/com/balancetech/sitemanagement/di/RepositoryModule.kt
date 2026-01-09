@@ -72,9 +72,10 @@ object RepositoryModule {
         remoteDataSource: RemoteDataSource,
         userUnitDao: UserUnitDao,
         functionsService: com.balancetech.sitemanagement.data.service.FirebaseFunctionsService,
-        firestore: com.google.firebase.firestore.FirebaseFirestore
+        firestore: com.google.firebase.firestore.FirebaseFirestore,
+        paymentRepository: PaymentRepository
     ): SyncRepository {
-        return SyncRepository(localDataSource, remoteDataSource, userUnitDao, functionsService, firestore)
+        return SyncRepository(localDataSource, remoteDataSource, userUnitDao, functionsService, firestore, paymentRepository)
     }
 
     @Provides

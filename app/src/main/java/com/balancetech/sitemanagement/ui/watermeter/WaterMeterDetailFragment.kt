@@ -16,6 +16,7 @@ import com.balancetech.sitemanagement.databinding.FragmentWaterMeterDetailBindin
 import com.balancetech.sitemanagement.ui.adapter.WaterBillAdapter
 import com.balancetech.sitemanagement.ui.dialog.PaymentEntryDialogFragment
 import com.balancetech.sitemanagement.ui.viewmodel.WaterMeterViewModel
+import com.balancetech.sitemanagement.util.MeskiBillCalculator
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -153,22 +154,27 @@ class WaterMeterDetailFragment : Fragment() {
         val monthName = monthNames.getOrNull(waterBill.month - 1) ?: waterBill.month.toString()
         val remaining = waterBill.totalAmount - waterBill.paidAmount
         
-        // MESKİ fatura detayları
+        // Create BillCalculationResult from WaterBill
+        val subtotal = waterBill.amount + waterBill.wastewaterAmount + waterBill.environmentalTax
+        val billResult = MeskiBillCalculator.BillCalculationResult(
+            consumption = waterBill.consumption,
+            waterAmount = waterBill.amount,
+            wastewaterAmount = waterBill.wastewaterAmount,
+            environmentalTax = waterBill.environmentalTax,
+            subtotal = subtotal,
+            vat = waterBill.vat,
+            totalAmount = waterBill.totalAmount,
+            breakdown = emptyList() // Breakdown not needed for display
+        )
+        
+        // Use formatBillDetails to format the bill details
+        val formattedDetails = MeskiBillCalculator.formatBillDetails(billResult)
+        
+        // Add month/year, paid amount, and remaining amount
         val details = buildString {
-            append("$monthName ${waterBill.year}\n")
-            append("Tüketim: ${String.format("%.2f", waterBill.consumption)} m³\n")
-            append("Su Bedeli: ${String.format("%.2f", waterBill.amount)} ₺\n")
-            if (waterBill.wastewaterAmount > 0) {
-                append("Atık Su: ${String.format("%.2f", waterBill.wastewaterAmount)} ₺\n")
-            }
-            if (waterBill.environmentalTax > 0) {
-                append("ÇTV: ${String.format("%.2f", waterBill.environmentalTax)} ₺\n")
-            }
-            if (waterBill.vat > 0) {
-                append("KDV: ${String.format("%.2f", waterBill.vat)} ₺\n")
-            }
-            append("TOPLAM: ${String.format("%.2f", waterBill.totalAmount)} ₺\n")
-            append("Ödenen: ${String.format("%.2f", waterBill.paidAmount)} ₺\n")
+            append("$monthName ${waterBill.year}\n\n")
+            append(formattedDetails)
+            append("\nÖdenen: ${String.format("%.2f", waterBill.paidAmount)} ₺\n")
             append("Kalan: ${String.format("%.2f", remaining)} ₺")
         }
         
