@@ -2,6 +2,7 @@ package com.balancetech.sitemanagement.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -36,8 +37,7 @@ class FeeMonthAdapter(
                 totalAmountText.text = String.format("%.2f ₺", summary.totalAmount)
                 paidAmountText.text = String.format("%.2f ₺", summary.totalPaidAmount)
                 remainingAmountText.text = String.format("%.2f ₺", summary.totalRemainingAmount)
-                
-                // Show fee count
+                 // Show fee count
                 feeCountText.text = "${summary.fees.size} daire"
                 
                 root.setOnClickListener {

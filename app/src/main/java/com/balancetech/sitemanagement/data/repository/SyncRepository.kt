@@ -4,6 +4,8 @@ import com.balancetech.sitemanagement.data.dao.UserUnitDao
 import com.balancetech.sitemanagement.data.datasource.LocalDataSource
 import com.balancetech.sitemanagement.data.datasource.RemoteDataSource
 import com.balancetech.sitemanagement.data.entity.UserUnit
+import com.balancetech.sitemanagement.data.model.PaymentStatus
+import com.balancetech.sitemanagement.data.repository.PaymentRepository
 import com.balancetech.sitemanagement.data.service.FirebaseFunctionsService
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.first
@@ -17,7 +19,8 @@ class SyncRepository @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val userUnitDao: UserUnitDao,
     private val functionsService: FirebaseFunctionsService,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val paymentRepository: PaymentRepository
 ) {
     /**
      * Sync all local data to Firebase
@@ -87,6 +90,44 @@ class SyncRepository @Inject constructor(
                             errors.take(5).forEach { results.add("  - $it") }
                             results.add("  - ... ve ${errors.size - 5} hata daha")
                         }
+                    }
+                    
+                    // Check for PAID fees without payment records and create them
+                    try {
+                        val paidFees = fees.filter { it.status == PaymentStatus.PAID && it.paidAmount > 0 }
+                        var createdPaymentCount = 0
+                        val currentUser = localDataSource.getCurrentUser()
+                        val createdBy = currentUser?.id ?: "system"
+                        
+                        paidFees.forEach { fee ->
+                            // Check if payment record exists for this fee
+                            val existingPayments = paymentRepository.getPaymentsByFee(fee.id).first()
+                            if (existingPayments.isEmpty()) {
+                                // Create payment record for this fee
+                                try {
+                                    val result = paymentRepository.recordPayment(
+                                        unitId = fee.unitId,
+                                        amount = fee.paidAmount,
+                                        paymentMethod = "unknown", // Default payment method
+                                        description = "Otomatik oluşturuldu - ${fee.month}/${fee.year} aidat ödemesi",
+                                        createdBy = createdBy,
+                                        feeId = fee.id
+                                    )
+                                    if (result.isSuccess) {
+                                        createdPaymentCount++
+                                        android.util.Log.d("SyncRepository", "Created payment record for fee ${fee.id}")
+                                    }
+                                } catch (e: Exception) {
+                                    android.util.Log.e("SyncRepository", "Error creating payment for fee ${fee.id}: ${e.message}", e)
+                                }
+                            }
+                        }
+                        
+                        if (createdPaymentCount > 0) {
+                            results.add("$createdPaymentCount eksik ödeme kaydı oluşturuldu (PAID aidatlar için)")
+                        }
+                    } catch (e: Exception) {
+                        android.util.Log.e("SyncRepository", "Error checking paid fees for payment records: ${e.message}", e)
                     }
                 }
             } catch (e: Exception) {

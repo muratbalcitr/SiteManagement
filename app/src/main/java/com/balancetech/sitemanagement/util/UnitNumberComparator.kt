@@ -2,6 +2,7 @@ package com.balancetech.sitemanagement.util
 
 import com.balancetech.sitemanagement.data.entity.WaterMeter
 import com.balancetech.sitemanagement.data.entity.WaterBill
+import com.balancetech.sitemanagement.data.entity.Unit
 import com.balancetech.sitemanagement.data.datasource.LocalDataSource
 
 /**
@@ -72,9 +73,19 @@ object UnitNumberComparator {
         waterMeters: List<WaterMeter>,
         localDataSource: LocalDataSource
     ): List<WaterMeter> {
+        // Collect all unique unit IDs
+        val unitIds = waterMeters.map { it.unitId }.distinct()
+        
+        // Fetch all units first (outside the comparator)
+        val unitMap = mutableMapOf<String, Unit?>()
+        for (unitId in unitIds) {
+            unitMap[unitId] = localDataSource.getUnitById(unitId)
+        }
+        
+        // Now sort using the pre-fetched units
         return waterMeters.sortedWith { meter1, meter2 ->
-            val unit1 = localDataSource.getUnitById(meter1.unitId)
-            val unit2 = localDataSource.getUnitById(meter2.unitId)
+            val unit1 = unitMap[meter1.unitId]
+            val unit2 = unitMap[meter2.unitId]
             
             val unitNumber1 = unit1?.unitNumber ?: meter1.id
             val unitNumber2 = unit2?.unitNumber ?: meter2.id
@@ -90,9 +101,19 @@ object UnitNumberComparator {
         waterBills: List<WaterBill>,
         localDataSource: LocalDataSource
     ): List<WaterBill> {
+        // Collect all unique unit IDs
+        val unitIds = waterBills.map { it.unitId }.distinct()
+        
+        // Fetch all units first (outside the comparator)
+        val unitMap = mutableMapOf<String, Unit?>()
+        for (unitId in unitIds) {
+            unitMap[unitId] = localDataSource.getUnitById(unitId)
+        }
+        
+        // Now sort using the pre-fetched units
         return waterBills.sortedWith { bill1, bill2 ->
-            val unit1 = localDataSource.getUnitById(bill1.unitId)
-            val unit2 = localDataSource.getUnitById(bill2.unitId)
+            val unit1 = unitMap[bill1.unitId]
+            val unit2 = unitMap[bill2.unitId]
             
             val unitNumber1 = unit1?.unitNumber ?: bill1.id
             val unitNumber2 = unit2?.unitNumber ?: bill2.id

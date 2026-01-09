@@ -1,6 +1,7 @@
 package com.balancetech.sitemanagement.ui.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -47,8 +48,14 @@ class FeeAdapter(
                 feeAmount.text = String.format(root.context.getString(R.string.currency_format), fee.amount)
                 paidAmount.text = root.context.getString(R.string.paid_amount_format, String.format("%.2f", fee.paidAmount))
                 
-                val remainingAmount = fee.amount - fee.paidAmount
-                remainingAmountText.text = root.context.getString(R.string.remaining_amount_format, String.format("%.2f", remainingAmount))
+                // Hide remaining amount for fully paid fees, show only paid amount
+                if (fee.status == PaymentStatus.PAID) {
+                    remainingAmountText.visibility = View.GONE
+                } else {
+                    remainingAmountText.visibility = View.VISIBLE
+                    val remainingAmount = fee.amount - fee.paidAmount
+                    remainingAmountText.text = root.context.getString(R.string.remaining_amount_format, String.format("%.2f", remainingAmount))
+                }
                 
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                 dueDateText.text = root.context.getString(R.string.due_date_format, dateFormat.format(Date(fee.dueDate)))
