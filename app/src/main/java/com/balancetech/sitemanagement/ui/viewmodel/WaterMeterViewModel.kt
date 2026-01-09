@@ -73,6 +73,49 @@ class WaterMeterViewModel @Inject constructor(
     suspend fun getAllUnits(apartmentId: String): List<com.balancetech.sitemanagement.data.entity.Unit> {
         return localDataSource.getUnitsByApartment(apartmentId)
     }
+    
+    fun importWaterMeters(waterMeters: List<com.balancetech.sitemanagement.data.entity.WaterMeter>) {
+        viewModelScope.launch {
+            _uiState.value = WaterMeterUiState.Loading
+            try {
+                var successCount = 0
+                var errorCount = 0
+                
+                waterMeters.forEach { waterMeter ->
+                    val result = waterMeterRepository.createOrUpdateWaterMeter(
+                        unitId = waterMeter.unitId,
+                        meterNumber = waterMeter.meterNumber,
+                        unitPrice = waterMeter.unitPrice
+                    )
+                    if (result.isSuccess) {
+                        successCount++
+                    } else {
+                        errorCount++
+                    }
+                }
+                
+                _uiState.value = if (errorCount == 0) {
+                    WaterMeterUiState.Success("$successCount su sayacı başarıyla içe aktarıldı")
+                } else {
+                    WaterMeterUiState.Error("$successCount başarılı, $errorCount hata")
+                }
+            } catch (e: Exception) {
+                _uiState.value = WaterMeterUiState.Error("İçe aktarma hatası: ${e.message}")
+            }
+        }
+    }
+    
+    fun deleteWaterBill(waterBillId: String) {
+        viewModelScope.launch {
+            _uiState.value = WaterMeterUiState.Loading
+            val result = waterMeterRepository.deleteWaterBill(waterBillId)
+            _uiState.value = if (result.isSuccess) {
+                WaterMeterUiState.Success("Fatura silindi")
+            } else {
+                WaterMeterUiState.Error(result.exceptionOrNull()?.message ?: "Fatura silinemedi")
+            }
+        }
+    }
 }
 
 sealed class WaterMeterUiState {

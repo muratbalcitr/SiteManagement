@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
+    android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="2dp">
 
@@ -11,16 +11,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/unitNumberText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Daire: A/1"
+            android:textSize="14sp"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:layout_marginBottom="4dp" />
 
         <TextView
             android:id="@+id/meterNumberText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Sayaç No: 12345"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface" />
+            android:textColor="?attr/colorOnSurface"
+            android:maxLines="1"
+            android:ellipsize="end" />
 
         <View
             android:layout_width="match_parent"
@@ -33,26 +44,26 @@
             android:id="@+id/currentReadingText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Güncel Okuma: 150.50 m³"
-            android:textSize="16sp"
+            android:text="Güncel: 150.50 m³"
+            android:textSize="14sp"
             android:textColor="?attr/colorPrimary" />
 
         <TextView
             android:id="@+id/previousReadingText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Önceki Okuma: 120.00 m³"
-            android:textSize="14sp"
+            android:layout_marginTop="2dp"
+            android:text="Önceki: 120.00 m³"
+            android:textSize="12sp"
             android:textColor="?attr/colorOnSurfaceVariant" />
 
         <TextView
             android:id="@+id/consumptionText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="2dp"
             android:text="Tüketim: 30.50 m³"
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnSurface" />
 
@@ -60,26 +71,27 @@
             android:id="@+id/unitPriceText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Birim Fiyat: 5.00 ₺/m³"
-            android:textSize="12sp"
+            android:layout_marginTop="2dp"
+            android:text="Fiyat: 5.00 ₺/m³"
+            android:textSize="11sp"
             android:textColor="?attr/colorOnSurfaceVariant" />
 
         <TextView
             android:id="@+id/lastReadingDateText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Son Okuma: 15/01/2024"
-            android:textSize="12sp"
+            android:layout_marginTop="2dp"
+            android:text="Son: 15/01/2024"
+            android:textSize="11sp"
             android:textColor="?attr/colorOnSurfaceVariant" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/recordReadingButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Okuma Girişi Yap"
+            android:layout_marginTop="8dp"
+            android:text="Okuma Girişi"
+            android:textSize="12sp"
             style="@style/Widget.Material3.Button.OutlinedButton" />
 
     </LinearLayout>

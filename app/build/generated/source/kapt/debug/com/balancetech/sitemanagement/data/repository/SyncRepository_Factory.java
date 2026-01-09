@@ -4,6 +4,7 @@ import com.balancetech.sitemanagement.data.dao.UserUnitDao;
 import com.balancetech.sitemanagement.data.datasource.LocalDataSource;
 import com.balancetech.sitemanagement.data.datasource.RemoteDataSource;
 import com.balancetech.sitemanagement.data.service.FirebaseFunctionsService;
+import com.google.firebase.firestore.FirebaseFirestore;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
 import dagger.internal.QualifierMetadata;
@@ -33,31 +34,36 @@ public final class SyncRepository_Factory implements Factory<SyncRepository> {
 
   private final Provider<FirebaseFunctionsService> functionsServiceProvider;
 
+  private final Provider<FirebaseFirestore> firestoreProvider;
+
   public SyncRepository_Factory(Provider<LocalDataSource> localDataSourceProvider,
       Provider<RemoteDataSource> remoteDataSourceProvider,
       Provider<UserUnitDao> userUnitDaoProvider,
-      Provider<FirebaseFunctionsService> functionsServiceProvider) {
+      Provider<FirebaseFunctionsService> functionsServiceProvider,
+      Provider<FirebaseFirestore> firestoreProvider) {
     this.localDataSourceProvider = localDataSourceProvider;
     this.remoteDataSourceProvider = remoteDataSourceProvider;
     this.userUnitDaoProvider = userUnitDaoProvider;
     this.functionsServiceProvider = functionsServiceProvider;
+    this.firestoreProvider = firestoreProvider;
   }
 
   @Override
   public SyncRepository get() {
-    return newInstance(localDataSourceProvider.get(), remoteDataSourceProvider.get(), userUnitDaoProvider.get(), functionsServiceProvider.get());
+    return newInstance(localDataSourceProvider.get(), remoteDataSourceProvider.get(), userUnitDaoProvider.get(), functionsServiceProvider.get(), firestoreProvider.get());
   }
 
   public static SyncRepository_Factory create(Provider<LocalDataSource> localDataSourceProvider,
       Provider<RemoteDataSource> remoteDataSourceProvider,
       Provider<UserUnitDao> userUnitDaoProvider,
-      Provider<FirebaseFunctionsService> functionsServiceProvider) {
-    return new SyncRepository_Factory(localDataSourceProvider, remoteDataSourceProvider, userUnitDaoProvider, functionsServiceProvider);
+      Provider<FirebaseFunctionsService> functionsServiceProvider,
+      Provider<FirebaseFirestore> firestoreProvider) {
+    return new SyncRepository_Factory(localDataSourceProvider, remoteDataSourceProvider, userUnitDaoProvider, functionsServiceProvider, firestoreProvider);
   }
 
   public static SyncRepository newInstance(LocalDataSource localDataSource,
       RemoteDataSource remoteDataSource, UserUnitDao userUnitDao,
-      FirebaseFunctionsService functionsService) {
-    return new SyncRepository(localDataSource, remoteDataSource, userUnitDao, functionsService);
+      FirebaseFunctionsService functionsService, FirebaseFirestore firestore) {
+    return new SyncRepository(localDataSource, remoteDataSource, userUnitDao, functionsService, firestore);
   }
 }

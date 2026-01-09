@@ -128,13 +128,15 @@ class FirebaseFunctionsService @Inject constructor(
      */
     suspend fun recordWaterMeterReading(
         unitId: String,
-        currentReading: Double
+        currentReading: Double,
+        waterBillId: String? = null
     ): Result<Map<String, Any?>> {
         return try {
             val data = hashMapOf(
                 "unitId" to unitId,
-                "currentReading" to currentReading
-            )
+                "currentReading" to currentReading,
+                "waterBillId" to waterBillId
+            ).filterValues { it != null }
             
             val result = functions.getHttpsCallable("recordWaterMeterReading")
                 .call(data)

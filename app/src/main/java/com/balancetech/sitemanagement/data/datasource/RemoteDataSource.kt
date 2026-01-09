@@ -42,6 +42,7 @@ interface RemoteDataSource {
     suspend fun getWaterBillById(id: String): WaterBill?
     suspend fun createWaterBill(waterBill: WaterBill): Result<WaterBill>
     suspend fun updateWaterBill(waterBill: WaterBill): Result<WaterBill>
+    suspend fun deleteWaterBill(waterBillId: String): Result<Unit>
     
     // Notification operations
     suspend fun getNotificationsByUser(userId: String): List<Notification>

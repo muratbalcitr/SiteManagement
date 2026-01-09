@@ -63,6 +63,7 @@ import com.balancetech.sitemanagement.ui.auth.LoginFragment;
 import com.balancetech.sitemanagement.ui.auth.RegisterFragment;
 import com.balancetech.sitemanagement.ui.dashboard.DashboardFragment;
 import com.balancetech.sitemanagement.ui.dialog.AddUserDialogFragment;
+import com.balancetech.sitemanagement.ui.dialog.AddWaterMeterDialogFragment;
 import com.balancetech.sitemanagement.ui.dialog.CreateExtraPaymentDialogFragment;
 import com.balancetech.sitemanagement.ui.dialog.CreateFeeDialogFragment;
 import com.balancetech.sitemanagement.ui.dialog.CreateFeesForAllUnitsDialogFragment;
@@ -97,6 +98,7 @@ import com.balancetech.sitemanagement.ui.viewmodel.UserViewModel;
 import com.balancetech.sitemanagement.ui.viewmodel.UserViewModel_HiltModules_KeyModule_ProvideFactory;
 import com.balancetech.sitemanagement.ui.viewmodel.WaterMeterViewModel;
 import com.balancetech.sitemanagement.ui.viewmodel.WaterMeterViewModel_HiltModules_KeyModule_ProvideFactory;
+import com.balancetech.sitemanagement.ui.watermeter.WaterMeterDetailFragment;
 import com.balancetech.sitemanagement.ui.watermeter.WaterMeterFragment;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -455,6 +457,11 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
     }
 
     @Override
+    public void injectAddWaterMeterDialogFragment(
+        AddWaterMeterDialogFragment addWaterMeterDialogFragment) {
+    }
+
+    @Override
     public void injectCreateExtraPaymentDialogFragment(
         CreateExtraPaymentDialogFragment createExtraPaymentDialogFragment) {
     }
@@ -509,6 +516,10 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
 
     @Override
     public void injectUsersFragment(UsersFragment usersFragment) {
+    }
+
+    @Override
+    public void injectWaterMeterDetailFragment(WaterMeterDetailFragment waterMeterDetailFragment) {
     }
 
     @Override
@@ -702,7 +713,7 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
           return (T) new UserViewModel(singletonCImpl.provideUserRepositoryProvider.get(), singletonCImpl.provideLocalDataSourceProvider.get(), singletonCImpl.provideRemoteDataSourceProvider.get());
 
           case 9: // com.balancetech.sitemanagement.ui.viewmodel.WaterMeterViewModel 
-          return (T) new WaterMeterViewModel(singletonCImpl.provideWaterMeterRepositoryProvider.get());
+          return (T) new WaterMeterViewModel(singletonCImpl.provideWaterMeterRepositoryProvider.get(), singletonCImpl.provideLocalDataSourceProvider.get());
 
           default: throw new AssertionError(id);
         }
@@ -931,7 +942,7 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
           return (T) DatabaseModule_ProvideAppDatabaseFactory.provideAppDatabase(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
           case 1: // com.balancetech.sitemanagement.data.repository.SyncRepository 
-          return (T) RepositoryModule_ProvideSyncRepositoryFactory.provideSyncRepository(singletonCImpl.provideLocalDataSourceProvider.get(), singletonCImpl.provideRemoteDataSourceProvider.get(), singletonCImpl.userUnitDao(), singletonCImpl.provideFirebaseFunctionsServiceProvider.get());
+          return (T) RepositoryModule_ProvideSyncRepositoryFactory.provideSyncRepository(singletonCImpl.provideLocalDataSourceProvider.get(), singletonCImpl.provideRemoteDataSourceProvider.get(), singletonCImpl.userUnitDao(), singletonCImpl.provideFirebaseFunctionsServiceProvider.get(), singletonCImpl.provideFirebaseFirestoreProvider.get());
 
           case 2: // com.balancetech.sitemanagement.data.datasource.LocalDataSource 
           return (T) DataSourceModule_ProvideLocalDataSourceFactory.provideLocalDataSource(singletonCImpl.localDataSourceImpl());
@@ -964,7 +975,7 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
           return (T) RepositoryModule_ProvideExtraPaymentRepositoryFactory.provideExtraPaymentRepository(singletonCImpl.extraPaymentDao(), singletonCImpl.provideRemoteDataSourceProvider.get());
 
           case 12: // com.balancetech.sitemanagement.data.repository.WaterMeterRepository 
-          return (T) RepositoryModule_ProvideWaterMeterRepositoryFactory.provideWaterMeterRepository(singletonCImpl.waterMeterDao(), singletonCImpl.waterBillDao(), singletonCImpl.provideFirebaseFunctionsServiceProvider.get(), singletonCImpl.provideRemoteDataSourceProvider.get());
+          return (T) RepositoryModule_ProvideWaterMeterRepositoryFactory.provideWaterMeterRepository(singletonCImpl.waterMeterDao(), singletonCImpl.waterBillDao(), singletonCImpl.provideFirebaseFunctionsServiceProvider.get(), singletonCImpl.provideRemoteDataSourceProvider.get(), singletonCImpl.provideLocalDataSourceProvider.get());
 
           case 13: // com.balancetech.sitemanagement.data.repository.NotificationRepository 
           return (T) RepositoryModule_ProvideNotificationRepositoryFactory.provideNotificationRepository(singletonCImpl.notificationDao());

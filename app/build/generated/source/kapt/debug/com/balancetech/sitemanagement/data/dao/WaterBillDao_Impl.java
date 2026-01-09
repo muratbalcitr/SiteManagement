@@ -47,7 +47,7 @@ public final class WaterBillDao_Impl implements WaterBillDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `water_bills` (`id`,`unitId`,`waterMeterId`,`month`,`year`,`previousReading`,`currentReading`,`consumption`,`unitPrice`,`amount`,`sharedAmount`,`totalAmount`,`paidAmount`,`status`,`dueDate`,`createdAt`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        return "INSERT OR REPLACE INTO `water_bills` (`id`,`unitId`,`waterMeterId`,`month`,`year`,`previousReading`,`currentReading`,`consumption`,`unitPrice`,`amount`,`wastewaterAmount`,`environmentalTax`,`vat`,`sharedAmount`,`totalAmount`,`paidAmount`,`status`,`dueDate`,`createdAt`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -75,12 +75,15 @@ public final class WaterBillDao_Impl implements WaterBillDao {
         statement.bindDouble(8, entity.getConsumption());
         statement.bindDouble(9, entity.getUnitPrice());
         statement.bindDouble(10, entity.getAmount());
-        statement.bindDouble(11, entity.getSharedAmount());
-        statement.bindDouble(12, entity.getTotalAmount());
-        statement.bindDouble(13, entity.getPaidAmount());
-        statement.bindString(14, __PaymentStatus_enumToString(entity.getStatus()));
-        statement.bindLong(15, entity.getDueDate());
-        statement.bindLong(16, entity.getCreatedAt());
+        statement.bindDouble(11, entity.getWastewaterAmount());
+        statement.bindDouble(12, entity.getEnvironmentalTax());
+        statement.bindDouble(13, entity.getVat());
+        statement.bindDouble(14, entity.getSharedAmount());
+        statement.bindDouble(15, entity.getTotalAmount());
+        statement.bindDouble(16, entity.getPaidAmount());
+        statement.bindString(17, __PaymentStatus_enumToString(entity.getStatus()));
+        statement.bindLong(18, entity.getDueDate());
+        statement.bindLong(19, entity.getCreatedAt());
       }
     };
     this.__deletionAdapterOfWaterBill = new EntityDeletionOrUpdateAdapter<WaterBill>(__db) {
@@ -104,7 +107,7 @@ public final class WaterBillDao_Impl implements WaterBillDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `water_bills` SET `id` = ?,`unitId` = ?,`waterMeterId` = ?,`month` = ?,`year` = ?,`previousReading` = ?,`currentReading` = ?,`consumption` = ?,`unitPrice` = ?,`amount` = ?,`sharedAmount` = ?,`totalAmount` = ?,`paidAmount` = ?,`status` = ?,`dueDate` = ?,`createdAt` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `water_bills` SET `id` = ?,`unitId` = ?,`waterMeterId` = ?,`month` = ?,`year` = ?,`previousReading` = ?,`currentReading` = ?,`consumption` = ?,`unitPrice` = ?,`amount` = ?,`wastewaterAmount` = ?,`environmentalTax` = ?,`vat` = ?,`sharedAmount` = ?,`totalAmount` = ?,`paidAmount` = ?,`status` = ?,`dueDate` = ?,`createdAt` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -132,23 +135,27 @@ public final class WaterBillDao_Impl implements WaterBillDao {
         statement.bindDouble(8, entity.getConsumption());
         statement.bindDouble(9, entity.getUnitPrice());
         statement.bindDouble(10, entity.getAmount());
-        statement.bindDouble(11, entity.getSharedAmount());
-        statement.bindDouble(12, entity.getTotalAmount());
-        statement.bindDouble(13, entity.getPaidAmount());
-        statement.bindString(14, __PaymentStatus_enumToString(entity.getStatus()));
-        statement.bindLong(15, entity.getDueDate());
-        statement.bindLong(16, entity.getCreatedAt());
+        statement.bindDouble(11, entity.getWastewaterAmount());
+        statement.bindDouble(12, entity.getEnvironmentalTax());
+        statement.bindDouble(13, entity.getVat());
+        statement.bindDouble(14, entity.getSharedAmount());
+        statement.bindDouble(15, entity.getTotalAmount());
+        statement.bindDouble(16, entity.getPaidAmount());
+        statement.bindString(17, __PaymentStatus_enumToString(entity.getStatus()));
+        statement.bindLong(18, entity.getDueDate());
+        statement.bindLong(19, entity.getCreatedAt());
         if (entity.getId() == null) {
-          statement.bindNull(17);
+          statement.bindNull(20);
         } else {
-          statement.bindString(17, entity.getId());
+          statement.bindString(20, entity.getId());
         }
       }
     };
   }
 
   @Override
-  public Object insertWaterBill(final WaterBill waterBill, final Continuation<? super Unit> arg1) {
+  public Object insertWaterBill(final WaterBill waterBill,
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -162,11 +169,12 @@ public final class WaterBillDao_Impl implements WaterBillDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object deleteWaterBill(final WaterBill waterBill, final Continuation<? super Unit> arg1) {
+  public Object deleteWaterBill(final WaterBill waterBill,
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -180,11 +188,12 @@ public final class WaterBillDao_Impl implements WaterBillDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object updateWaterBill(final WaterBill waterBill, final Continuation<? super Unit> arg1) {
+  public Object updateWaterBill(final WaterBill waterBill,
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -198,11 +207,12 @@ public final class WaterBillDao_Impl implements WaterBillDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object getWaterBillById(final String id, final Continuation<? super WaterBill> arg1) {
+  public Object getWaterBillById(final String id,
+      final Continuation<? super WaterBill> $completion) {
     final String _sql = "SELECT * FROM water_bills WHERE id = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -228,6 +238,9 @@ public final class WaterBillDao_Impl implements WaterBillDao {
           final int _cursorIndexOfConsumption = CursorUtil.getColumnIndexOrThrow(_cursor, "consumption");
           final int _cursorIndexOfUnitPrice = CursorUtil.getColumnIndexOrThrow(_cursor, "unitPrice");
           final int _cursorIndexOfAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "amount");
+          final int _cursorIndexOfWastewaterAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "wastewaterAmount");
+          final int _cursorIndexOfEnvironmentalTax = CursorUtil.getColumnIndexOrThrow(_cursor, "environmentalTax");
+          final int _cursorIndexOfVat = CursorUtil.getColumnIndexOrThrow(_cursor, "vat");
           final int _cursorIndexOfSharedAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "sharedAmount");
           final int _cursorIndexOfTotalAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "totalAmount");
           final int _cursorIndexOfPaidAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "paidAmount");
@@ -268,6 +281,12 @@ public final class WaterBillDao_Impl implements WaterBillDao {
             _tmpUnitPrice = _cursor.getDouble(_cursorIndexOfUnitPrice);
             final double _tmpAmount;
             _tmpAmount = _cursor.getDouble(_cursorIndexOfAmount);
+            final double _tmpWastewaterAmount;
+            _tmpWastewaterAmount = _cursor.getDouble(_cursorIndexOfWastewaterAmount);
+            final double _tmpEnvironmentalTax;
+            _tmpEnvironmentalTax = _cursor.getDouble(_cursorIndexOfEnvironmentalTax);
+            final double _tmpVat;
+            _tmpVat = _cursor.getDouble(_cursorIndexOfVat);
             final double _tmpSharedAmount;
             _tmpSharedAmount = _cursor.getDouble(_cursorIndexOfSharedAmount);
             final double _tmpTotalAmount;
@@ -280,7 +299,7 @@ public final class WaterBillDao_Impl implements WaterBillDao {
             _tmpDueDate = _cursor.getLong(_cursorIndexOfDueDate);
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
-            _result = new WaterBill(_tmpId,_tmpUnitId,_tmpWaterMeterId,_tmpMonth,_tmpYear,_tmpPreviousReading,_tmpCurrentReading,_tmpConsumption,_tmpUnitPrice,_tmpAmount,_tmpSharedAmount,_tmpTotalAmount,_tmpPaidAmount,_tmpStatus,_tmpDueDate,_tmpCreatedAt);
+            _result = new WaterBill(_tmpId,_tmpUnitId,_tmpWaterMeterId,_tmpMonth,_tmpYear,_tmpPreviousReading,_tmpCurrentReading,_tmpConsumption,_tmpUnitPrice,_tmpAmount,_tmpWastewaterAmount,_tmpEnvironmentalTax,_tmpVat,_tmpSharedAmount,_tmpTotalAmount,_tmpPaidAmount,_tmpStatus,_tmpDueDate,_tmpCreatedAt);
           } else {
             _result = null;
           }
@@ -290,7 +309,7 @@ public final class WaterBillDao_Impl implements WaterBillDao {
           _statement.release();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
@@ -319,6 +338,9 @@ public final class WaterBillDao_Impl implements WaterBillDao {
           final int _cursorIndexOfConsumption = CursorUtil.getColumnIndexOrThrow(_cursor, "consumption");
           final int _cursorIndexOfUnitPrice = CursorUtil.getColumnIndexOrThrow(_cursor, "unitPrice");
           final int _cursorIndexOfAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "amount");
+          final int _cursorIndexOfWastewaterAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "wastewaterAmount");
+          final int _cursorIndexOfEnvironmentalTax = CursorUtil.getColumnIndexOrThrow(_cursor, "environmentalTax");
+          final int _cursorIndexOfVat = CursorUtil.getColumnIndexOrThrow(_cursor, "vat");
           final int _cursorIndexOfSharedAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "sharedAmount");
           final int _cursorIndexOfTotalAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "totalAmount");
           final int _cursorIndexOfPaidAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "paidAmount");
@@ -360,6 +382,12 @@ public final class WaterBillDao_Impl implements WaterBillDao {
             _tmpUnitPrice = _cursor.getDouble(_cursorIndexOfUnitPrice);
             final double _tmpAmount;
             _tmpAmount = _cursor.getDouble(_cursorIndexOfAmount);
+            final double _tmpWastewaterAmount;
+            _tmpWastewaterAmount = _cursor.getDouble(_cursorIndexOfWastewaterAmount);
+            final double _tmpEnvironmentalTax;
+            _tmpEnvironmentalTax = _cursor.getDouble(_cursorIndexOfEnvironmentalTax);
+            final double _tmpVat;
+            _tmpVat = _cursor.getDouble(_cursorIndexOfVat);
             final double _tmpSharedAmount;
             _tmpSharedAmount = _cursor.getDouble(_cursorIndexOfSharedAmount);
             final double _tmpTotalAmount;
@@ -372,7 +400,7 @@ public final class WaterBillDao_Impl implements WaterBillDao {
             _tmpDueDate = _cursor.getLong(_cursorIndexOfDueDate);
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
-            _item = new WaterBill(_tmpId,_tmpUnitId,_tmpWaterMeterId,_tmpMonth,_tmpYear,_tmpPreviousReading,_tmpCurrentReading,_tmpConsumption,_tmpUnitPrice,_tmpAmount,_tmpSharedAmount,_tmpTotalAmount,_tmpPaidAmount,_tmpStatus,_tmpDueDate,_tmpCreatedAt);
+            _item = new WaterBill(_tmpId,_tmpUnitId,_tmpWaterMeterId,_tmpMonth,_tmpYear,_tmpPreviousReading,_tmpCurrentReading,_tmpConsumption,_tmpUnitPrice,_tmpAmount,_tmpWastewaterAmount,_tmpEnvironmentalTax,_tmpVat,_tmpSharedAmount,_tmpTotalAmount,_tmpPaidAmount,_tmpStatus,_tmpDueDate,_tmpCreatedAt);
             _result.add(_item);
           }
           return _result;
@@ -412,6 +440,9 @@ public final class WaterBillDao_Impl implements WaterBillDao {
           final int _cursorIndexOfConsumption = CursorUtil.getColumnIndexOrThrow(_cursor, "consumption");
           final int _cursorIndexOfUnitPrice = CursorUtil.getColumnIndexOrThrow(_cursor, "unitPrice");
           final int _cursorIndexOfAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "amount");
+          final int _cursorIndexOfWastewaterAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "wastewaterAmount");
+          final int _cursorIndexOfEnvironmentalTax = CursorUtil.getColumnIndexOrThrow(_cursor, "environmentalTax");
+          final int _cursorIndexOfVat = CursorUtil.getColumnIndexOrThrow(_cursor, "vat");
           final int _cursorIndexOfSharedAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "sharedAmount");
           final int _cursorIndexOfTotalAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "totalAmount");
           final int _cursorIndexOfPaidAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "paidAmount");
@@ -453,6 +484,12 @@ public final class WaterBillDao_Impl implements WaterBillDao {
             _tmpUnitPrice = _cursor.getDouble(_cursorIndexOfUnitPrice);
             final double _tmpAmount;
             _tmpAmount = _cursor.getDouble(_cursorIndexOfAmount);
+            final double _tmpWastewaterAmount;
+            _tmpWastewaterAmount = _cursor.getDouble(_cursorIndexOfWastewaterAmount);
+            final double _tmpEnvironmentalTax;
+            _tmpEnvironmentalTax = _cursor.getDouble(_cursorIndexOfEnvironmentalTax);
+            final double _tmpVat;
+            _tmpVat = _cursor.getDouble(_cursorIndexOfVat);
             final double _tmpSharedAmount;
             _tmpSharedAmount = _cursor.getDouble(_cursorIndexOfSharedAmount);
             final double _tmpTotalAmount;
@@ -465,7 +502,7 @@ public final class WaterBillDao_Impl implements WaterBillDao {
             _tmpDueDate = _cursor.getLong(_cursorIndexOfDueDate);
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
-            _item = new WaterBill(_tmpId,_tmpUnitId,_tmpWaterMeterId,_tmpMonth,_tmpYear,_tmpPreviousReading,_tmpCurrentReading,_tmpConsumption,_tmpUnitPrice,_tmpAmount,_tmpSharedAmount,_tmpTotalAmount,_tmpPaidAmount,_tmpStatus,_tmpDueDate,_tmpCreatedAt);
+            _item = new WaterBill(_tmpId,_tmpUnitId,_tmpWaterMeterId,_tmpMonth,_tmpYear,_tmpPreviousReading,_tmpCurrentReading,_tmpConsumption,_tmpUnitPrice,_tmpAmount,_tmpWastewaterAmount,_tmpEnvironmentalTax,_tmpVat,_tmpSharedAmount,_tmpTotalAmount,_tmpPaidAmount,_tmpStatus,_tmpDueDate,_tmpCreatedAt);
             _result.add(_item);
           }
           return _result;
@@ -501,6 +538,9 @@ public final class WaterBillDao_Impl implements WaterBillDao {
           final int _cursorIndexOfConsumption = CursorUtil.getColumnIndexOrThrow(_cursor, "consumption");
           final int _cursorIndexOfUnitPrice = CursorUtil.getColumnIndexOrThrow(_cursor, "unitPrice");
           final int _cursorIndexOfAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "amount");
+          final int _cursorIndexOfWastewaterAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "wastewaterAmount");
+          final int _cursorIndexOfEnvironmentalTax = CursorUtil.getColumnIndexOrThrow(_cursor, "environmentalTax");
+          final int _cursorIndexOfVat = CursorUtil.getColumnIndexOrThrow(_cursor, "vat");
           final int _cursorIndexOfSharedAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "sharedAmount");
           final int _cursorIndexOfTotalAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "totalAmount");
           final int _cursorIndexOfPaidAmount = CursorUtil.getColumnIndexOrThrow(_cursor, "paidAmount");
@@ -542,6 +582,12 @@ public final class WaterBillDao_Impl implements WaterBillDao {
             _tmpUnitPrice = _cursor.getDouble(_cursorIndexOfUnitPrice);
             final double _tmpAmount;
             _tmpAmount = _cursor.getDouble(_cursorIndexOfAmount);
+            final double _tmpWastewaterAmount;
+            _tmpWastewaterAmount = _cursor.getDouble(_cursorIndexOfWastewaterAmount);
+            final double _tmpEnvironmentalTax;
+            _tmpEnvironmentalTax = _cursor.getDouble(_cursorIndexOfEnvironmentalTax);
+            final double _tmpVat;
+            _tmpVat = _cursor.getDouble(_cursorIndexOfVat);
             final double _tmpSharedAmount;
             _tmpSharedAmount = _cursor.getDouble(_cursorIndexOfSharedAmount);
             final double _tmpTotalAmount;
@@ -554,7 +600,7 @@ public final class WaterBillDao_Impl implements WaterBillDao {
             _tmpDueDate = _cursor.getLong(_cursorIndexOfDueDate);
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
-            _item = new WaterBill(_tmpId,_tmpUnitId,_tmpWaterMeterId,_tmpMonth,_tmpYear,_tmpPreviousReading,_tmpCurrentReading,_tmpConsumption,_tmpUnitPrice,_tmpAmount,_tmpSharedAmount,_tmpTotalAmount,_tmpPaidAmount,_tmpStatus,_tmpDueDate,_tmpCreatedAt);
+            _item = new WaterBill(_tmpId,_tmpUnitId,_tmpWaterMeterId,_tmpMonth,_tmpYear,_tmpPreviousReading,_tmpCurrentReading,_tmpConsumption,_tmpUnitPrice,_tmpAmount,_tmpWastewaterAmount,_tmpEnvironmentalTax,_tmpVat,_tmpSharedAmount,_tmpTotalAmount,_tmpPaidAmount,_tmpStatus,_tmpDueDate,_tmpCreatedAt);
             _result.add(_item);
           }
           return _result;

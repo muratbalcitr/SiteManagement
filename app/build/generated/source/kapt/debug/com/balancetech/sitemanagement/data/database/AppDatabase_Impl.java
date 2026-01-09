@@ -74,7 +74,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(2) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(3) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `users` (`id` TEXT NOT NULL, `email` TEXT NOT NULL, `password` TEXT NOT NULL, `name` TEXT NOT NULL, `phone` TEXT, `role` TEXT NOT NULL, `apartmentId` TEXT, `unitId` TEXT, `createdAt` INTEGER NOT NULL, `isActive` INTEGER NOT NULL, PRIMARY KEY(`id`))");
@@ -88,11 +88,11 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("CREATE TABLE IF NOT EXISTS `fees` (`id` TEXT NOT NULL, `apartmentId` TEXT NOT NULL, `unitId` TEXT NOT NULL, `month` INTEGER NOT NULL, `year` INTEGER NOT NULL, `amount` REAL NOT NULL, `paidAmount` REAL NOT NULL, `status` TEXT NOT NULL, `dueDate` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `extra_payments` (`id` TEXT NOT NULL, `apartmentId` TEXT NOT NULL, `unitId` TEXT, `title` TEXT NOT NULL, `description` TEXT, `amount` REAL NOT NULL, `type` TEXT NOT NULL, `installmentCount` INTEGER NOT NULL, `currentInstallment` INTEGER NOT NULL, `paidAmount` REAL NOT NULL, `status` TEXT NOT NULL, `dueDate` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `water_meters` (`id` TEXT NOT NULL, `unitId` TEXT NOT NULL, `meterNumber` TEXT NOT NULL, `previousReading` REAL NOT NULL, `currentReading` REAL NOT NULL, `unitPrice` REAL NOT NULL, `lastReadingDate` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
-        db.execSQL("CREATE TABLE IF NOT EXISTS `water_bills` (`id` TEXT NOT NULL, `unitId` TEXT NOT NULL, `waterMeterId` TEXT NOT NULL, `month` INTEGER NOT NULL, `year` INTEGER NOT NULL, `previousReading` REAL NOT NULL, `currentReading` REAL NOT NULL, `consumption` REAL NOT NULL, `unitPrice` REAL NOT NULL, `amount` REAL NOT NULL, `sharedAmount` REAL NOT NULL, `totalAmount` REAL NOT NULL, `paidAmount` REAL NOT NULL, `status` TEXT NOT NULL, `dueDate` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `water_bills` (`id` TEXT NOT NULL, `unitId` TEXT NOT NULL, `waterMeterId` TEXT NOT NULL, `month` INTEGER NOT NULL, `year` INTEGER NOT NULL, `previousReading` REAL NOT NULL, `currentReading` REAL NOT NULL, `consumption` REAL NOT NULL, `unitPrice` REAL NOT NULL, `amount` REAL NOT NULL, `wastewaterAmount` REAL NOT NULL, `environmentalTax` REAL NOT NULL, `vat` REAL NOT NULL, `sharedAmount` REAL NOT NULL, `totalAmount` REAL NOT NULL, `paidAmount` REAL NOT NULL, `status` TEXT NOT NULL, `dueDate` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `payments` (`id` TEXT NOT NULL, `unitId` TEXT NOT NULL, `feeId` TEXT, `extraPaymentId` TEXT, `waterBillId` TEXT, `amount` REAL NOT NULL, `paymentDate` INTEGER NOT NULL, `paymentMethod` TEXT NOT NULL, `description` TEXT, `createdBy` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `notifications` (`id` TEXT NOT NULL, `userId` TEXT NOT NULL, `title` TEXT NOT NULL, `message` TEXT NOT NULL, `type` TEXT NOT NULL, `isRead` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd11e0908bc09a9495b82620f66aabb02')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fcdeb215fc6a63be2fe27e83aa85f2e8')");
       }
 
       @Override
@@ -308,7 +308,7 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoWaterMeters + "\n"
                   + " Found:\n" + _existingWaterMeters);
         }
-        final HashMap<String, TableInfo.Column> _columnsWaterBills = new HashMap<String, TableInfo.Column>(16);
+        final HashMap<String, TableInfo.Column> _columnsWaterBills = new HashMap<String, TableInfo.Column>(19);
         _columnsWaterBills.put("id", new TableInfo.Column("id", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsWaterBills.put("unitId", new TableInfo.Column("unitId", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsWaterBills.put("waterMeterId", new TableInfo.Column("waterMeterId", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -319,6 +319,9 @@ public final class AppDatabase_Impl extends AppDatabase {
         _columnsWaterBills.put("consumption", new TableInfo.Column("consumption", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsWaterBills.put("unitPrice", new TableInfo.Column("unitPrice", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsWaterBills.put("amount", new TableInfo.Column("amount", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsWaterBills.put("wastewaterAmount", new TableInfo.Column("wastewaterAmount", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsWaterBills.put("environmentalTax", new TableInfo.Column("environmentalTax", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsWaterBills.put("vat", new TableInfo.Column("vat", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsWaterBills.put("sharedAmount", new TableInfo.Column("sharedAmount", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsWaterBills.put("totalAmount", new TableInfo.Column("totalAmount", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsWaterBills.put("paidAmount", new TableInfo.Column("paidAmount", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -374,7 +377,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "d11e0908bc09a9495b82620f66aabb02", "bd4dad904fba1b7e4e0e4eb29c6386c0");
+    }, "fcdeb215fc6a63be2fe27e83aa85f2e8", "ce495d3fb8eee855e7d32dfdc7ca5702");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;

@@ -2,11 +2,13 @@ package com.balancetech.sitemanagement.data.repository
 
 import com.balancetech.sitemanagement.data.dao.WaterMeterDao
 import com.balancetech.sitemanagement.data.dao.WaterBillDao
+import com.balancetech.sitemanagement.data.datasource.LocalDataSource
 import com.balancetech.sitemanagement.data.datasource.RemoteDataSource
 import com.balancetech.sitemanagement.data.entity.WaterMeter
 import com.balancetech.sitemanagement.data.entity.WaterBill
 import com.balancetech.sitemanagement.data.model.PaymentStatus
 import com.balancetech.sitemanagement.data.service.FirebaseFunctionsService
+import com.balancetech.sitemanagement.util.MeskiBillCalculator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,7 +21,8 @@ class WaterMeterRepository @Inject constructor(
     private val waterMeterDao: WaterMeterDao,
     private val waterBillDao: WaterBillDao,
     private val functionsService: FirebaseFunctionsService,
-    private val remoteDataSource: RemoteDataSource
+    private val remoteDataSource: RemoteDataSource,
+    private val localDataSource: LocalDataSource
 ) {
     fun getAllWaterMeters(): Flow<List<WaterMeter>> = waterMeterDao.getAllWaterMeters()
 
@@ -36,15 +39,23 @@ class WaterMeterRepository @Inject constructor(
         meterNumber: String,
         unitPrice: Double
     ): Result<WaterMeter> {
+        // Get unit to get unitNumber for document ID
+        val unit = localDataSource.getUnitById(unitId)
+            ?: return Result.failure(Exception("Unit not found"))
+        
+        // Use unitNumber as document ID (e.g., "A1", "B2")
+        val documentId = unit.unitNumber
+        
         val existing = waterMeterDao.getWaterMeterByUnit(unitId)
         val waterMeter = if (existing != null) {
             existing.copy(
+                id = documentId, // Update ID to unitNumber format
                 meterNumber = meterNumber,
                 unitPrice = unitPrice
             )
         } else {
             WaterMeter(
-                id = UUID.randomUUID().toString(),
+                id = documentId, // Use unitNumber as document ID
                 unitId = unitId,
                 meterNumber = meterNumber,
                 unitPrice = unitPrice
@@ -83,23 +94,53 @@ class WaterMeterRepository @Inject constructor(
         val month = calendar.get(Calendar.MONTH) + 1
         val year = calendar.get(Calendar.YEAR)
 
-        val amount = consumption * waterMeter.unitPrice
-        val totalAmount = amount // Can add shared amount later
+        // Get unit to get unitNumber for document ID
+        val unit = localDataSource.getUnitById(unitId)
+            ?: return Result.failure(Exception("Unit not found"))
+        
+        // Use unitNumber-month-year as document ID (e.g., "A1-1-2024", "B2-2-2024")
+        // This ensures each unit has one bill per month/year
+        val documentId = "${unit.unitNumber}-${month}-${year}"
 
-        val waterBill = WaterBill(
-            id = UUID.randomUUID().toString(),
-            unitId = unitId,
-            waterMeterId = waterMeter.id,
-            month = month,
-            year = year,
-            previousReading = previousReading,
-            currentReading = currentReading,
-            consumption = consumption,
-            unitPrice = waterMeter.unitPrice,
-            amount = amount,
-            totalAmount = totalAmount,
-            dueDate = System.currentTimeMillis() + (30 * 24 * 60 * 60 * 1000L) // 30 days from now
-        )
+        // MESKİ standartlarına göre fatura hesaplama
+        val billCalculation = MeskiBillCalculator.calculateWaterBill(consumption)
+        
+        // Check if bill already exists for this month/year
+        val existingBill = waterBillDao.getWaterBillById(documentId)
+        val waterBill = if (existingBill != null) {
+            // Update existing bill
+            existingBill.copy(
+                previousReading = previousReading,
+                currentReading = currentReading,
+                consumption = consumption,
+                amount = billCalculation.waterAmount,
+                wastewaterAmount = billCalculation.wastewaterAmount,
+                environmentalTax = billCalculation.environmentalTax,
+                vat = billCalculation.vat,
+                totalAmount = billCalculation.totalAmount,
+                dueDate = System.currentTimeMillis() + (30 * 24 * 60 * 60 * 1000L)
+            )
+        } else {
+            // Create new bill
+            WaterBill(
+                id = documentId, // Use unitNumber-month-year as document ID
+                unitId = unitId,
+                waterMeterId = waterMeter.id,
+                month = month,
+                year = year,
+                previousReading = previousReading,
+                currentReading = currentReading,
+                consumption = consumption,
+                unitPrice = waterMeter.unitPrice, // Deprecated, ama geriye dönük uyumluluk için tutuluyor
+                amount = billCalculation.waterAmount, // Su bedeli
+                wastewaterAmount = billCalculation.wastewaterAmount, // Atık su bedeli
+                environmentalTax = billCalculation.environmentalTax, // ÇTV
+                vat = billCalculation.vat, // KDV
+                sharedAmount = 0.0, // Ortak kullanım payı (ileride eklenebilir)
+                totalAmount = billCalculation.totalAmount, // Toplam tutar
+                dueDate = System.currentTimeMillis() + (30 * 24 * 60 * 60 * 1000L) // 30 days from now
+            )
+        }
 
         // Update water meter with new reading
         val updatedMeter = waterMeter.copy(
@@ -110,12 +151,16 @@ class WaterMeterRepository @Inject constructor(
         waterMeterDao.updateWaterMeter(updatedMeter)
 
         // Save to local first (offline-first)
-        waterBillDao.insertWaterBill(waterBill)
+        if (existingBill != null) {
+            waterBillDao.updateWaterBill(waterBill)
+        } else {
+            waterBillDao.insertWaterBill(waterBill)
+        }
         
-        // Then sync to Firebase via Functions
+        // Then sync to Firebase via Functions (pass documentId)
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                functionsService.recordWaterMeterReading(unitId, currentReading)
+                functionsService.recordWaterMeterReading(unitId, currentReading, documentId)
             } catch (e: Exception) {
                 // Error logged but not thrown - offline-first strategy
             }
@@ -150,6 +195,30 @@ class WaterMeterRepository @Inject constructor(
             }
             
             Result.success(updatedBill)
+        } else {
+            Result.failure(Exception("Water bill not found"))
+        }
+    }
+    
+    suspend fun deleteWaterBill(waterBillId: String): Result<Unit> {
+        val bill = waterBillDao.getWaterBillById(waterBillId)
+        return if (bill != null) {
+            try {
+                // Delete from Firebase first (to ensure consistency)
+                val deleteResult = remoteDataSource.deleteWaterBill(waterBillId)
+                if (deleteResult.isFailure) {
+                    android.util.Log.w("WaterMeterRepository", "Failed to delete water bill from Firebase: ${deleteResult.exceptionOrNull()?.message}")
+                    // Continue with local deletion even if Firebase fails (offline-first)
+                }
+                
+                // Delete from local database
+                waterBillDao.deleteWaterBill(bill)
+                
+                Result.success(Unit)
+            } catch (e: Exception) {
+                android.util.Log.e("WaterMeterRepository", "Error deleting water bill: ${e.message}", e)
+                Result.failure(e)
+            }
         } else {
             Result.failure(Exception("Water bill not found"))
         }

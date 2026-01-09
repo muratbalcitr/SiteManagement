@@ -213,6 +213,9 @@ class RemoteDataSourceImpl @Inject constructor(
                 consumption = (data["consumption"] as? Number)?.toDouble() ?: 0.0,
                 unitPrice = (data["unitPrice"] as? Number)?.toDouble() ?: 0.0,
                 amount = (data["amount"] as? Number)?.toDouble() ?: 0.0,
+                wastewaterAmount = (data["wastewaterAmount"] as? Number)?.toDouble() ?: 0.0,
+                environmentalTax = (data["environmentalTax"] as? Number)?.toDouble() ?: 0.0,
+                vat = (data["vat"] as? Number)?.toDouble() ?: 0.0,
                 sharedAmount = (data["sharedAmount"] as? Number)?.toDouble() ?: 0.0,
                 totalAmount = (data["totalAmount"] as? Number)?.toDouble() ?: 0.0,
                 paidAmount = (data["paidAmount"] as? Number)?.toDouble() ?: 0.0,
@@ -581,6 +584,15 @@ class RemoteDataSourceImpl @Inject constructor(
         return try {
             waterBillsCollection.document(waterBill.id).set(waterBill).await()
             Result.success(waterBill)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun deleteWaterBill(waterBillId: String): Result<Unit> {
+        return try {
+            waterBillsCollection.document(waterBillId).delete().await()
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }

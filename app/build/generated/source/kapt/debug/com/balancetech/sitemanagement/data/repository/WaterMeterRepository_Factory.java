@@ -2,6 +2,7 @@ package com.balancetech.sitemanagement.data.repository;
 
 import com.balancetech.sitemanagement.data.dao.WaterBillDao;
 import com.balancetech.sitemanagement.data.dao.WaterMeterDao;
+import com.balancetech.sitemanagement.data.datasource.LocalDataSource;
 import com.balancetech.sitemanagement.data.datasource.RemoteDataSource;
 import com.balancetech.sitemanagement.data.service.FirebaseFunctionsService;
 import dagger.internal.DaggerGenerated;
@@ -33,31 +34,36 @@ public final class WaterMeterRepository_Factory implements Factory<WaterMeterRep
 
   private final Provider<RemoteDataSource> remoteDataSourceProvider;
 
+  private final Provider<LocalDataSource> localDataSourceProvider;
+
   public WaterMeterRepository_Factory(Provider<WaterMeterDao> waterMeterDaoProvider,
       Provider<WaterBillDao> waterBillDaoProvider,
       Provider<FirebaseFunctionsService> functionsServiceProvider,
-      Provider<RemoteDataSource> remoteDataSourceProvider) {
+      Provider<RemoteDataSource> remoteDataSourceProvider,
+      Provider<LocalDataSource> localDataSourceProvider) {
     this.waterMeterDaoProvider = waterMeterDaoProvider;
     this.waterBillDaoProvider = waterBillDaoProvider;
     this.functionsServiceProvider = functionsServiceProvider;
     this.remoteDataSourceProvider = remoteDataSourceProvider;
+    this.localDataSourceProvider = localDataSourceProvider;
   }
 
   @Override
   public WaterMeterRepository get() {
-    return newInstance(waterMeterDaoProvider.get(), waterBillDaoProvider.get(), functionsServiceProvider.get(), remoteDataSourceProvider.get());
+    return newInstance(waterMeterDaoProvider.get(), waterBillDaoProvider.get(), functionsServiceProvider.get(), remoteDataSourceProvider.get(), localDataSourceProvider.get());
   }
 
   public static WaterMeterRepository_Factory create(Provider<WaterMeterDao> waterMeterDaoProvider,
       Provider<WaterBillDao> waterBillDaoProvider,
       Provider<FirebaseFunctionsService> functionsServiceProvider,
-      Provider<RemoteDataSource> remoteDataSourceProvider) {
-    return new WaterMeterRepository_Factory(waterMeterDaoProvider, waterBillDaoProvider, functionsServiceProvider, remoteDataSourceProvider);
+      Provider<RemoteDataSource> remoteDataSourceProvider,
+      Provider<LocalDataSource> localDataSourceProvider) {
+    return new WaterMeterRepository_Factory(waterMeterDaoProvider, waterBillDaoProvider, functionsServiceProvider, remoteDataSourceProvider, localDataSourceProvider);
   }
 
   public static WaterMeterRepository newInstance(WaterMeterDao waterMeterDao,
       WaterBillDao waterBillDao, FirebaseFunctionsService functionsService,
-      RemoteDataSource remoteDataSource) {
-    return new WaterMeterRepository(waterMeterDao, waterBillDao, functionsService, remoteDataSource);
+      RemoteDataSource remoteDataSource, LocalDataSource localDataSource) {
+    return new WaterMeterRepository(waterMeterDao, waterBillDao, functionsService, remoteDataSource, localDataSource);
   }
 }

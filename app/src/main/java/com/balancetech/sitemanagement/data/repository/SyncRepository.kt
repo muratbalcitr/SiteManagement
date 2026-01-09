@@ -159,7 +159,8 @@ class SyncRepository @Inject constructor(
                 units.forEach { unit ->
                     val bills = localDataSource.getWaterBillsByUnit(unit.id).first()
                     bills.forEach { bill ->
-                        val result = remoteDataSource.createWaterBill(bill)
+                        // Use updateWaterBill which uses set() to create or update
+                        val result = remoteDataSource.updateWaterBill(bill)
                         if (result.isSuccess) {
                             totalBills++
                         }

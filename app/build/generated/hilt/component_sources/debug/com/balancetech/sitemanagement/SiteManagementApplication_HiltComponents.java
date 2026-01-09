@@ -8,6 +8,7 @@ import com.balancetech.sitemanagement.ui.auth.LoginFragment_GeneratedInjector;
 import com.balancetech.sitemanagement.ui.auth.RegisterFragment_GeneratedInjector;
 import com.balancetech.sitemanagement.ui.dashboard.DashboardFragment_GeneratedInjector;
 import com.balancetech.sitemanagement.ui.dialog.AddUserDialogFragment_GeneratedInjector;
+import com.balancetech.sitemanagement.ui.dialog.AddWaterMeterDialogFragment_GeneratedInjector;
 import com.balancetech.sitemanagement.ui.dialog.CreateExtraPaymentDialogFragment_GeneratedInjector;
 import com.balancetech.sitemanagement.ui.dialog.CreateFeeDialogFragment_GeneratedInjector;
 import com.balancetech.sitemanagement.ui.dialog.CreateFeesForAllUnitsDialogFragment_GeneratedInjector;
@@ -31,6 +32,7 @@ import com.balancetech.sitemanagement.ui.viewmodel.ReportsViewModel_HiltModules;
 import com.balancetech.sitemanagement.ui.viewmodel.UserDetailViewModel_HiltModules;
 import com.balancetech.sitemanagement.ui.viewmodel.UserViewModel_HiltModules;
 import com.balancetech.sitemanagement.ui.viewmodel.WaterMeterViewModel_HiltModules;
+import com.balancetech.sitemanagement.ui.watermeter.WaterMeterDetailFragment_GeneratedInjector;
 import com.balancetech.sitemanagement.ui.watermeter.WaterMeterFragment_GeneratedInjector;
 import dagger.Binds;
 import dagger.Component;
@@ -273,6 +275,7 @@ public final class SiteManagementApplication_HiltComponents {
       RegisterFragment_GeneratedInjector,
       DashboardFragment_GeneratedInjector,
       AddUserDialogFragment_GeneratedInjector,
+      AddWaterMeterDialogFragment_GeneratedInjector,
       CreateExtraPaymentDialogFragment_GeneratedInjector,
       CreateFeeDialogFragment_GeneratedInjector,
       CreateFeesForAllUnitsDialogFragment_GeneratedInjector,
@@ -286,6 +289,7 @@ public final class SiteManagementApplication_HiltComponents {
       ReportsFragment_GeneratedInjector,
       UserDetailFragment_GeneratedInjector,
       UsersFragment_GeneratedInjector,
+      WaterMeterDetailFragment_GeneratedInjector,
       WaterMeterFragment_GeneratedInjector,
       FragmentComponent,
       DefaultViewModelFactories.FragmentEntryPoint,

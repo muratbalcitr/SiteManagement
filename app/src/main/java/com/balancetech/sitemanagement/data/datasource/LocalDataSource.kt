@@ -51,6 +51,7 @@ interface LocalDataSource {
     suspend fun insertWaterBill(waterBill: WaterBill)
     suspend fun insertWaterBills(waterBills: List<WaterBill>)
     suspend fun updateWaterBill(waterBill: WaterBill)
+    suspend fun deleteWaterBill(waterBill: WaterBill)
     
     // Notification operations
     fun getNotificationsByUser(userId: String): Flow<List<Notification>>

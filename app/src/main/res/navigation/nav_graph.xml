@@ -63,7 +63,24 @@
         android:id="@+id/waterMeterFragment"
         android:name="com.balancetech.sitemanagement.ui.watermeter.WaterMeterFragment"
         android:label="Su Sayaç"
-        tools:layout="@layout/fragment_water_meter" />
+        tools:layout="@layout/fragment_water_meter">
+        <action
+            android:id="@+id/action_waterMeterFragment_to_waterMeterDetailFragment"
+            app:destination="@id/waterMeterDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/waterMeterDetailFragment"
+        android:name="com.balancetech.sitemanagement.ui.watermeter.WaterMeterDetailFragment"
+        android:label="Su Sayacı Detayı"
+        tools:layout="@layout/fragment_water_meter_detail">
+        <argument
+            android:name="water_meter_id"
+            app:argType="string" />
+        <argument
+            android:name="unit_id"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/paymentsFragment"

@@ -3167,6 +3167,7 @@ drawable notification_template_icon_bg
 drawable notification_template_icon_low_bg
 drawable notification_tile_bg
 drawable notify_panel_notification_icon_bg
+drawable outline_arrow_back_ios_24
 drawable outline_attach_money_24
 drawable outline_lock_24
 drawable test_level_drawable
@@ -3241,7 +3242,9 @@ id action_dashboardFragment_to_usersFragment
 id action_dashboardFragment_to_waterMeterFragment
 id action_divider
 id action_export_excel
+id action_export_water_meters
 id action_image
+id action_import_water_meters
 id action_loginFragment_to_dashboardFragment
 id action_loginFragment_to_registerFragment
 id action_menu_divider
@@ -3253,6 +3256,7 @@ id action_registerFragment_to_loginFragment
 id action_search
 id action_text
 id action_usersFragment_to_userDetailFragment
+id action_waterMeterFragment_to_waterMeterDetailFragment
 id actions
 id activity_chooser_view_content
 id add
@@ -3523,6 +3527,7 @@ id material_value_index
 id matrix
 id message
 id messageText
+id meterNumberEditText
 id meterNumberText
 id middle
 id mini
@@ -3661,6 +3666,7 @@ id roleBadge
 id rounded
 id row_index_key
 id rtl
+id saveButton
 id save_non_transition_alpha
 id save_overlay_view
 id sawtooth
@@ -3793,7 +3799,9 @@ id unitCheckbox
 id unitIdEditText
 id unitInfoText
 id unitNumberText
+id unitPriceEditText
 id unitPriceText
+id unitSpinner
 id unitsRecyclerView
 id unlabeled
 id unreadIndicator
@@ -3816,7 +3824,9 @@ id view_tree_view_model_store_owner
 id visible
 id visible_removing_fragment_view_tag
 id waterBillRecyclerView
+id waterBillsRecyclerView
 id waterMeterCard
+id waterMeterDetailFragment
 id waterMeterFragment
 id waterMeterRecyclerView
 id west
@@ -3966,6 +3976,7 @@ layout design_navigation_menu_item
 layout design_text_input_end_icon
 layout design_text_input_start_icon
 layout dialog_add_user
+layout dialog_add_water_meter
 layout dialog_create_extra_payment
 layout dialog_create_fee
 layout dialog_create_fees_for_all_units
@@ -3982,6 +3993,7 @@ layout fragment_reports
 layout fragment_user_detail
 layout fragment_users
 layout fragment_water_meter
+layout fragment_water_meter_detail
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
 layout item_extra_payment
@@ -4056,6 +4068,7 @@ layout select_dialog_singlechoice_material
 layout support_simple_spinner_dropdown_item
 menu fees_toolbar_menu
 menu users_menu
+menu water_meter_toolbar_menu
 navigation nav_graph
 plurals mtrl_badge_content_description
 raw firebase_common_keep
@@ -4090,6 +4103,7 @@ string add
 string add_extra_payment_hint
 string add_resident_hint
 string add_water_meter_hint
+string add_water_meter_title
 string all
 string all_apartments
 string already_have_account
@@ -4140,6 +4154,7 @@ string common_google_play_services_wear_update_text
 string common_open_on_phone
 string common_signin_button_text
 string common_signin_button_text_long
+string consumption
 string consumption_format
 string consumption_label
 string copy_toast_msg
@@ -4151,6 +4166,7 @@ string create_fees_for_all_units_message
 string create_fees_for_all_units_title
 string create_for_all_units
 string currency_format
+string current_reading
 string current_reading_format
 string dashboard_title
 string default_web_client_id
@@ -4170,7 +4186,9 @@ string emoji_plus
 string emoji_profile
 string emoji_water
 string emoji_water_drop
+string enter_meter_number
 string enter_reading
+string enter_valid_unit_price
 string error_a11y_label
 string error_auth_generic
 string error_email_already_in_use
@@ -4186,6 +4204,7 @@ string error_weak_password
 string error_wrong_password
 string errors
 string export_to_excel
+string export_water_meters
 string exposed_dropdown_menu_content_description
 string extra_payment
 string extra_payment_status_paid
@@ -4214,9 +4233,11 @@ string google_crash_reporting_api_key
 string google_storage_bucket
 string hide_bottom_view_on_scroll_behavior
 string icon_content_description
+string import_water_meters
 string installment_format
 string invalid_unit_selection
 string item_view_role_description
+string last_reading_date
 string last_reading_format
 string login
 string m3_exceed_max_badge_text_suffix
@@ -4260,7 +4281,9 @@ string material_timepicker_minute
 string material_timepicker_pm
 string material_timepicker_select_time
 string material_timepicker_text_input_mode_description
+string meter_number
 string meter_number_format
+string meter_number_hint
 string month_april
 string month_august
 string month_december
@@ -4370,11 +4393,13 @@ string please_fill_all_fields
 string please_fill_all_required_fields
 string please_select_at_least_one_unit
 string please_select_block
+string previous_reading
 string previous_reading_format
 string previous_reading_label
 string profile
 string project_id
 string quick_access
+string record_reading
 string register
 string remaining
 string remaining_amount_format
@@ -4391,6 +4416,7 @@ string searchbar_scrolling_view_behavior
 string searchview_clear_text_content_description
 string searchview_navigation_content_description
 string select_due_date
+string select_unit
 string side_sheet_accessibility_pane_title
 string side_sheet_behavior
 string status_bar_notification_info_overflow
@@ -4408,7 +4434,9 @@ string unit_count_format
 string unit_format
 string unit_info_format
 string unit_number_format
+string unit_price
 string unit_price_format
+string unit_price_hint
 string unit_with_owner_format
 string units_format
 string units_imported_successfully
@@ -4427,7 +4455,10 @@ string water_bills_auto_created
 string water_bills_tab
 string water_bills_tab_title
 string water_meter
+string water_meter_added
 string water_meter_reading_entry
+string water_meter_saved
+string water_meter_tracking
 string water_meters_tab
 style AlertDialog_AppCompat
 style AlertDialog_AppCompat_Light

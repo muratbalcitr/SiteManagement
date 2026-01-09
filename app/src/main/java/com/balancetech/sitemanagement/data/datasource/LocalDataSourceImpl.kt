@@ -73,6 +73,7 @@ class LocalDataSourceImpl @Inject constructor(
         waterBills.forEach { waterBillDao.insertWaterBill(it) }
     }
     override suspend fun updateWaterBill(waterBill: WaterBill) = waterBillDao.updateWaterBill(waterBill)
+    override suspend fun deleteWaterBill(waterBill: WaterBill) = waterBillDao.deleteWaterBill(waterBill)
     
     // Notification operations
     override fun getNotificationsByUser(userId: String): Flow<List<Notification>> = notificationDao.getNotificationsByUser(userId)

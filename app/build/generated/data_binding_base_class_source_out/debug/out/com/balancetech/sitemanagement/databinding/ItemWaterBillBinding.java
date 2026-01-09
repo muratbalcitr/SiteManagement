@@ -27,6 +27,9 @@ public final class ItemWaterBillBinding implements ViewBinding {
   public final TextView consumptionText;
 
   @NonNull
+  public final MaterialButton deleteButton;
+
+  @NonNull
   public final TextView dueDateText;
 
   @NonNull
@@ -45,13 +48,14 @@ public final class ItemWaterBillBinding implements ViewBinding {
   public final TextView totalAmountText;
 
   private ItemWaterBillBinding(@NonNull MaterialCardView rootView, @NonNull TextView billMonthYear,
-      @NonNull TextView consumptionText, @NonNull TextView dueDateText,
-      @NonNull TextView paidAmountText, @NonNull MaterialButton paymentButton,
-      @NonNull TextView remainingAmountText, @NonNull TextView statusBadge,
-      @NonNull TextView totalAmountText) {
+      @NonNull TextView consumptionText, @NonNull MaterialButton deleteButton,
+      @NonNull TextView dueDateText, @NonNull TextView paidAmountText,
+      @NonNull MaterialButton paymentButton, @NonNull TextView remainingAmountText,
+      @NonNull TextView statusBadge, @NonNull TextView totalAmountText) {
     this.rootView = rootView;
     this.billMonthYear = billMonthYear;
     this.consumptionText = consumptionText;
+    this.deleteButton = deleteButton;
     this.dueDateText = dueDateText;
     this.paidAmountText = paidAmountText;
     this.paymentButton = paymentButton;
@@ -99,6 +103,12 @@ public final class ItemWaterBillBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.deleteButton;
+      MaterialButton deleteButton = ViewBindings.findChildViewById(rootView, id);
+      if (deleteButton == null) {
+        break missingId;
+      }
+
       id = R.id.dueDateText;
       TextView dueDateText = ViewBindings.findChildViewById(rootView, id);
       if (dueDateText == null) {
@@ -136,8 +146,8 @@ public final class ItemWaterBillBinding implements ViewBinding {
       }
 
       return new ItemWaterBillBinding((MaterialCardView) rootView, billMonthYear, consumptionText,
-          dueDateText, paidAmountText, paymentButton, remainingAmountText, statusBadge,
-          totalAmountText);
+          deleteButton, dueDateText, paidAmountText, paymentButton, remainingAmountText,
+          statusBadge, totalAmountText);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

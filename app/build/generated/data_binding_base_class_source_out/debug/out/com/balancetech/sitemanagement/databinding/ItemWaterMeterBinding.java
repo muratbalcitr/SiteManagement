@@ -39,13 +39,16 @@ public final class ItemWaterMeterBinding implements ViewBinding {
   public final MaterialButton recordReadingButton;
 
   @NonNull
+  public final TextView unitNumberText;
+
+  @NonNull
   public final TextView unitPriceText;
 
   private ItemWaterMeterBinding(@NonNull MaterialCardView rootView,
       @NonNull TextView consumptionText, @NonNull TextView currentReadingText,
       @NonNull TextView lastReadingDateText, @NonNull TextView meterNumberText,
       @NonNull TextView previousReadingText, @NonNull MaterialButton recordReadingButton,
-      @NonNull TextView unitPriceText) {
+      @NonNull TextView unitNumberText, @NonNull TextView unitPriceText) {
     this.rootView = rootView;
     this.consumptionText = consumptionText;
     this.currentReadingText = currentReadingText;
@@ -53,6 +56,7 @@ public final class ItemWaterMeterBinding implements ViewBinding {
     this.meterNumberText = meterNumberText;
     this.previousReadingText = previousReadingText;
     this.recordReadingButton = recordReadingButton;
+    this.unitNumberText = unitNumberText;
     this.unitPriceText = unitPriceText;
   }
 
@@ -119,6 +123,12 @@ public final class ItemWaterMeterBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.unitNumberText;
+      TextView unitNumberText = ViewBindings.findChildViewById(rootView, id);
+      if (unitNumberText == null) {
+        break missingId;
+      }
+
       id = R.id.unitPriceText;
       TextView unitPriceText = ViewBindings.findChildViewById(rootView, id);
       if (unitPriceText == null) {
@@ -127,7 +137,7 @@ public final class ItemWaterMeterBinding implements ViewBinding {
 
       return new ItemWaterMeterBinding((MaterialCardView) rootView, consumptionText,
           currentReadingText, lastReadingDateText, meterNumberText, previousReadingText,
-          recordReadingButton, unitPriceText);
+          recordReadingButton, unitNumberText, unitPriceText);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

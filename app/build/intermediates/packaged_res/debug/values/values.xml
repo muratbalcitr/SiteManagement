@@ -22,6 +22,7 @@
     <string name="add_extra_payment_hint">Yeni ek ödeme eklemek için + butonuna tıklayın</string>
     <string name="add_resident_hint">Yeni daire sakini eklemek için + butonuna tıklayın</string>
     <string name="add_water_meter_hint">Yeni su sayacı eklemek için + butonuna tıklayın</string>
+    <string name="add_water_meter_title">Yeni Su Sayacı Ekle</string>
     <string name="all">Tümü</string>
     <string name="all_apartments">Tüm Apartman</string>
     <string name="already_have_account">Zaten hesabınız var mı? Giriş Yap</string>
@@ -35,6 +36,7 @@
     <string name="cash">Nakit</string>
     <string name="chart_features_coming_soon">Grafik özellikleri yakında eklenecek</string>
     <string name="charts_and_detailed_reports">Grafikler ve Detaylı Raporlar</string>
+    <string name="consumption">Tüketim: %.2f m³</string>
     <string name="consumption_format">Tüketim: %1$.2f m³</string>
     <string name="consumption_label">Tüketim: %1$.2f m³</string>
     <string name="create">Oluştur</string>
@@ -45,6 +47,7 @@
     <string name="create_fees_for_all_units_title">Tüm Dairelere Aidat Oluştur</string>
     <string name="create_for_all_units">Tüm Dairelere Oluştur</string>
     <string name="currency_format">%.2f ₺</string>
+    <string name="current_reading">Güncel Okuma: %.2f m³</string>
     <string name="current_reading_format">Güncel Okuma: %1$.2f m³</string>
     <string name="dashboard_title">Ana Sayfa</string>
     <string name="default_web_client_id" translatable="false">320726427003-e0aqpr5d1lv7blec310q959f658egsne.apps.googleusercontent.com</string>
@@ -63,7 +66,9 @@
     <string name="emoji_profile">👤</string>
     <string name="emoji_water">🚰</string>
     <string name="emoji_water_drop">💧</string>
+    <string name="enter_meter_number">Sayaç numarasını girin</string>
     <string name="enter_reading">Okuma Girişi Yap</string>
+    <string name="enter_valid_unit_price">Geçerli bir birim fiyat girin</string>
     <string name="error_auth_generic">Kimlik doğrulama hatası: %1$s</string>
     <string name="error_email_already_in_use">Bu e-posta adresi zaten kullanılıyor</string>
     <string name="error_importing_units">Daireler içe aktarılırken hata: %1$s</string>
@@ -77,6 +82,7 @@
     <string name="error_wrong_password">Yanlış şifre</string>
     <string name="errors">Hatalar:\n</string>
     <string name="export_to_excel">📊 Excel\'e Aktar</string>
+    <string name="export_water_meters">Su Sayaçları Dışa Aktar</string>
     <string name="extra_payment">Ek Ödeme</string>
     <string name="extra_payment_status_paid">Ödendi</string>
     <string name="extra_payment_status_partially_paid">Kısmen Ödendi</string>
@@ -97,14 +103,18 @@
     <string name="google_app_id" translatable="false">1:320726427003:android:0ba29d25d00276bb3ac9de</string>
     <string name="google_crash_reporting_api_key" translatable="false">AIzaSyABnhswcE3Mw8mu6BgrhsDVdPK6-k2saas</string>
     <string name="google_storage_bucket" translatable="false">balancetech-app.firebasestorage.app</string>
+    <string name="import_water_meters">Su Sayaçları İçe Aktar</string>
     <string name="installment_format">Taksit: %1$d/%2$d</string>
     <string name="invalid_unit_selection">Geçersiz daire seçimi</string>
+    <string name="last_reading_date">Son Okuma: %1$s</string>
     <string name="last_reading_format">Son Okuma: %1$s</string>
     <string name="login">Giriş Yap</string>
     <string name="maintenance">Bakım</string>
     <string name="make_payment">Ödeme Yap</string>
     <string name="mark_all_as_read">Tümünü Okundu İşaretle</string>
+    <string name="meter_number">Sayaç No: %1$s</string>
     <string name="meter_number_format">Sayaç No: %1$s</string>
+    <string name="meter_number_hint">Sayaç Numarası</string>
     <string name="month_april">Nisan</string>
     <string name="month_august">Ağustos</string>
     <string name="month_december">Aralık</string>
@@ -145,11 +155,13 @@
     <string name="please_fill_all_required_fields">Lütfen tüm zorunlu alanları doldurun</string>
     <string name="please_select_at_least_one_unit">Lütfen en az bir daire seçin</string>
     <string name="please_select_block">Lütfen bir blok seçin</string>
+    <string name="previous_reading">Önceki Okuma: %.2f m³</string>
     <string name="previous_reading_format">Önceki Okuma: %1$.2f m³</string>
     <string name="previous_reading_label">Önceki Okuma: %1$.2f m³</string>
     <string name="profile">Profilim</string>
     <string name="project_id" translatable="false">balancetech-app</string>
     <string name="quick_access">Hızlı Erişim</string>
+    <string name="record_reading">Okuma Girişi Yap</string>
     <string name="register">Kayıt Ol</string>
     <string name="remaining">Kalan:</string>
     <string name="remaining_amount_format">Kalan: %1$s</string>
@@ -162,6 +174,7 @@
     <string name="rows_with_errors">%1$d satırda hata var</string>
     <string name="save">Kaydet</string>
     <string name="select_due_date">Son Ödeme Tarihi Seç</string>
+    <string name="select_unit">Daire seçin</string>
     <string name="summary_info">Özet Bilgiler</string>
     <string name="sync_completed">Senkronizasyon tamamlandı</string>
     <string name="sync_to_server">🔄 Sunucu ile Senkronize Et</string>
@@ -176,7 +189,9 @@
     <string name="unit_format">Daire %1$s</string>
     <string name="unit_info_format">Daire: %1$s</string>
     <string name="unit_number_format">Daire: %1$s</string>
+    <string name="unit_price">Birim Fiyat: %.2f ₺/m³</string>
     <string name="unit_price_format">Birim Fiyat: %1$.2f ₺/m³</string>
+    <string name="unit_price_hint">Birim Fiyat (₺/m³)</string>
     <string name="unit_with_owner_format">Daire %1$s - %2$s</string>
     <string name="units_format">Daireler: %1$s</string>
     <string name="units_imported_successfully">Daireler başarıyla içe aktarıldı</string>
@@ -195,7 +210,10 @@
     <string name="water_bills_tab">Su Faturaları</string>
     <string name="water_bills_tab_title">Su Faturaları</string>
     <string name="water_meter">Su Sayaç</string>
+    <string name="water_meter_added">Su sayacı eklendi</string>
     <string name="water_meter_reading_entry">Su Sayaç Okuma Girişi</string>
+    <string name="water_meter_saved">Su sayacı kaydedildi</string>
+    <string name="water_meter_tracking">Su Sayaç Takibi</string>
     <string name="water_meters_tab">Su Sayaçları</string>
     <style name="Base.Theme.KucukyaliSiteYonetimi" parent="Theme.Material3.DayNight">
         

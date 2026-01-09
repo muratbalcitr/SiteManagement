@@ -15,10 +15,13 @@ data class WaterBill(
     val previousReading: Double,
     val currentReading: Double,
     val consumption: Double, // Tüketim (m³)
-    val unitPrice: Double,
-    val amount: Double, // Toplam tutar
+    val unitPrice: Double, // Deprecated: MESKİ tarifesi kullanılıyor
+    val amount: Double, // Su bedeli (kademeli tarife)
+    val wastewaterAmount: Double = 0.0, // Atık su bedeli
+    val environmentalTax: Double = 0.0, // Çevre Temizlik Vergisi
+    val vat: Double = 0.0, // KDV
     val sharedAmount: Double = 0.0, // Ortak kullanım payı
-    val totalAmount: Double, // amount + sharedAmount
+    val totalAmount: Double, // Toplam tutar (amount + wastewaterAmount + environmentalTax + vat + sharedAmount)
     val paidAmount: Double = 0.0,
     val status: PaymentStatus = PaymentStatus.UNPAID,
     val dueDate: Long,

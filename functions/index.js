@@ -410,7 +410,7 @@ exports.recordWaterMeterReading = functions.https.onCall(
       }
 
       try {
-        const {unitId, currentReading} = data;
+        const {unitId, currentReading, waterBillId} = data;
 
         if (!unitId || currentReading === undefined) {
           throw new functions.https.HttpsError(
@@ -419,21 +419,27 @@ exports.recordWaterMeterReading = functions.https.onCall(
           );
         }
 
-        // Get water meter
-        const waterMeterSnapshot = await db
-            .collection("water_meters")
-            .where("unitId", "==", unitId)
-            .limit(1)
-            .get();
+        // Get unit to get unitNumber for document ID
+        const unitDoc = await db.collection("units").doc(unitId).get();
+        if (!unitDoc.exists) {
+          throw new functions.https.HttpsError(
+              "not-found",
+              "Unit not found",
+          );
+        }
+        const unit = unitDoc.data();
+        const unitNumber = unit?.unitNumber || unitId;
 
-        if (waterMeterSnapshot.empty) {
+        // Get water meter - use unitNumber as document ID
+        const waterMeterDoc = await db.collection("water_meters").doc(unitNumber).get();
+
+        if (!waterMeterDoc.exists) {
           throw new functions.https.HttpsError(
               "not-found",
               "Water meter not found",
           );
         }
 
-        const waterMeterDoc = waterMeterSnapshot.docs[0];
         const waterMeter = waterMeterDoc.data();
         const previousReading = waterMeter.currentReading || 0;
         const consumption = currentReading - previousReading;
@@ -449,23 +455,34 @@ exports.recordWaterMeterReading = functions.https.onCall(
         const month = now.getMonth() + 1;
         const year = now.getFullYear();
 
-        const amount = consumption * (waterMeter.unitPrice || 0);
-        const totalAmount = amount; // Can add shared amount later
+        // Use unitNumber-month-year as document ID (e.g., "A1-1-2024", "B2-2-2024")
+        const finalWaterBillId = waterBillId || `${unitNumber}-${month}-${year}`;
 
-        const waterBillId = db.collection("water_bills").doc().id;
+        // Calculate bill using MESKİ standards (simplified - should match Android calculation)
+        // Note: This is a simplified calculation. Full MESKİ calculation should be done on client side
+        const baseAmount = consumption * (waterMeter.unitPrice || 0);
+        const wastewaterAmount = baseAmount * 0.50; // 50% of water amount
+        const environmentalTax = consumption * 0.50; // 0.50 ₺/m³
+        const subtotal = baseAmount + wastewaterAmount + environmentalTax;
+        const vat = subtotal * 0.20; // 20% KDV
+        const totalAmount = subtotal + vat;
+
         const waterBill = {
-          id: waterBillId,
+          id: finalWaterBillId,
           unitId,
-          waterMeterId: waterMeter.id,
+          waterMeterId: waterMeter.id || unitNumber,
           month,
           year,
           previousReading,
           currentReading,
           consumption,
           unitPrice: waterMeter.unitPrice || 0,
-          amount,
+          amount: baseAmount,
+          wastewaterAmount: wastewaterAmount,
+          environmentalTax: environmentalTax,
+          vat: vat,
           sharedAmount: 0,
-          totalAmount,
+          totalAmount: totalAmount,
           paidAmount: 0,
           status: "UNPAID",
           dueDate: now.getTime() + 30 * 24 * 60 * 60 * 1000, // 30 days
@@ -479,13 +496,13 @@ exports.recordWaterMeterReading = functions.https.onCall(
           lastReadingDate: admin.firestore.FieldValue.serverTimestamp(),
         });
 
-        // Create water bill
-        await db.collection("water_bills").doc(waterBillId).set(waterBill);
+        // Create or update water bill using document ID
+        await db.collection("water_bills").doc(finalWaterBillId).set(waterBill);
 
         // Create notification
-        await createNotificationForWaterBill(waterBillId, unitId, totalAmount);
+        await createNotificationForWaterBill(finalWaterBillId, unitId, totalAmount);
 
-        return {success: true, waterBillId, waterBill};
+        return {success: true, waterBillId: finalWaterBillId, waterBill};
       } catch (error) {
         console.error("Error recording water meter reading:", error);
         throw new functions.https.HttpsError(

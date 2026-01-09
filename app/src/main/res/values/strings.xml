@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Küçükyalı Site Yönetimi</string>
-    
+
     <!-- Dashboard -->
     <string name="dashboard_title">Ana Sayfa</string>
     <string name="total_debt">Toplam Borç</string>
@@ -18,7 +18,7 @@
     <string name="extra_payment">Ek Ödeme</string>
     <string name="residents">Daire Sakinleri</string>
     <string name="currency_format">%.2f ₺</string>
-    
+
     <!-- Fees -->
     <string name="export_to_excel">📊 Excel\'e Aktar</string>
     <string name="no_fees_found">Aidat bulunamadı</string>
@@ -40,12 +40,12 @@
     <string name="unknown_unit">Daire: -</string>
     <string name="unknown_owner">-</string>
     <string name="unknown">Bilinmiyor</string>
-    
+
     <!-- Fee Month Summary -->
     <string name="unit_count_format">%1$d daire</string>
     <string name="total_amount">Toplam Tutar:</string>
     <string name="remaining">Kalan:</string>
-    
+
     <!-- Users -->
     <string name="no_residents_added">Henüz daire sakini eklenmemiş</string>
     <string name="add_resident_hint">Yeni daire sakini eklemek için + butonuna tıklayın</string>
@@ -65,7 +65,7 @@
     <string name="extra_payments_tab">Ek Ödemeler</string>
     <string name="water_bills_tab">Su Faturaları</string>
     <string name="payments_tab">Ödemeler</string>
-    
+
     <!-- User Dialog -->
     <string name="units_selection_hint">Daireler (Birden fazla seçebilirsiniz)</string>
     <string name="cancel">İptal</string>
@@ -76,14 +76,12 @@
     <string name="please_select_at_least_one_unit">Lütfen en az bir daire seçin</string>
     <string name="invalid_unit_selection">Geçersiz daire seçimi</string>
     <string name="please_enter_name">Lütfen adı girin</string>
-    
+
     <!-- Water Meter -->
     <string name="water_meters_tab">Su Sayaçları</string>
     <string name="water_bills_tab_title">Su Faturaları</string>
     <string name="no_water_meter_found">Henüz su sayacı bulunmuyor</string>
     <string name="add_water_meter_hint">Yeni su sayacı eklemek için + butonuna tıklayın</string>
-    <string name="no_water_bills_found">Henüz su faturası bulunmuyor</string>
-    <string name="water_bills_auto_created">Su sayacı okuması yapıldığında faturalar otomatik oluşturulur</string>
     <string name="meter_number_format">Sayaç No: %1$s</string>
     <string name="current_reading_format">Güncel Okuma: %1$.2f m³</string>
     <string name="previous_reading_format">Önceki Okuma: %1$.2f m³</string>
@@ -95,7 +93,7 @@
     <string name="water_bill_status_partially_paid">Kısmi Ödendi</string>
     <string name="water_bill_status_unpaid">Ödenmedi</string>
     <string name="consumption_label">Tüketim: %1$.2f m³</string>
-    
+
     <!-- Extra Payments -->
     <string name="no_extra_payments_found">Henüz ek ödeme bulunmuyor</string>
     <string name="add_extra_payment_hint">Yeni ek ödeme eklemek için + butonuna tıklayın</string>
@@ -112,7 +110,7 @@
     <string name="extra_payment_status_unpaid">Ödenmedi</string>
     <string name="unit_info_format">Daire: %1$s</string>
     <string name="all_apartments">Tüm Apartman</string>
-    
+
     <!-- Payments -->
     <string name="filter">Filtrele</string>
     <string name="all">Tümü</string>
@@ -125,20 +123,20 @@
     <string name="payment_type_fee">Aidat Ödemesi</string>
     <string name="cash">Nakit</string>
     <string name="description_label">Açıklama</string>
-    
+
     <!-- Reports -->
     <string name="summary_info">Özet Bilgiler</string>
     <string name="total_unpaid_fees">Toplam Ödenmemiş Aidatlar</string>
     <string name="total_unpaid_water_bills">Toplam Ödenmemiş Su Faturaları</string>
     <string name="charts_and_detailed_reports">Grafikler ve Detaylı Raporlar</string>
     <string name="chart_features_coming_soon">Grafik özellikleri yakında eklenecek</string>
-    
+
     <!-- Notifications -->
     <string name="mark_all_as_read">Tümünü Okundu İşaretle</string>
     <string name="no_notifications">Henüz bildirim yok</string>
     <string name="notification_title">Bildirim Başlığı</string>
     <string name="notification_message_placeholder">Bildirim mesajı burada görünecek</string>
-    
+
     <!-- Dialogs -->
     <string name="create_extra_payment">Yeni Ek Ödeme Oluştur</string>
     <string name="select_due_date">Son Ödeme Tarihi Seç</string>
@@ -163,21 +161,20 @@
     <string name="enter_meter_number">Sayaç numarasını girin</string>
     <string name="enter_valid_unit_price">Geçerli bir birim fiyat girin</string>
     <string name="water_meter_tracking">Su Sayaç Takibi</string>
-    <string name="water_bills_tab">Su Faturaları</string>
     <string name="no_water_bills_found">Henüz su faturası bulunmuyor</string>
     <string name="water_bills_auto_created">Su sayacı okuması yapıldığında faturalar otomatik oluşturulur</string>
     <string name="previous_reading_label">Önceki Okuma: %1$.2f m³</string>
     <string name="save">Kaydet</string>
     <string name="payment_entry">Ödeme Girişi</string>
     <string name="create_fee">Yeni Aidat Oluştur</string>
-    
+
     <!-- Auth -->
     <string name="login">Giriş Yap</string>
     <string name="register">Kayıt Ol</string>
     <string name="already_have_account">Zaten hesabınız var mı? Giriş Yap</string>
     <string name="no_account">Hesabınız yok mu? Kayıt Ol</string>
     <string name="please_fill_all_fields">Lütfen tüm alanları doldurun</string>
-    
+
     <!-- Error Messages -->
     <string name="error_invalid_email">Geçersiz e-posta adresi</string>
     <string name="error_wrong_password">Yanlış şifre</string>
@@ -190,7 +187,7 @@
     <string name="error_auth_generic">Kimlik doğrulama hatası: %1$s</string>
     <string name="error_sync">Hata: %1$s</string>
     <string name="sync_completed">Senkronizasyon tamamlandı</string>
-    
+
     <!-- Excel Import -->
     <string name="units_to_import">%1$d daire içe aktarılacak</string>
     <string name="rows_with_errors">%1$d satırda hata var</string>
@@ -198,7 +195,9 @@
     <string name="and_more_errors">… ve %1$d hata daha</string>
     <string name="error_importing_units">Daireler içe aktarılırken hata: %1$s</string>
     <string name="units_imported_successfully">Daireler başarıyla içe aktarıldı</string>
-    
+    <string name="import_water_meters">Su Sayaçları İçe Aktar</string>
+    <string name="export_water_meters">Su Sayaçları Dışa Aktar</string>
+
     <!-- Month Names -->
     <string-array name="month_names">
         <item>Ocak</item>
@@ -226,7 +225,7 @@
     <string name="month_october">Ekim</string>
     <string name="month_november">Kasım</string>
     <string name="month_december">Aralık</string>
-    
+
     <!-- Common -->
     <string name="arrow">→</string>
     <string name="emoji_profile">👤</string>

@@ -247,6 +247,52 @@ object ExcelExportUtil {
         return sdf.format(Date())
     }
     
+    /**
+     * Export water meters list to Excel (CSV format)
+     * Format: Daire Numarası, Daire İsmi, Sayaç Numarası, Birim Fiyat (₺/m³), Güncel Okuma, Önceki Okuma
+     */
+    suspend fun exportWaterMetersToExcel(
+        context: Context,
+        waterMeters: List<com.balancetech.sitemanagement.data.entity.WaterMeter>,
+        units: Map<String, UnitEntity> = emptyMap()
+    ): Result<Uri> = withContext(Dispatchers.IO) {
+        try {
+            val fileName = "Su_Sayaclari_${getCurrentTimestamp()}.csv"
+            val file = createFile(context, fileName)
+            
+            FileWriter(file).use { writer ->
+                // Write BOM for Excel UTF-8 support
+                writer.write("\uFEFF")
+                
+                // Write header
+                writer.appendLine("Daire Numarası,Daire İsmi,Sayaç Numarası,Birim Fiyat (₺/m³),Güncel Okuma,Önceki Okuma,Son Okuma Tarihi")
+                
+                // Write data
+                waterMeters.forEach { waterMeter ->
+                    val unit = units[waterMeter.unitId]
+                    val unitNumber = unit?.unitNumber ?: "N/A"
+                    val ownerName = unit?.ownerName ?: "N/A"
+                    val lastReadingDate = formatDate(waterMeter.lastReadingDate)
+                    
+                    writer.appendLine(
+                        "${escapeCsv(unitNumber)}," +
+                        "${escapeCsv(ownerName)}," +
+                        "${escapeCsv(waterMeter.meterNumber)}," +
+                        "${waterMeter.unitPrice}," +
+                        "${waterMeter.currentReading}," +
+                        "${waterMeter.previousReading}," +
+                        "${escapeCsv(lastReadingDate)}"
+                    )
+                }
+            }
+            
+            val uri = getFileUri(context, file)
+            Result.success(uri)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
     private fun FileWriter.appendLine(line: String) {
         append(line)
         append("\n")

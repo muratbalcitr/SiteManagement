@@ -22,7 +22,7 @@ import com.balancetech.sitemanagement.data.entity.Unit as UnitEntity
         Payment::class,
         Notification::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -49,7 +49,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "site_management_database"
                 )
-                .addMigrations(MIGRATION_1_2)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                 .build()
                 INSTANCE = instance
                 instance
@@ -82,6 +82,15 @@ abstract class AppDatabase : RoomDatabase() {
                     FROM users
                     WHERE unitId IS NOT NULL
                 """.trimIndent())
+            }
+        }
+        
+        val MIGRATION_2_3 = object : androidx.room.migration.Migration(2, 3) {
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                // Add new columns to water_bills table for MESKİ calculation
+                db.execSQL("ALTER TABLE water_bills ADD COLUMN wastewaterAmount REAL NOT NULL DEFAULT 0.0")
+                db.execSQL("ALTER TABLE water_bills ADD COLUMN environmentalTax REAL NOT NULL DEFAULT 0.0")
+                db.execSQL("ALTER TABLE water_bills ADD COLUMN vat REAL NOT NULL DEFAULT 0.0")
             }
         }
     }

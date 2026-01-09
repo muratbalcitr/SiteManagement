@@ -39,17 +39,17 @@ class WaterMeterAdapter(
 
         fun bind(waterMeter: WaterMeter) {
             binding.apply {
-                meterNumberText.text = "Sayaç No: ${waterMeter.meterNumber}"
-                currentReadingText.text = String.format("Güncel Okuma: %.2f m³", waterMeter.currentReading)
-                previousReadingText.text = String.format("Önceki Okuma: %.2f m³", waterMeter.previousReading)
+                meterNumberText.text = "Sayaç: ${waterMeter.meterNumber}"
+                currentReadingText.text = String.format("Güncel: %.2f m³", waterMeter.currentReading)
+                previousReadingText.text = String.format("Önceki: %.2f m³", waterMeter.previousReading)
                 
                 val consumption = waterMeter.currentReading - waterMeter.previousReading
                 consumptionText.text = String.format("Tüketim: %.2f m³", consumption)
                 
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                lastReadingDateText.text = "Son Okuma: ${dateFormat.format(Date(waterMeter.lastReadingDate))}"
+                lastReadingDateText.text = "Son: ${dateFormat.format(Date(waterMeter.lastReadingDate))}"
                 
-                unitPriceText.text = String.format("Birim Fiyat: %.2f ₺/m³", waterMeter.unitPrice)
+                unitPriceText.text = String.format("Fiyat: %.2f ₺/m³", waterMeter.unitPrice)
                 
                 // Load unit information
                 CoroutineScope(Dispatchers.Main).launch {
@@ -63,10 +63,16 @@ class WaterMeterAdapter(
                                 num
                             }
                         }
+                        // Format with owner name if available
+                        val unitDisplayText = if (unit.ownerName != null && unit.ownerName.isNotEmpty()) {
+                            "$unitNumber - ${unit.ownerName}"
+                        } else {
+                            unitNumber
+                        }
                         // Check if unitNumberText exists (it should be in the layout)
                         try {
                             val unitNumberTextView = binding.root.findViewById<android.widget.TextView>(com.balancetech.sitemanagement.R.id.unitNumberText)
-                            unitNumberTextView?.text = "Daire: $unitNumber"
+                            unitNumberTextView?.text = "Daire: $unitDisplayText"
                         } catch (e: Exception) {
                             // TextView might not exist in older layouts
                         }

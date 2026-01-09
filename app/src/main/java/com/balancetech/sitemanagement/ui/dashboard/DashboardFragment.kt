@@ -136,6 +136,7 @@ class DashboardFragment : Fragment() {
         // Sync button - Download data from Firebase and update screen
         binding.syncButton.setOnClickListener {
             viewModel.syncFromFirebase("apt-001")
+            viewModel.syncToFirebase()
         }
 
         // Load current user info for profile card

@@ -13,7 +13,8 @@ import java.util.*
 
 class WaterBillAdapter(
     private val onItemClick: (WaterBill) -> Unit,
-    private val onPaymentClick: (WaterBill) -> Unit
+    private val onPaymentClick: (WaterBill) -> Unit,
+    private val onDeleteClick: (WaterBill) -> Unit
 ) : ListAdapter<WaterBill, WaterBillAdapter.WaterBillViewHolder>(WaterBillDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WaterBillViewHolder {
@@ -87,6 +88,10 @@ class WaterBillAdapter(
                     if (!isFullyPaid) {
                         onPaymentClick(waterBill)
                     }
+                }
+                
+                deleteButton.setOnClickListener {
+                    onDeleteClick(waterBill)
                 }
             }
         }

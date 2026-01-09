@@ -1,4 +1,4 @@
-#Thu Jan 08 15:23:39 TRT 2026
+#Thu Jan 08 17:18:21 TRT 2026
 base.0=/Users/muratbalci/AndroidStudioProjects/kucukyali-site-yonetimi/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
 base.1=/Users/muratbalci/AndroidStudioProjects/kucukyali-site-yonetimi/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
 base.10=/Users/muratbalci/AndroidStudioProjects/kucukyali-site-yonetimi/app/build/intermediates/dex/debug/mergeProjectDexDebug/7/classes.dex

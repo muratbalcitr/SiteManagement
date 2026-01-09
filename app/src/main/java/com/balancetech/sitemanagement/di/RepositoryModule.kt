@@ -34,9 +34,10 @@ object RepositoryModule {
         waterMeterDao: WaterMeterDao,
         waterBillDao: WaterBillDao,
         functionsService: com.balancetech.sitemanagement.data.service.FirebaseFunctionsService,
-        remoteDataSource: RemoteDataSource
+        remoteDataSource: RemoteDataSource,
+        localDataSource: LocalDataSource
     ): WaterMeterRepository {
-        return WaterMeterRepository(waterMeterDao, waterBillDao, functionsService, remoteDataSource)
+        return WaterMeterRepository(waterMeterDao, waterBillDao, functionsService, remoteDataSource, localDataSource)
     }
 
     @Provides
@@ -70,9 +71,10 @@ object RepositoryModule {
         localDataSource: LocalDataSource,
         remoteDataSource: RemoteDataSource,
         userUnitDao: UserUnitDao,
-        functionsService: com.balancetech.sitemanagement.data.service.FirebaseFunctionsService
+        functionsService: com.balancetech.sitemanagement.data.service.FirebaseFunctionsService,
+        firestore: com.google.firebase.firestore.FirebaseFirestore
     ): SyncRepository {
-        return SyncRepository(localDataSource, remoteDataSource, userUnitDao, functionsService)
+        return SyncRepository(localDataSource, remoteDataSource, userUnitDao, functionsService, firestore)
     }
 
     @Provides

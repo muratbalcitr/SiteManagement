@@ -23,6 +23,7 @@ import com.balancetech.sitemanagement.ui.adapter.PaymentAdapter
 import com.balancetech.sitemanagement.ui.adapter.WaterBillAdapter
 import com.balancetech.sitemanagement.ui.dialog.PaymentEntryDialogFragment
 import com.balancetech.sitemanagement.ui.viewmodel.UserDetailViewModel
+import com.balancetech.sitemanagement.ui.viewmodel.WaterMeterViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,6 +35,7 @@ class UserDetailFragment : Fragment() {
     private var _binding: FragmentUserDetailBinding? = null
     private val binding get() = _binding!!
     private val viewModel: UserDetailViewModel by viewModels()
+    private val waterMeterViewModel: WaterMeterViewModel by viewModels()
 
     private lateinit var feeAdapter: FeeAdapter
     private lateinit var extraPaymentAdapter: ExtraPaymentAdapter
@@ -119,15 +121,21 @@ class UserDetailFragment : Fragment() {
             )
         })
 
-        waterBillAdapter = WaterBillAdapter(onItemClick = { bill ->
-            // Show water bill details
-        }, onPaymentClick = { bill ->
-            showPaymentDialog(
-                bill.id,
-                bill.totalAmount - bill.paidAmount,
-                PaymentEntryDialogFragment.PaymentType.WATER_BILL
-            )
-        })
+        waterBillAdapter = WaterBillAdapter(
+            onItemClick = { bill ->
+                // Show water bill details
+            },
+            onPaymentClick = { bill ->
+                showPaymentDialog(
+                    bill.id,
+                    bill.totalAmount - bill.paidAmount,
+                    PaymentEntryDialogFragment.PaymentType.WATER_BILL
+                )
+            },
+            onDeleteClick = { bill ->
+                deleteWaterBill(bill)
+            }
+        )
 
         paymentAdapter = PaymentAdapter(
             onItemClick = { payment ->
@@ -226,7 +234,10 @@ class UserDetailFragment : Fragment() {
             currentUnitIds.forEach { unitId ->
                 viewModel.getWaterBillsByUnit(unitId).first().let { allBills.addAll(it) }
             }
-            waterBillAdapter.submitList(allBills.sortedByDescending { it.year })
+            // Sort by unit number, then by year and month
+            val sortedBills = com.balancetech.sitemanagement.util.UnitNumberComparator
+                .sortWaterBillsByUnitNumber(allBills, viewModel.localDataSource)
+            waterBillAdapter.submitList(sortedBills)
             binding.emptyState.visibility = if (allBills.isEmpty()) View.VISIBLE else View.GONE
         }
     }
@@ -292,6 +303,37 @@ class UserDetailFragment : Fragment() {
                 }
             }?.show(parentFragmentManager, "PaymentEntryDialog")
         }
+    }
+    
+    private fun deleteWaterBill(waterBill: WaterBill) {
+        val monthNames = resources.getStringArray(R.array.month_names)
+        val monthName = monthNames.getOrNull(waterBill.month - 1) ?: waterBill.month.toString()
+        
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Faturayı Sil")
+            .setMessage("$monthName ${waterBill.year} faturasını silmek istediğinize emin misiniz?")
+            .setPositiveButton("Sil") { _, _ ->
+                lifecycleScope.launch {
+                    waterMeterViewModel.deleteWaterBill(waterBill.id)
+                    // Observe UI state once to refresh after deletion
+                    waterMeterViewModel.uiState.collect { state ->
+                        when (state) {
+                            is com.balancetech.sitemanagement.ui.viewmodel.WaterMeterUiState.Success -> {
+                                Snackbar.make(binding.root, state.message, Snackbar.LENGTH_SHORT).show()
+                                showWaterBills() // Refresh water bills tab
+                                return@collect // Stop collecting after first success
+                            }
+                            is com.balancetech.sitemanagement.ui.viewmodel.WaterMeterUiState.Error -> {
+                                Snackbar.make(binding.root, "Hata: ${state.message}", Snackbar.LENGTH_LONG).show()
+                                return@collect // Stop collecting after first error
+                            }
+                            else -> {}
+                        }
+                    }
+                }
+            }
+            .setNegativeButton("İptal", null)
+            .show()
     }
 
     override fun onDestroyView() {

@@ -1,5 +1,6 @@
 package com.balancetech.sitemanagement.ui.viewmodel;
 
+import com.balancetech.sitemanagement.data.datasource.LocalDataSource;
 import com.balancetech.sitemanagement.data.repository.WaterMeterRepository;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
@@ -24,21 +25,27 @@ import javax.inject.Provider;
 public final class WaterMeterViewModel_Factory implements Factory<WaterMeterViewModel> {
   private final Provider<WaterMeterRepository> waterMeterRepositoryProvider;
 
-  public WaterMeterViewModel_Factory(Provider<WaterMeterRepository> waterMeterRepositoryProvider) {
+  private final Provider<LocalDataSource> localDataSourceProvider;
+
+  public WaterMeterViewModel_Factory(Provider<WaterMeterRepository> waterMeterRepositoryProvider,
+      Provider<LocalDataSource> localDataSourceProvider) {
     this.waterMeterRepositoryProvider = waterMeterRepositoryProvider;
+    this.localDataSourceProvider = localDataSourceProvider;
   }
 
   @Override
   public WaterMeterViewModel get() {
-    return newInstance(waterMeterRepositoryProvider.get());
+    return newInstance(waterMeterRepositoryProvider.get(), localDataSourceProvider.get());
   }
 
   public static WaterMeterViewModel_Factory create(
-      Provider<WaterMeterRepository> waterMeterRepositoryProvider) {
-    return new WaterMeterViewModel_Factory(waterMeterRepositoryProvider);
+      Provider<WaterMeterRepository> waterMeterRepositoryProvider,
+      Provider<LocalDataSource> localDataSourceProvider) {
+    return new WaterMeterViewModel_Factory(waterMeterRepositoryProvider, localDataSourceProvider);
   }
 
-  public static WaterMeterViewModel newInstance(WaterMeterRepository waterMeterRepository) {
-    return new WaterMeterViewModel(waterMeterRepository);
+  public static WaterMeterViewModel newInstance(WaterMeterRepository waterMeterRepository,
+      LocalDataSource localDataSource) {
+    return new WaterMeterViewModel(waterMeterRepository, localDataSource);
   }
 }

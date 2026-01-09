@@ -209,5 +209,132 @@ object ExcelImportUtil {
         
         return values
     }
+    
+    /**
+     * Import water meters from CSV file
+     * Expected CSV format:
+     * Daire Numarası, Daire İsmi, Sayaç Numarası, Birim Fiyat (₺/m³)
+     * 
+     * Example:
+     * A1,Ahmet Yılmaz,12345,5.50
+     * A2,Mehmet Demir,12346,5.50
+     * B1,Ayşe Kaya,12347,5.50
+     * 
+     * Note: Daire İsmi sütunu bilgilendirme amaçlıdır, import işleminde kullanılmaz.
+     * Daire eşleştirmesi Daire Numarası ile yapılır.
+     */
+    suspend fun importWaterMetersFromCsv(
+        context: Context,
+        uri: Uri,
+        apartmentId: String,
+        getUnitIdByNumber: (String) -> String? // Function to get unitId from unitNumber
+    ): Result<Pair<List<com.balancetech.sitemanagement.data.entity.WaterMeter>, ImportResult>> = withContext(Dispatchers.IO) {
+        try {
+            val waterMeters = mutableListOf<com.balancetech.sitemanagement.data.entity.WaterMeter>()
+            val errors = mutableListOf<String>()
+            var lineNumber = 0
+            
+            val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+            if (inputStream == null) {
+                return@withContext Result.failure(Exception("Dosya açılamadı"))
+            }
+            
+            BufferedReader(InputStreamReader(inputStream, "UTF-8")).use { reader ->
+                // Skip BOM if present
+                reader.mark(1)
+                val firstChar = reader.read()
+                if (firstChar.toChar() != 0xFEFF.toChar()) {
+                    reader.reset()
+                }
+                
+                // Read header line (skip it)
+                val headerLine = reader.readLine()
+                if (headerLine == null) {
+                    return@withContext Result.failure(Exception("Dosya boş"))
+                }
+                
+                // Read data lines
+                var line: String?
+                while (reader.readLine().also { line = it } != null) {
+                    lineNumber++
+                    val trimmedLine = line!!.trim()
+                    if (trimmedLine.isEmpty()) continue
+                    
+                    try {
+                        val waterMeter = parseWaterMeterLine(trimmedLine, apartmentId, lineNumber, getUnitIdByNumber)
+                        if (waterMeter != null) {
+                            waterMeters.add(waterMeter)
+                        } else {
+                            errors.add("Satır $lineNumber: Geçersiz format veya daire bulunamadı")
+                        }
+                    } catch (e: Exception) {
+                        errors.add("Satır $lineNumber: ${e.message ?: "Bilinmeyen hata"}")
+                    }
+                }
+            }
+            
+            val result = ImportResult(
+                successCount = waterMeters.size,
+                errorCount = errors.size,
+                errors = errors
+            )
+            
+            Result.success(Pair(waterMeters, result))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    private fun parseWaterMeterLine(
+        line: String,
+        apartmentId: String,
+        lineNumber: Int,
+        getUnitIdByNumber: (String) -> String?
+    ): com.balancetech.sitemanagement.data.entity.WaterMeter? {
+        val values = parseCsvLine(line)
+        
+        if (values.size < 2) {
+            throw Exception("Eksik sütun sayısı (en az 2 sütun gerekli: Daire Numarası, Sayaç Numarası)")
+        }
+        
+        val unitNumber = values[0].trim()
+        // Daire İsmi (values[1]) - bilgilendirme amaçlı, kullanılmıyor
+        val meterNumber = if (values.size >= 3) {
+            values[2].trim() // Yeni format: Daire Numarası, Daire İsmi, Sayaç Numarası
+        } else {
+            values[1].trim() // Eski format: Daire Numarası, Sayaç Numarası
+        }
+        val unitPrice = if (values.size >= 4) {
+            values[3].trim().toDoubleOrNull() ?: 0.0 // Yeni format
+        } else if (values.size >= 3) {
+            values[2].trim().toDoubleOrNull() ?: 0.0 // Eski format
+        } else {
+            0.0
+        }
+        
+        if (meterNumber.isEmpty()) {
+            throw Exception("Sayaç numarası boş olamaz")
+        }
+        
+        // Get unitId from unitNumber
+        val unitId = getUnitIdByNumber(unitNumber)
+        if (unitId == null) {
+            throw Exception("Daire '$unitNumber' bulunamadı")
+        }
+        
+        // Generate water meter ID
+        val waterMeterId = "water-meter-${unitId}-${meterNumber}"
+        
+        return com.balancetech.sitemanagement.data.entity.WaterMeter(
+            id = waterMeterId,
+            unitId = unitId,
+            meterNumber = meterNumber,
+            unitPrice = unitPrice,
+            previousReading = 0.0,
+            currentReading = 0.0,
+            lastReadingDate = System.currentTimeMillis(),
+            createdAt = System.currentTimeMillis()
+        )
+    }
 }
 
