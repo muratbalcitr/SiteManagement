@@ -11,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,6 +45,29 @@ class PaymentViewModel @Inject constructor(
             if (currentUser == null) {
                 _uiState.value = PaymentUiState.Error("Kullanıcı bulunamadı")
                 return@launch
+            }
+            
+            // Check if payment exceeds fee amount for fees
+            if (feeId != null) {
+                val fee = feeRepository.getFeeById(feeId)
+                if (fee != null) {
+                    // Get existing payments for this fee to calculate actual paid amount
+                    val existingPayments = paymentRepository.getPaymentsByFee(feeId).first()
+                    val actualPaidAmount = existingPayments.sumOf { it.amount }
+                    val remainingAmount = fee.amount - actualPaidAmount
+                    
+                    if (amount > remainingAmount) {
+                        _uiState.value = PaymentUiState.Error("Ödeme tutarı kalan tutardan (${String.format("%.2f", remainingAmount)} ₺) fazla olamaz")
+                        return@launch
+                    }
+                    
+                    // Also check if total would exceed fee amount
+                    val totalAfterPayment = actualPaidAmount + amount
+                    if (totalAfterPayment > fee.amount) {
+                        _uiState.value = PaymentUiState.Error("Toplam ödeme tutarı aidat tutarını (${String.format("%.2f", fee.amount)} ₺) aşamaz")
+                        return@launch
+                    }
+                }
             }
             
             val result = paymentRepository.recordPayment(

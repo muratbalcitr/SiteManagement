@@ -8,7 +8,8 @@ import com.balancetech.sitemanagement.data.entity.Fee
 data class FeeMonthSummary(
     val month: Int,
     val year: Int,
-    val fees: List<Fee>
+    val fees: List<Fee>,
+    val filteredCount: Int = fees.size // Number of fees after filtering (for display count)
 ) {
     val totalAmount: Double
         get() = fees.sumOf { it.amount }

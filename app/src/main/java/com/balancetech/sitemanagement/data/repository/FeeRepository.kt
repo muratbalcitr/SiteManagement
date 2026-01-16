@@ -38,6 +38,8 @@ class FeeRepository(
 
     fun getAllFees(): Flow<List<Fee>> = feeDao.getAllFees()
 
+    suspend fun getFeeById(id: String): Fee? = feeDao.getFeeById(id)
+
     suspend fun createFee(
         apartmentId: String,
         unitId: String,

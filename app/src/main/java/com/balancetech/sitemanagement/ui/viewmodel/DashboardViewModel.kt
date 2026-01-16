@@ -36,7 +36,7 @@ class DashboardViewModel @Inject constructor(
 
     val currentUser = authRepository.currentUser
 
-    // Total Debt (Toplam Borç) - Ödenmemiş tutarlar
+    // Total Debt (Toplam Borç) - Tüm tutarlar (ödenen + ödenmemiş)
     // If unitId is provided, only calculate for that unit
     fun getTotalDebt(unitId: String? = null): Flow<Double> = combine(
         feeRepository.getAllFees(),
@@ -58,17 +58,14 @@ class DashboardViewModel @Inject constructor(
             waterBills
         }
 
-        // Unpaid fees (aidatlar)
-        filteredFees.filter { it.status != PaymentStatus.PAID }
-            .forEach { debt += (it.amount - it.paidAmount) }
+        // All fees (aidatlar) - include both paid and unpaid
+        filteredFees.forEach { debt += it.amount }
 
-        // Unpaid extra payments (ek ödemeler)
-        filteredExtraPayments.filter { it.status != PaymentStatus.PAID }
-            .forEach { debt += (it.amount - it.paidAmount) }
+        // All extra payments (ek ödemeler) - include both paid and unpaid
+        filteredExtraPayments.forEach { debt += it.amount }
 
-        // Unpaid water bills (su faturaları)
-        filteredWaterBills.filter { it.status != PaymentStatus.PAID }
-            .forEach { debt += (it.totalAmount - it.paidAmount) }
+        // All water bills (su faturaları) - include both paid and unpaid
+        filteredWaterBills.forEach { debt += it.totalAmount }
 
         debt
     }

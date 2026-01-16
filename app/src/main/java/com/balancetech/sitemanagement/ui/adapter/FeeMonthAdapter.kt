@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.balancetech.sitemanagement.data.model.FeeMonthSummary
+import com.balancetech.sitemanagement.data.model.PaymentStatus
 import com.balancetech.sitemanagement.databinding.ItemFeeMonthBinding
 
 class FeeMonthAdapter(
@@ -31,14 +32,26 @@ class FeeMonthAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(summary: FeeMonthSummary) {
+
             binding.apply {
                 monthYearText.text = "${summary.monthName} ${summary.year}"
                 
                 totalAmountText.text = String.format("%.2f ₺", summary.totalAmount)
                 paidAmountText.text = String.format("%.2f ₺", summary.totalPaidAmount)
-                remainingAmountText.text = String.format("%.2f ₺", summary.totalRemainingAmount)
-                 // Show fee count
-                feeCountText.text = "${summary.fees.size} daire"
+                
+                // Show remaining amount only if there are unpaid fees
+                // Hide for months where all fees are partially paid or fully paid
+                val hasUnpaidFees = summary.fees.any { it.status == PaymentStatus.UNPAID }
+                if (hasUnpaidFees && summary.totalRemainingAmount > 0) {
+                    remainingAmountText.visibility = android.view.View.VISIBLE
+                    remainingAmountText.text = String.format("%.2f ₺", summary.totalRemainingAmount)
+                } else {
+                    // Hide remaining amount for months with only partially paid or fully paid fees
+                    remainingAmountText.visibility = android.view.View.GONE
+                }
+                
+                 // Show filtered fee count (not all fees)
+                feeCountText.text = "${summary.filteredCount} daire"
                 
                 root.setOnClickListener {
                     onItemClick(summary)

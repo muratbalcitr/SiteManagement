@@ -48,13 +48,15 @@ class FeeAdapter(
                 feeAmount.text = String.format(root.context.getString(R.string.currency_format), fee.amount)
                 paidAmount.text = root.context.getString(R.string.paid_amount_format, String.format("%.2f", fee.paidAmount))
                 
-                // Hide remaining amount for fully paid fees, show only paid amount
-                if (fee.status == PaymentStatus.PAID) {
-                    remainingAmountText.visibility = View.GONE
-                } else {
+                // Show remaining amount only for unpaid fees
+                // Hide for partially paid and fully paid fees
+                if (fee.status == PaymentStatus.UNPAID) {
                     remainingAmountText.visibility = View.VISIBLE
                     val remainingAmount = fee.amount - fee.paidAmount
                     remainingAmountText.text = root.context.getString(R.string.remaining_amount_format, String.format("%.2f", remainingAmount))
+                } else {
+                    // Hide remaining amount for PARTIALLY_PAID and PAID
+                    remainingAmountText.visibility = View.GONE
                 }
                 
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -105,6 +107,7 @@ class FeeAdapter(
                 // Status badge
                 when (fee.status) {
                     PaymentStatus.PAID -> {
+
                         statusBadge.text = root.context.getString(R.string.fee_status_paid)
                         statusBadge.setBackgroundColor(
                             root.context.getColor(android.R.color.holo_green_light)
