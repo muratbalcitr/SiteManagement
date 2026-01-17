@@ -22,3 +22,16 @@ ui-debug.log# Functions
 functions/node_modules/
 functions/.env
 functions/*.log
+
+# Android Studio generated files and folders
+*.apk
+*.aab
+output.json
+# src/main/res/values/strings.xml
+# src/main/res/values-ar/strings.xml
+# src/main/res/values-ru/strings.xml
+# src/main/res/values-tr/strings.xml
+
+# Google Services (e.g. APIs or Firebase)
+# google-services.json# Android Profiling
+*.hprof

@@ -39,5 +39,8 @@ public class DashboardFragmentDirections private constructor() {
 
     public fun actionDashboardFragmentToUserDetailFragment(userId: String): NavDirections =
         ActionDashboardFragmentToUserDetailFragment(userId)
+
+    public fun actionDashboardFragmentToBankTransactionsFragment(): NavDirections =
+        ActionOnlyNavDirections(R.id.action_dashboardFragment_to_bankTransactionsFragment)
   }
 }

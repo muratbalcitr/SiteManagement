@@ -1,0 +1,39 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log# Functions
+functions/node_modules/
+functions/.env
+functions/*.log
+
+# Android Studio generated files and folders
+*.apk
+*.aab
+output.json
+# src/main/res/values/strings.xml
+# src/main/res/values-ar/strings.xml
+# src/main/res/values-ru/strings.xml
+# src/main/res/values-tr/strings.xml
+
+# Google Services (e.g. APIs or Firebase)
+# google-services.json
+
+# Android Profiling
+*.hprof

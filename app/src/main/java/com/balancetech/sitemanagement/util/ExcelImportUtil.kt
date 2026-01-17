@@ -3,12 +3,17 @@ package com.balancetech.sitemanagement.util
 import android.content.Context
 import android.net.Uri
 import com.balancetech.sitemanagement.data.entity.Unit as UnitEntity
+import com.balancetech.sitemanagement.data.entity.BankTransaction
 import com.balancetech.sitemanagement.data.model.OwnerType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.text.SimpleDateFormat
+import java.util.Locale
+import org.apache.poi.ss.usermodel.*
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 
 /**
  * Utility class for importing data from Excel (CSV format)
@@ -327,6 +332,299 @@ object ExcelImportUtil {
             currentReading = 0.0,
             lastReadingDate = System.currentTimeMillis(),
             createdAt = System.currentTimeMillis()
+        )
+    }
+    
+    /**
+     * Import bank transactions from CSV/XLSX file
+     * Expected format: Tarih, Fiş No, Açıklama, İşlem Tutarı, Bakiye
+     * 
+     * Example:
+     * 29.12.2025,F39525,Gönd: AHMET OKYAY - DOĞALGAZ PROJE ÜCRETI,-75000.00,9438.17
+     * 29.12.2025,F39525,MESAJ ÜCRETİ TUTARI,-1.97,9436.20
+     * 
+     * Supports both CSV and XLSX formats
+     */
+    suspend fun importBankTransactionsFromCsv(
+        context: Context,
+        uri: Uri
+    ): Result<Pair<List<BankTransaction>, ImportResult>> = withContext(Dispatchers.IO) {
+        // Detect file type by MIME type or extension
+        val mimeType = context.contentResolver.getType(uri) ?: ""
+        val fileName = getFileName(context, uri) ?: ""
+        
+        return@withContext when {
+            mimeType.contains("spreadsheet") || 
+            mimeType.contains("excel") || 
+            fileName.endsWith(".xlsx", ignoreCase = true) ||
+            fileName.endsWith(".xls", ignoreCase = true) -> {
+                importBankTransactionsFromXlsx(context, uri)
+            }
+            else -> {
+                importBankTransactionsFromCsvInternal(context, uri)
+            }
+        }
+    }
+    
+    private suspend fun importBankTransactionsFromXlsx(
+        context: Context,
+        uri: Uri
+    ): Result<Pair<List<BankTransaction>, ImportResult>> = withContext(Dispatchers.IO) {
+        try {
+            val transactions = mutableListOf<BankTransaction>()
+            val errors = mutableListOf<String>()
+            
+            val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+            if (inputStream == null) {
+                return@withContext Result.failure(Exception("Dosya açılamadı"))
+            }
+            
+            inputStream.use { stream ->
+                val workbook: Workbook = try {
+                    XSSFWorkbook(stream)
+                } catch (e: Exception) {
+                    return@withContext Result.failure(Exception("XLSX dosyası okunamadı: ${e.message}"))
+                }
+                
+                try {
+                    val sheet = workbook.getSheetAt(0) // First sheet
+                    if (sheet == null) {
+                        return@withContext Result.failure(Exception("Excel dosyası boş"))
+                    }
+                    
+                    var rowIndex = 0
+                    for (row in sheet) {
+                        rowIndex++
+                        
+                        // Skip header row
+                        if (rowIndex == 1) continue
+                        
+                        // Skip empty rows
+                        if (row.getCell(0) == null || getCellValueAsString(row.getCell(0)).isBlank()) {
+                            continue
+                        }
+                        
+                        try {
+                            val date = getCellValueAsString(row.getCell(0))
+                            val receiptNo = getCellValueAsString(row.getCell(1))
+                            val description = getCellValueAsString(row.getCell(2))
+                            val amountStr = getCellValueAsString(row.getCell(3))
+                            val balanceStr = getCellValueAsString(row.getCell(4))
+                            
+                            if (date.isBlank() || receiptNo.isBlank()) {
+                                errors.add("Satır $rowIndex: Tarih ve Fiş No boş olamaz")
+                                continue
+                            }
+                            
+                            // Parse amount
+                            val amount = parseAmount(amountStr)
+                            val balance = parseAmount(balanceStr)
+                            
+                            val transaction = BankTransaction(
+                                date = date,
+                                receiptNo = receiptNo,
+                                description = description,
+                                amount = amount,
+                                balance = balance
+                            )
+                            
+                            transactions.add(transaction)
+                        } catch (e: Exception) {
+                            errors.add("Satır $rowIndex: ${e.message ?: "Bilinmeyen hata"}")
+                        }
+                    }
+                } finally {
+                    workbook.close()
+                }
+            }
+            
+            val result = ImportResult(
+                successCount = transactions.size,
+                errorCount = errors.size,
+                errors = errors
+            )
+            
+            Result.success(Pair(transactions, result))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    private fun getCellValueAsString(cell: Cell?): String {
+        if (cell == null) return ""
+        
+        return when (cell.cellType) {
+            CellType.STRING -> cell.stringCellValue.trim()
+            CellType.NUMERIC -> {
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+                    dateFormat.format(cell.dateCellValue)
+                } else {
+                    // Format number without scientific notation
+                    val num = cell.numericCellValue
+                    if (num % 1 == 0.0) {
+                        num.toLong().toString()
+                    } else {
+                        num.toString()
+                    }
+                }
+            }
+            CellType.BOOLEAN -> cell.booleanCellValue.toString()
+            CellType.FORMULA -> {
+                when (cell.cachedFormulaResultType) {
+                    CellType.STRING -> cell.stringCellValue.trim()
+                    CellType.NUMERIC -> {
+                        val num = cell.numericCellValue
+                        if (num % 1 == 0.0) {
+                            num.toLong().toString()
+                        } else {
+                            num.toString()
+                        }
+                    }
+                    CellType.BOOLEAN -> cell.booleanCellValue.toString()
+                    else -> ""
+                }
+            }
+            else -> ""
+        }
+    }
+    
+    private fun parseAmount(amountStr: String): Double {
+        if (amountStr.isBlank()) return 0.0
+        
+        // Remove thousand separators and handle decimal
+        val cleaned = amountStr
+            .replace(".", "") // Remove thousand separators
+            .replace(",", ".") // Replace comma with dot for decimal
+            .trim()
+        
+        return cleaned.toDoubleOrNull() ?: 0.0
+    }
+    
+    private fun getFileName(context: Context, uri: Uri): String? {
+        var result: String? = null
+        if (uri.scheme == "content") {
+            val cursor = context.contentResolver.query(uri, null, null, null, null)
+            cursor?.use {
+                if (it.moveToFirst()) {
+                    val nameIndex = it.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+                    if (nameIndex >= 0) {
+                        result = it.getString(nameIndex)
+                    }
+                }
+            }
+        }
+        if (result == null) {
+            result = uri.path
+            val cut = result?.lastIndexOf('/')
+            if (cut != -1) {
+                result = result?.substring(cut + 1)
+            }
+        }
+        return result
+    }
+    
+    private suspend fun importBankTransactionsFromCsvInternal(
+        context: Context,
+        uri: Uri
+    ): Result<Pair<List<BankTransaction>, ImportResult>> = withContext(Dispatchers.IO) {
+        try {
+            val transactions = mutableListOf<BankTransaction>()
+            val errors = mutableListOf<String>()
+            var lineNumber = 0
+            
+            val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+            if (inputStream == null) {
+                return@withContext Result.failure(Exception("Dosya açılamadı"))
+            }
+            
+            BufferedReader(InputStreamReader(inputStream, "UTF-8")).use { reader ->
+                // Skip BOM if present
+                reader.mark(1)
+                val firstChar = reader.read()
+                if (firstChar.toChar() != 0xFEFF.toChar()) {
+                    reader.reset()
+                }
+                
+                // Read header line (skip it)
+                val headerLine = reader.readLine()
+                if (headerLine == null) {
+                    return@withContext Result.failure(Exception("Dosya boş"))
+                }
+                
+                // Read data lines
+                var line: String?
+                while (reader.readLine().also { line = it } != null) {
+                    lineNumber++
+                    val trimmedLine = line!!.trim()
+                    if (trimmedLine.isEmpty()) continue
+                    
+                    try {
+                        val transaction = parseBankTransactionLine(trimmedLine, lineNumber)
+                        if (transaction != null) {
+                            transactions.add(transaction)
+                        } else {
+                            errors.add("Satır $lineNumber: Geçersiz format")
+                        }
+                    } catch (e: Exception) {
+                        errors.add("Satır $lineNumber: ${e.message ?: "Bilinmeyen hata"}")
+                    }
+                }
+            }
+            
+            val result = ImportResult(
+                successCount = transactions.size,
+                errorCount = errors.size,
+                errors = errors
+            )
+            
+            Result.success(Pair(transactions, result))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    private fun parseBankTransactionLine(
+        line: String,
+        lineNumber: Int
+    ): BankTransaction? {
+        // Try different delimiters: tab, semicolon, comma
+        val values = when {
+            line.contains('\t') -> line.split('\t')
+            line.contains(';') -> parseCsvLine(line) // Use existing CSV parser for semicolon
+            else -> line.split(',').map { it.trim() }
+        }
+        
+        if (values.size < 5) {
+            throw Exception("Eksik sütun sayısı (en az 5 sütun gerekli: Tarih, Fiş No, Açıklama, İşlem Tutarı, Bakiye)")
+        }
+        
+        val date = values[0].trim()
+        val receiptNo = values[1].trim()
+        val description = values[2].trim()
+        
+        // Parse amount - remove thousand separators and handle decimal
+        val amountStr = values[3].trim()
+            .replace(".", "") // Remove thousand separators
+            .replace(",", ".") // Replace comma with dot for decimal
+        val amount = amountStr.toDoubleOrNull() ?: throw Exception("Geçersiz işlem tutarı: ${values[3]}")
+        
+        // Parse balance - remove thousand separators and handle decimal
+        val balanceStr = values[4].trim()
+            .replace(".", "") // Remove thousand separators
+            .replace(",", ".") // Replace comma with dot for decimal
+        val balance = balanceStr.toDoubleOrNull() ?: throw Exception("Geçersiz bakiye: ${values[4]}")
+        
+        if (date.isEmpty() || receiptNo.isEmpty()) {
+            throw Exception("Tarih ve Fiş No boş olamaz")
+        }
+        
+        return BankTransaction(
+            date = date,
+            receiptNo = receiptNo,
+            description = description,
+            amount = amount,
+            balance = balance
         )
     }
 }

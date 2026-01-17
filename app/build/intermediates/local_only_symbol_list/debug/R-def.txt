@@ -10,6 +10,7 @@ drawable outline_arrow_back_ios_24
 drawable outline_attach_money_24
 drawable outline_lock_24
 id action_create_fees_for_all
+id action_dashboardFragment_to_bankTransactionsFragment
 id action_dashboardFragment_to_extraPaymentsFragment
 id action_dashboardFragment_to_feesFragment
 id action_dashboardFragment_to_paymentsFragment
@@ -34,6 +35,9 @@ id amountEditText
 id amountText
 id apartmentIdEditText
 id appBarLayout
+id balanceText
+id bankTransactionsCard
+id bankTransactionsFragment
 id baseAmountEditText
 id billMonthYear
 id blockSpinner
@@ -75,6 +79,7 @@ id filterFeeButton
 id filterGeneralButton
 id filterWaterBillButton
 id importButton
+id importFab
 id installmentEditText
 id installmentText
 id lastReadingDateText
@@ -110,6 +115,7 @@ id profileCard
 id profileEmailText
 id profileNameText
 id progressBar
+id receiptNoText
 id recordButton
 id recordReadingButton
 id recyclerView
@@ -133,6 +139,7 @@ id totalDebtText
 id totalDebtTextView
 id totalUnpaidFeesText
 id totalUnpaidWaterBillsText
+id transactionsRecyclerView
 id typeBadge
 id typeSpinner
 id typeText
@@ -168,6 +175,7 @@ layout dialog_create_fee
 layout dialog_create_fees_for_all_units
 layout dialog_payment_entry
 layout dialog_water_meter_reading
+layout fragment_bank_transactions
 layout fragment_dashboard
 layout fragment_extra_payments
 layout fragment_fees
@@ -180,6 +188,7 @@ layout fragment_user_detail
 layout fragment_users
 layout fragment_water_meter
 layout fragment_water_meter_detail
+layout item_bank_transaction
 layout item_extra_payment
 layout item_fee
 layout item_fee_month

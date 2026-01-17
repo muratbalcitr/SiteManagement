@@ -91,6 +91,10 @@ dependencies {
     // Excel Export - CSV format (Excel'de açılabilir)
     // CSV formatı Excel'de açılabilir ve daha hafiftir
     
+    // Apache POI for XLSX support
+    implementation 'org.apache.poi:poi:5.2.5'
+    implementation 'org.apache.poi:poi-ooxml:5.2.5'
+    
     // Testing
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

@@ -3234,6 +3234,7 @@ id action_bar_title
 id action_container
 id action_context_bar
 id action_create_fees_for_all
+id action_dashboardFragment_to_bankTransactionsFragment
 id action_dashboardFragment_to_extraPaymentsFragment
 id action_dashboardFragment_to_feesFragment
 id action_dashboardFragment_to_paymentsFragment
@@ -3288,6 +3289,9 @@ id auto
 id autoComplete
 id autoCompleteToEnd
 id autoCompleteToStart
+id balanceText
+id bankTransactionsCard
+id bankTransactionsFragment
 id barrier
 id baseAmountEditText
 id baseline
@@ -3469,6 +3473,7 @@ id ignoreRequest
 id image
 id immediateStop
 id importButton
+id importFab
 id included
 id indeterminate
 id info
@@ -3647,6 +3652,7 @@ id progress_circular
 id progress_horizontal
 id radio
 id ratio
+id receiptNoText
 id recordButton
 id recordReadingButton
 id rectangles
@@ -3781,6 +3787,7 @@ id totalDebtTextView
 id totalUnpaidFeesText
 id totalUnpaidWaterBillsText
 id touch_outside
+id transactionsRecyclerView
 id transitionToEnd
 id transitionToStart
 id transition_current_scene
@@ -3982,6 +3989,7 @@ layout dialog_create_fee
 layout dialog_create_fees_for_all_units
 layout dialog_payment_entry
 layout dialog_water_meter_reading
+layout fragment_bank_transactions
 layout fragment_dashboard
 layout fragment_extra_payments
 layout fragment_fees
@@ -3996,6 +4004,7 @@ layout fragment_water_meter
 layout fragment_water_meter_detail
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
+layout item_bank_transaction
 layout item_extra_payment
 layout item_fee
 layout item_fee_month

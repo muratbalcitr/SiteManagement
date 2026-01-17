@@ -22,6 +22,9 @@ public final class FragmentDashboardBinding implements ViewBinding {
   private final CoordinatorLayout rootView;
 
   @NonNull
+  public final MaterialCardView bankTransactionsCard;
+
+  @NonNull
   public final MaterialCardView extraPaymentsCard;
 
   @NonNull
@@ -58,13 +61,15 @@ public final class FragmentDashboardBinding implements ViewBinding {
   public final MaterialCardView waterMeterCard;
 
   private FragmentDashboardBinding(@NonNull CoordinatorLayout rootView,
-      @NonNull MaterialCardView extraPaymentsCard, @NonNull MaterialCardView feesCard,
-      @NonNull MaterialCardView paymentsCard, @NonNull MaterialCardView profileCard,
-      @NonNull TextView profileEmailText, @NonNull TextView profileNameText,
-      @NonNull TextView remainingPaymentTextView, @NonNull MaterialButton syncButton,
-      @NonNull TextView totalCreditTextView, @NonNull TextView totalDebtTextView,
-      @NonNull MaterialCardView usersCard, @NonNull MaterialCardView waterMeterCard) {
+      @NonNull MaterialCardView bankTransactionsCard, @NonNull MaterialCardView extraPaymentsCard,
+      @NonNull MaterialCardView feesCard, @NonNull MaterialCardView paymentsCard,
+      @NonNull MaterialCardView profileCard, @NonNull TextView profileEmailText,
+      @NonNull TextView profileNameText, @NonNull TextView remainingPaymentTextView,
+      @NonNull MaterialButton syncButton, @NonNull TextView totalCreditTextView,
+      @NonNull TextView totalDebtTextView, @NonNull MaterialCardView usersCard,
+      @NonNull MaterialCardView waterMeterCard) {
     this.rootView = rootView;
+    this.bankTransactionsCard = bankTransactionsCard;
     this.extraPaymentsCard = extraPaymentsCard;
     this.feesCard = feesCard;
     this.paymentsCard = paymentsCard;
@@ -106,6 +111,12 @@ public final class FragmentDashboardBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.bankTransactionsCard;
+      MaterialCardView bankTransactionsCard = ViewBindings.findChildViewById(rootView, id);
+      if (bankTransactionsCard == null) {
+        break missingId;
+      }
+
       id = R.id.extraPaymentsCard;
       MaterialCardView extraPaymentsCard = ViewBindings.findChildViewById(rootView, id);
       if (extraPaymentsCard == null) {
@@ -178,9 +189,10 @@ public final class FragmentDashboardBinding implements ViewBinding {
         break missingId;
       }
 
-      return new FragmentDashboardBinding((CoordinatorLayout) rootView, extraPaymentsCard, feesCard,
-          paymentsCard, profileCard, profileEmailText, profileNameText, remainingPaymentTextView,
-          syncButton, totalCreditTextView, totalDebtTextView, usersCard, waterMeterCard);
+      return new FragmentDashboardBinding((CoordinatorLayout) rootView, bankTransactionsCard,
+          extraPaymentsCard, feesCard, paymentsCard, profileCard, profileEmailText, profileNameText,
+          remainingPaymentTextView, syncButton, totalCreditTextView, totalDebtTextView, usersCard,
+          waterMeterCard);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

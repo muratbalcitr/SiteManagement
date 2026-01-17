@@ -117,6 +117,10 @@ class DashboardFragment : Fragment() {
             findNavController().navigate(R.id.action_dashboardFragment_to_usersFragment)
         }
 
+        binding.bankTransactionsCard.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardFragment_to_bankTransactionsFragment)
+        }
+
         // Profile card - show for all users, navigate to own profile for residents
         binding.profileCard.setOnClickListener {
             lifecycleScope.launch {

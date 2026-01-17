@@ -3233,6 +3233,7 @@ int id action_bar_title 0x7f090039
 int id action_container 0x7f09003a
 int id action_context_bar 0x7f09003b
 int id action_create_fees_for_all 0x7f09003c
+int id action_dashboardFragment_to_bankTransactionsFragment 0x7f09029b
 int id action_dashboardFragment_to_extraPaymentsFragment 0x7f09003d
 int id action_dashboardFragment_to_feesFragment 0x7f09003e
 int id action_dashboardFragment_to_paymentsFragment 0x7f09003f
@@ -3287,6 +3288,9 @@ int id auto 0x7f09006e
 int id autoComplete 0x7f09006f
 int id autoCompleteToEnd 0x7f090070
 int id autoCompleteToStart 0x7f090071
+int id balanceText 0x7f09029c
+int id bankTransactionsCard 0x7f09029d
+int id bankTransactionsFragment 0x7f09029e
 int id barrier 0x7f090072
 int id baseAmountEditText 0x7f090073
 int id baseline 0x7f090074
@@ -3468,6 +3472,7 @@ int id ignoreRequest 0x7f090123
 int id image 0x7f090124
 int id immediateStop 0x7f090125
 int id importButton 0x7f090126
+int id importFab 0x7f09029f
 int id included 0x7f090127
 int id indeterminate 0x7f090128
 int id info 0x7f090129
@@ -3646,6 +3651,7 @@ int id progress_circular 0x7f0901d5
 int id progress_horizontal 0x7f0901d6
 int id radio 0x7f0901d7
 int id ratio 0x7f0901d8
+int id receiptNoText 0x7f0902a0
 int id recordButton 0x7f0901d9
 int id recordReadingButton 0x7f0901da
 int id rectangles 0x7f0901db
@@ -3780,6 +3786,7 @@ int id totalDebtTextView 0x7f09025b
 int id totalUnpaidFeesText 0x7f09025c
 int id totalUnpaidWaterBillsText 0x7f09025d
 int id touch_outside 0x7f09025e
+int id transactionsRecyclerView 0x7f0902a1
 int id transitionToEnd 0x7f09025f
 int id transitionToStart 0x7f090260
 int id transition_current_scene 0x7f090261
@@ -3981,6 +3988,7 @@ int layout dialog_create_fee 0x7f0c0032
 int layout dialog_create_fees_for_all_units 0x7f0c0033
 int layout dialog_payment_entry 0x7f0c0034
 int layout dialog_water_meter_reading 0x7f0c0035
+int layout fragment_bank_transactions 0x7f0c008a
 int layout fragment_dashboard 0x7f0c0036
 int layout fragment_extra_payments 0x7f0c0037
 int layout fragment_fees 0x7f0c0038
@@ -3995,6 +4003,7 @@ int layout fragment_water_meter 0x7f0c0040
 int layout fragment_water_meter_detail 0x7f0c0041
 int layout ime_base_split_test_activity 0x7f0c0042
 int layout ime_secondary_split_test_activity 0x7f0c0043
+int layout item_bank_transaction 0x7f0c008b
 int layout item_extra_payment 0x7f0c0044
 int layout item_fee 0x7f0c0045
 int layout item_fee_month 0x7f0c0046

@@ -51,6 +51,9 @@
         <action
             android:id="@+id/action_dashboardFragment_to_userDetailFragment"
             app:destination="@id/userDetailFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_bankTransactionsFragment"
+            app:destination="@id/bankTransactionsFragment" />
     </fragment>
 
     <fragment
@@ -113,5 +116,11 @@
             android:name="user_id"
             app:argType="string" />
     </fragment>
+
+    <fragment
+        android:id="@+id/bankTransactionsFragment"
+        android:name="com.balancetech.sitemanagement.ui.banktransactions.BankTransactionsFragment"
+        android:label="Banka Hareketleri"
+        tools:layout="@layout/fragment_bank_transactions" />
 
 </navigation>
