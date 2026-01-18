@@ -6,6 +6,7 @@ import com.balancetech.sitemanagement.di.FirebaseModule;
 import com.balancetech.sitemanagement.di.RepositoryModule;
 import com.balancetech.sitemanagement.ui.auth.LoginFragment_GeneratedInjector;
 import com.balancetech.sitemanagement.ui.auth.RegisterFragment_GeneratedInjector;
+import com.balancetech.sitemanagement.ui.banktransactions.BankTransactionsFragment_GeneratedInjector;
 import com.balancetech.sitemanagement.ui.dashboard.DashboardFragment_GeneratedInjector;
 import com.balancetech.sitemanagement.ui.dialog.AddUserDialogFragment_GeneratedInjector;
 import com.balancetech.sitemanagement.ui.dialog.AddWaterMeterDialogFragment_GeneratedInjector;
@@ -273,6 +274,7 @@ public final class SiteManagementApplication_HiltComponents {
   @FragmentScoped
   public abstract static class FragmentC implements LoginFragment_GeneratedInjector,
       RegisterFragment_GeneratedInjector,
+      BankTransactionsFragment_GeneratedInjector,
       DashboardFragment_GeneratedInjector,
       AddUserDialogFragment_GeneratedInjector,
       AddWaterMeterDialogFragment_GeneratedInjector,

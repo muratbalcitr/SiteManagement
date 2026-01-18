@@ -496,6 +496,16 @@ class FeesFragment : Fragment() {
             val fees = viewModel.getAllFees().first()
             val fee = fees.find { it.id == feeId }
             fee?.let {
+                // Check if fee is already PAID - prevent duplicate payments
+                if (fee.status == com.balancetech.sitemanagement.data.model.PaymentStatus.PAID) {
+                    com.google.android.material.snackbar.Snackbar.make(
+                        binding.root,
+                        "Bu aidat zaten tamamen ödenmiş. Mükerrer ödeme yapılamaz.",
+                        com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
+                    ).show()
+                    return@launch
+                }
+                
                 PaymentEntryDialogFragment.newInstance(
                     unitId = it.unitId,
                     maxAmount = remainingAmount,

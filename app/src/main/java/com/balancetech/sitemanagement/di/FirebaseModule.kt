@@ -23,7 +23,11 @@ object FirebaseModule {
     @Provides
     @Singleton
     fun provideFirebaseAuth(): FirebaseAuth {
-        return FirebaseAuth.getInstance()
+        val auth = FirebaseAuth.getInstance()
+        // Firebase Auth persistence is enabled by default on Android
+        // This ensures users stay logged in across app restarts
+        // The auth state is automatically persisted to local storage
+        return auth
     }
 
     @Provides

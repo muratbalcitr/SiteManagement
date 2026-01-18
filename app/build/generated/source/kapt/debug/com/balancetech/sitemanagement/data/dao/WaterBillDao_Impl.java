@@ -154,7 +154,8 @@ public final class WaterBillDao_Impl implements WaterBillDao {
   }
 
   @Override
-  public Object insertWaterBill(final WaterBill waterBill, final Continuation<? super Unit> arg1) {
+  public Object insertWaterBill(final WaterBill waterBill,
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -168,11 +169,12 @@ public final class WaterBillDao_Impl implements WaterBillDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object deleteWaterBill(final WaterBill waterBill, final Continuation<? super Unit> arg1) {
+  public Object deleteWaterBill(final WaterBill waterBill,
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -186,11 +188,12 @@ public final class WaterBillDao_Impl implements WaterBillDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object updateWaterBill(final WaterBill waterBill, final Continuation<? super Unit> arg1) {
+  public Object updateWaterBill(final WaterBill waterBill,
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -204,11 +207,12 @@ public final class WaterBillDao_Impl implements WaterBillDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object getWaterBillById(final String id, final Continuation<? super WaterBill> arg1) {
+  public Object getWaterBillById(final String id,
+      final Continuation<? super WaterBill> $completion) {
     final String _sql = "SELECT * FROM water_bills WHERE id = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -305,7 +309,7 @@ public final class WaterBillDao_Impl implements WaterBillDao {
           _statement.release();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override

@@ -176,7 +176,7 @@ public final class PaymentDao_Impl implements PaymentDao {
   }
 
   @Override
-  public Object insertPayment(final Payment payment, final Continuation<? super Unit> arg1) {
+  public Object insertPayment(final Payment payment, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -190,11 +190,11 @@ public final class PaymentDao_Impl implements PaymentDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object deletePayment(final Payment payment, final Continuation<? super Unit> arg1) {
+  public Object deletePayment(final Payment payment, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -208,11 +208,11 @@ public final class PaymentDao_Impl implements PaymentDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object updatePayment(final Payment payment, final Continuation<? super Unit> arg1) {
+  public Object updatePayment(final Payment payment, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -226,11 +226,11 @@ public final class PaymentDao_Impl implements PaymentDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object getPaymentById(final String id, final Continuation<? super Payment> arg1) {
+  public Object getPaymentById(final String id, final Continuation<? super Payment> $completion) {
     final String _sql = "SELECT * FROM payments WHERE id = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -323,7 +323,7 @@ public final class PaymentDao_Impl implements PaymentDao {
           _statement.release();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override

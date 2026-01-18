@@ -51,6 +51,12 @@ class PaymentViewModel @Inject constructor(
             if (feeId != null) {
                 val fee = feeRepository.getFeeById(feeId)
                 if (fee != null) {
+                    // Check if fee is already PAID - prevent duplicate payments
+                    if (fee.status == com.balancetech.sitemanagement.data.model.PaymentStatus.PAID) {
+                        _uiState.value = PaymentUiState.Error("Bu aidat zaten tamamen ödenmiş. Mükerrer ödeme yapılamaz.")
+                        return@launch
+                    }
+                    
                     // Get existing payments for this fee to calculate actual paid amount
                     val existingPayments = paymentRepository.getPaymentsByFee(feeId).first()
                     val actualPaidAmount = existingPayments.sumOf { it.amount }

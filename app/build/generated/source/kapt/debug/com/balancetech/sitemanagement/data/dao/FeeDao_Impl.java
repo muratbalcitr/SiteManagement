@@ -138,7 +138,7 @@ public final class FeeDao_Impl implements FeeDao {
   }
 
   @Override
-  public Object insertFee(final Fee fee, final Continuation<? super Unit> arg1) {
+  public Object insertFee(final Fee fee, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -152,11 +152,11 @@ public final class FeeDao_Impl implements FeeDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object insertFees(final List<Fee> fees, final Continuation<? super Unit> arg1) {
+  public Object insertFees(final List<Fee> fees, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -170,11 +170,11 @@ public final class FeeDao_Impl implements FeeDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object deleteFee(final Fee fee, final Continuation<? super Unit> arg1) {
+  public Object deleteFee(final Fee fee, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -188,11 +188,11 @@ public final class FeeDao_Impl implements FeeDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object updateFee(final Fee fee, final Continuation<? super Unit> arg1) {
+  public Object updateFee(final Fee fee, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -206,11 +206,11 @@ public final class FeeDao_Impl implements FeeDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object getFeeById(final String id, final Continuation<? super Fee> arg1) {
+  public Object getFeeById(final String id, final Continuation<? super Fee> $completion) {
     final String _sql = "SELECT * FROM fees WHERE id = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -283,7 +283,7 @@ public final class FeeDao_Impl implements FeeDao {
           _statement.release();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
@@ -534,7 +534,7 @@ public final class FeeDao_Impl implements FeeDao {
 
   @Override
   public Object getFeeByUnitMonthYear(final String unitId, final int month, final int year,
-      final Continuation<? super Fee> arg3) {
+      final Continuation<? super Fee> $completion) {
     final String _sql = "SELECT * FROM fees WHERE unitId = ? AND month = ? AND year = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 3);
     int _argIndex = 1;
@@ -611,7 +611,7 @@ public final class FeeDao_Impl implements FeeDao {
           _statement.release();
         }
       }
-    }, arg3);
+    }, $completion);
   }
 
   @Override

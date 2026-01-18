@@ -24,6 +24,7 @@ class RemoteDataSourceImpl @Inject constructor(
     private val notificationsCollection = firestore.collection("notifications")
     private val unitsCollection = firestore.collection("units")
     private val extraPaymentsCollection = firestore.collection("extra_payments")
+    private val bankTransactionsCollection = firestore.collection("bank_transactions")
 
     // User operations
     override suspend fun getUserByEmail(email: String): User? {
@@ -58,8 +59,8 @@ class RemoteDataSourceImpl @Inject constructor(
             }
             
             User(
-                id = doc.id,
-                email = data["email"] as? String ?: "",
+                id =  (data["unitId"] as? String).toString(),
+                 email = data["email"] as? String ?: "",
                 password = data["password"] as? String ?: "",
                 name = data["name"] as? String ?: "",
                 phone = data["phone"] as? String,
@@ -752,6 +753,63 @@ class RemoteDataSourceImpl @Inject constructor(
             Result.success(extraPayment)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    // Bank Transaction operations
+    override suspend fun createBankTransaction(transaction: com.balancetech.sitemanagement.data.entity.BankTransaction): Result<com.balancetech.sitemanagement.data.entity.BankTransaction> {
+        return try {
+            bankTransactionsCollection.document(transaction.id).set(transaction).await()
+            Result.success(transaction)
+        } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error creating bank transaction: ${e.message}", e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun createBankTransactions(transactions: List<com.balancetech.sitemanagement.data.entity.BankTransaction>): Result<List<com.balancetech.sitemanagement.data.entity.BankTransaction>> {
+        return try {
+            val batch = firestore.batch()
+            transactions.forEach { transaction ->
+                batch.set(bankTransactionsCollection.document(transaction.id), transaction)
+            }
+            batch.commit().await()
+            Result.success(transactions)
+        } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error creating bank transactions: ${e.message}", e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getAllBankTransactions(): List<com.balancetech.sitemanagement.data.entity.BankTransaction> {
+        return try {
+            bankTransactionsCollection
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .get()
+                .await()
+                .documents
+                .mapNotNull { doc -> docToBankTransaction(doc) }
+        } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error fetching bank transactions: ${e.message}", e)
+            emptyList()
+        }
+    }
+
+    private fun docToBankTransaction(doc: com.google.firebase.firestore.DocumentSnapshot): com.balancetech.sitemanagement.data.entity.BankTransaction? {
+        return try {
+            val data = doc.data ?: return null
+            
+            com.balancetech.sitemanagement.data.entity.BankTransaction(
+                date = data["date"] as? String ?: "",
+                receiptNo = data["receiptNo"] as? String ?: "",
+                description = data["description"] as? String ?: "",
+                amount = (data["amount"] as? Number)?.toDouble() ?: 0.0,
+                balance = (data["balance"] as? Number)?.toDouble() ?: 0.0,
+                createdAt = (data["createdAt"] as? Long) ?: System.currentTimeMillis()
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("RemoteDataSource", "Error converting document to BankTransaction: ${e.message}", e)
+            null
         }
     }
 

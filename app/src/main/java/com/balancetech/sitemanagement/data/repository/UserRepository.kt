@@ -47,6 +47,7 @@ class UserRepository @Inject constructor(
     /**
      * Create a new user (resident)
      * If unitIds is provided, creates user-unit relationships
+     * @param documentId Optional documentId for Firestore (e.g., unitNumber). If not provided, generates from name.
      */
     suspend fun createUser(
         email: String,
@@ -55,10 +56,19 @@ class UserRepository @Inject constructor(
         phone: String?,
         role: UserRole,
         apartmentId: String?,
-        unitIds: List<String>
+        unitIds: List<String>,
+        documentId: String? = null
     ): Result<User> {
-        // Check if user already exists
-        val existingUser = localDataSource.getUserByEmail(email)
+        // Use documentId if provided (e.g., unitNumber), otherwise generate from name
+        val userId = documentId ?: run {
+            val allUsers = localDataSource.getAllActiveUsers().first()
+            val existingIds = allUsers.map { it.id }.toSet()
+            StringUtils.generateUserIdFromName(name, existingIds)
+        }
+        
+        // Check if user with this ID already exists
+        val existingUser = localDataSource.getUserById(userId)
+        
         if (existingUser != null) {
             // If user exists, add new units to existing user
             val existingUnitIds = userUnitDao.getUnitIdsByUserId(existingUser.id).toSet()
@@ -82,11 +92,6 @@ class UserRepository @Inject constructor(
             
             return Result.success(existingUser)
         }
-
-        // Generate user ID based on name
-        val allUsers = localDataSource.getAllActiveUsers().first()
-        val existingIds = allUsers.map { it.id }.toSet()
-        val userId = StringUtils.generateUserIdFromName(name, existingIds)
 
         val user = User(
             id = userId,

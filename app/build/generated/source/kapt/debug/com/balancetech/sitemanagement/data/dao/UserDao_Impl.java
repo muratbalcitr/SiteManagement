@@ -170,7 +170,7 @@ public final class UserDao_Impl implements UserDao {
   }
 
   @Override
-  public Object insertUser(final User user, final Continuation<? super Unit> arg1) {
+  public Object insertUser(final User user, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -184,11 +184,11 @@ public final class UserDao_Impl implements UserDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object deleteUser(final User user, final Continuation<? super Unit> arg1) {
+  public Object deleteUser(final User user, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -202,11 +202,11 @@ public final class UserDao_Impl implements UserDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object updateUser(final User user, final Continuation<? super Unit> arg1) {
+  public Object updateUser(final User user, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -220,11 +220,11 @@ public final class UserDao_Impl implements UserDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object getUserById(final String id, final Continuation<? super User> arg1) {
+  public Object getUserById(final String id, final Continuation<? super User> $completion) {
     final String _sql = "SELECT * FROM users WHERE id = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -312,11 +312,11 @@ public final class UserDao_Impl implements UserDao {
           _statement.release();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object getUserByEmail(final String email, final Continuation<? super User> arg1) {
+  public Object getUserByEmail(final String email, final Continuation<? super User> $completion) {
     final String _sql = "SELECT * FROM users WHERE email = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -404,7 +404,7 @@ public final class UserDao_Impl implements UserDao {
           _statement.release();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
@@ -683,8 +683,8 @@ public final class UserDao_Impl implements UserDao {
   }
 
   @Override
-  public Object getCurrentUser(final Continuation<? super User> arg0) {
-    return UserDao.DefaultImpls.getCurrentUser(UserDao_Impl.this, arg0);
+  public Object getCurrentUser(final Continuation<? super User> $completion) {
+    return UserDao.DefaultImpls.getCurrentUser(UserDao_Impl.this, $completion);
   }
 
   @NonNull

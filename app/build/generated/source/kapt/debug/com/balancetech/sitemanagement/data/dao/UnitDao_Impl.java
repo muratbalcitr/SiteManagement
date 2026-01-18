@@ -165,7 +165,7 @@ public final class UnitDao_Impl implements UnitDao {
   }
 
   @Override
-  public Object insertUnit(final Unit unit, final Continuation<? super kotlin.Unit> arg1) {
+  public Object insertUnit(final Unit unit, final Continuation<? super kotlin.Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<kotlin.Unit>() {
       @Override
       @NonNull
@@ -179,11 +179,11 @@ public final class UnitDao_Impl implements UnitDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object deleteUnit(final Unit unit, final Continuation<? super kotlin.Unit> arg1) {
+  public Object deleteUnit(final Unit unit, final Continuation<? super kotlin.Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<kotlin.Unit>() {
       @Override
       @NonNull
@@ -197,11 +197,11 @@ public final class UnitDao_Impl implements UnitDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object updateUnit(final Unit unit, final Continuation<? super kotlin.Unit> arg1) {
+  public Object updateUnit(final Unit unit, final Continuation<? super kotlin.Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<kotlin.Unit>() {
       @Override
       @NonNull
@@ -215,11 +215,11 @@ public final class UnitDao_Impl implements UnitDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object getUnitById(final String id, final Continuation<? super Unit> arg1) {
+  public Object getUnitById(final String id, final Continuation<? super Unit> $completion) {
     final String _sql = "SELECT * FROM units WHERE id = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -309,7 +309,7 @@ public final class UnitDao_Impl implements UnitDao {
           _statement.release();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override

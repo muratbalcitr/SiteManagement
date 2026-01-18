@@ -182,6 +182,11 @@ class FeeRepository(
     suspend fun recordPayment(feeId: String, paymentAmount: Double): Result<Fee> {
         val fee = feeDao.getFeeById(feeId)
         return if (fee != null) {
+            // Prevent duplicate payment if fee is already PAID
+            if (fee.status == PaymentStatus.PAID) {
+            return Result.failure(Exception("Bu aidat zaten tamamen ödenmiş. Mükerrer ödeme yapılamaz."))
+            }
+            
             val newPaidAmount = fee.paidAmount + paymentAmount
             val newStatus = when {
                 newPaidAmount >= fee.amount -> PaymentStatus.PAID

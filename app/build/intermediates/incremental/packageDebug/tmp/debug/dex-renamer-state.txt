@@ -1,4 +1,4 @@
-#Sat Jan 17 19:53:01 TRT 2026
+#Sun Jan 18 11:35:06 TRT 2026
 base.0=/Users/muratbalci/AndroidStudioProjects/kucukyali-site-yonetimi/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
 base.1=/Users/muratbalci/AndroidStudioProjects/kucukyali-site-yonetimi/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
 base.10=/Users/muratbalci/AndroidStudioProjects/kucukyali-site-yonetimi/app/build/intermediates/dex/debug/mergeProjectDexDebug/7/classes.dex
@@ -6,6 +6,9 @@ base.11=/Users/muratbalci/AndroidStudioProjects/kucukyali-site-yonetimi/app/buil
 base.12=/Users/muratbalci/AndroidStudioProjects/kucukyali-site-yonetimi/app/build/intermediates/dex/debug/mergeProjectDexDebug/9/classes.dex
 base.13=/Users/muratbalci/AndroidStudioProjects/kucukyali-site-yonetimi/app/build/intermediates/dex/debug/mergeExtDexDebug/classes2.dex
 base.14=/Users/muratbalci/AndroidStudioProjects/kucukyali-site-yonetimi/app/build/intermediates/dex/debug/mergeExtDexDebug/classes3.dex
+base.15=/Users/muratbalci/AndroidStudioProjects/kucukyali-site-yonetimi/app/build/intermediates/dex/debug/mergeExtDexDebug/classes4.dex
+base.16=/Users/muratbalci/AndroidStudioProjects/kucukyali-site-yonetimi/app/build/intermediates/dex/debug/mergeExtDexDebug/classes5.dex
+base.17=/Users/muratbalci/AndroidStudioProjects/kucukyali-site-yonetimi/app/build/intermediates/dex/debug/mergeExtDexDebug/classes6.dex
 base.2=/Users/muratbalci/AndroidStudioProjects/kucukyali-site-yonetimi/app/build/intermediates/dex/debug/mergeProjectDexDebug/1/classes.dex
 base.3=/Users/muratbalci/AndroidStudioProjects/kucukyali-site-yonetimi/app/build/intermediates/dex/debug/mergeProjectDexDebug/10/classes.dex
 base.4=/Users/muratbalci/AndroidStudioProjects/kucukyali-site-yonetimi/app/build/intermediates/dex/debug/mergeProjectDexDebug/12/classes.dex
@@ -21,6 +24,9 @@ path.11=8/classes.dex
 path.12=9/classes.dex
 path.13=classes2.dex
 path.14=classes3.dex
+path.15=classes4.dex
+path.16=classes5.dex
+path.17=classes6.dex
 path.2=1/classes.dex
 path.3=10/classes.dex
 path.4=12/classes.dex
@@ -36,6 +42,9 @@ renamed.11=classes12.dex
 renamed.12=classes13.dex
 renamed.13=classes14.dex
 renamed.14=classes15.dex
+renamed.15=classes16.dex
+renamed.16=classes17.dex
+renamed.17=classes18.dex
 renamed.2=classes3.dex
 renamed.3=classes4.dex
 renamed.4=classes5.dex

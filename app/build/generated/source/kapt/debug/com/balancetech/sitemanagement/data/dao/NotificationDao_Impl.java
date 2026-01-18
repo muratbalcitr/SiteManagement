@@ -167,7 +167,7 @@ public final class NotificationDao_Impl implements NotificationDao {
 
   @Override
   public Object insertNotification(final Notification notification,
-      final Continuation<? super Unit> arg1) {
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -181,12 +181,12 @@ public final class NotificationDao_Impl implements NotificationDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
   public Object deleteNotification(final Notification notification,
-      final Continuation<? super Unit> arg1) {
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -200,12 +200,12 @@ public final class NotificationDao_Impl implements NotificationDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
   public Object updateNotification(final Notification notification,
-      final Continuation<? super Unit> arg1) {
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -219,11 +219,11 @@ public final class NotificationDao_Impl implements NotificationDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object markAsRead(final String id, final Continuation<? super Unit> arg1) {
+  public Object markAsRead(final String id, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -248,11 +248,11 @@ public final class NotificationDao_Impl implements NotificationDao {
           __preparedStmtOfMarkAsRead.release(_stmt);
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object markAllAsRead(final String userId, final Continuation<? super Unit> arg1) {
+  public Object markAllAsRead(final String userId, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -277,7 +277,7 @@ public final class NotificationDao_Impl implements NotificationDao {
           __preparedStmtOfMarkAllAsRead.release(_stmt);
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override

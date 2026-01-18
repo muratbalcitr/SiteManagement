@@ -24,6 +24,7 @@ id action_loginFragment_to_dashboardFragment
 id action_loginFragment_to_registerFragment
 id action_registerFragment_to_loginFragment
 id action_search
+id action_upload_to_firestore
 id action_usersFragment_to_userDetailFragment
 id action_waterMeterFragment_to_waterMeterDetailFragment
 id addButton
@@ -45,6 +46,7 @@ id cancelButton
 id constraint
 id consumptionText
 id createButton
+id currentBalanceText
 id currentReadingEditText
 id currentReadingText
 id dashboardFragment
@@ -96,6 +98,7 @@ id nameEditText
 id nameInputLayout
 id nav_graph
 id nav_host_fragment
+id netBalanceText
 id notificationsRecyclerView
 id ownerNameText
 id paidAmount
@@ -128,6 +131,7 @@ id roleBadge
 id saveButton
 id searchMenuItem
 id statusBadge
+id summaryCard
 id syncButton
 id tabLayout
 id titleEditText
@@ -137,6 +141,8 @@ id totalAmountText
 id totalCreditTextView
 id totalDebtText
 id totalDebtTextView
+id totalExpenseText
+id totalIncomeText
 id totalUnpaidFeesText
 id totalUnpaidWaterBillsText
 id transactionsRecyclerView
@@ -198,6 +204,7 @@ layout item_unit_checkbox
 layout item_user
 layout item_water_bill
 layout item_water_meter
+menu bank_transactions_toolbar_menu
 menu fees_toolbar_menu
 menu users_menu
 menu water_meter_toolbar_menu

@@ -3256,6 +3256,7 @@ id action_mode_close_button
 id action_registerFragment_to_loginFragment
 id action_search
 id action_text
+id action_upload_to_firestore
 id action_usersFragment_to_userDetailFragment
 id action_waterMeterFragment_to_waterMeterDetailFragment
 id actions
@@ -3349,6 +3350,7 @@ id cos
 id counterclockwise
 id cradle
 id createButton
+id currentBalanceText
 id currentReadingEditText
 id currentReadingText
 id currentState
@@ -3582,6 +3584,7 @@ id navigation_bar_item_labels_group
 id navigation_bar_item_large_label_view
 id navigation_bar_item_small_label_view
 id navigation_header_container
+id netBalanceText
 id never
 id neverCompleteToEnd
 id neverCompleteToStart
@@ -3737,6 +3740,7 @@ id stop
 id stretch
 id submenuarrow
 id submit_area
+id summaryCard
 id supportScrollUp
 id syncButton
 id tabLayout
@@ -3784,6 +3788,8 @@ id totalAmountText
 id totalCreditTextView
 id totalDebtText
 id totalDebtTextView
+id totalExpenseText
+id totalIncomeText
 id totalUnpaidFeesText
 id totalUnpaidWaterBillsText
 id touch_outside
@@ -4075,6 +4081,7 @@ layout select_dialog_item_material
 layout select_dialog_multichoice_material
 layout select_dialog_singlechoice_material
 layout support_simple_spinner_dropdown_item
+menu bank_transactions_toolbar_menu
 menu fees_toolbar_menu
 menu users_menu
 menu water_meter_toolbar_menu

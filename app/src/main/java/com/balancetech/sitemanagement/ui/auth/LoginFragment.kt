@@ -33,6 +33,9 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Check if user is already logged in
+        checkAutoLogin()
+
         binding.loginButton.setOnClickListener {
             val email = binding.emailEditText.text.toString()
             val password = binding.passwordEditText.text.toString()
@@ -71,6 +74,26 @@ class LoginFragment : Fragment() {
                         binding.loginButton.isEnabled = true
                     }
                 }
+            }
+        }
+        
+        // Observe current user to auto-navigate if logged in
+        lifecycleScope.launch {
+            viewModel.currentUser.collect { user ->
+                if (user != null && findNavController().currentDestination?.id == R.id.loginFragment) {
+                    // User is logged in, navigate to dashboard
+                    findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
+                }
+            }
+        }
+    }
+    
+    private fun checkAutoLogin() {
+        lifecycleScope.launch {
+            // Check if user is already logged in via Firebase Auth persistence
+            if (viewModel.isLoggedIn()) {
+                // User is already logged in, navigate to dashboard
+                findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
             }
         }
     }

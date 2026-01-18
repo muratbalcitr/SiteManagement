@@ -63,6 +63,11 @@ interface RemoteDataSource {
     suspend fun createExtraPayment(extraPayment: ExtraPayment): Result<ExtraPayment>
     suspend fun updateExtraPayment(extraPayment: ExtraPayment): Result<ExtraPayment>
     
+    // Bank Transaction operations
+    suspend fun createBankTransaction(transaction: com.balancetech.sitemanagement.data.entity.BankTransaction): Result<com.balancetech.sitemanagement.data.entity.BankTransaction>
+    suspend fun createBankTransactions(transactions: List<com.balancetech.sitemanagement.data.entity.BankTransaction>): Result<List<com.balancetech.sitemanagement.data.entity.BankTransaction>>
+    suspend fun getAllBankTransactions(): List<com.balancetech.sitemanagement.data.entity.BankTransaction>
+    
     // Sync operations
     suspend fun syncAllData(): Result<kotlin.Unit>
 }

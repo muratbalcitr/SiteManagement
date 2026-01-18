@@ -61,6 +61,8 @@ import com.balancetech.sitemanagement.di.RepositoryModule_ProvideUserRepositoryF
 import com.balancetech.sitemanagement.di.RepositoryModule_ProvideWaterMeterRepositoryFactory;
 import com.balancetech.sitemanagement.ui.auth.LoginFragment;
 import com.balancetech.sitemanagement.ui.auth.RegisterFragment;
+import com.balancetech.sitemanagement.ui.banktransactions.BankTransactionsFragment;
+import com.balancetech.sitemanagement.ui.banktransactions.BankTransactionsFragment_MembersInjector;
 import com.balancetech.sitemanagement.ui.dashboard.DashboardFragment;
 import com.balancetech.sitemanagement.ui.dialog.AddUserDialogFragment;
 import com.balancetech.sitemanagement.ui.dialog.AddWaterMeterDialogFragment;
@@ -449,6 +451,11 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
     }
 
     @Override
+    public void injectBankTransactionsFragment(BankTransactionsFragment bankTransactionsFragment) {
+      injectBankTransactionsFragment2(bankTransactionsFragment);
+    }
+
+    @Override
     public void injectDashboardFragment(DashboardFragment dashboardFragment) {
     }
 
@@ -534,6 +541,13 @@ public final class DaggerSiteManagementApplication_HiltComponents_SingletonC {
     @Override
     public ViewWithFragmentComponentBuilder viewWithFragmentComponentBuilder() {
       return new ViewWithFragmentCBuilder(singletonCImpl, activityRetainedCImpl, activityCImpl, fragmentCImpl);
+    }
+
+    @CanIgnoreReturnValue
+    private BankTransactionsFragment injectBankTransactionsFragment2(
+        BankTransactionsFragment instance) {
+      BankTransactionsFragment_MembersInjector.injectRemoteDataSource(instance, singletonCImpl.provideRemoteDataSourceProvider.get());
+      return instance;
     }
 
     @CanIgnoreReturnValue

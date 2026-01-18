@@ -408,17 +408,15 @@ object ExcelImportUtil {
                             val date = getCellValueAsString(row.getCell(0))
                             val receiptNo = getCellValueAsString(row.getCell(1))
                             val description = getCellValueAsString(row.getCell(2))
-                            val amountStr = getCellValueAsString(row.getCell(3))
-                            val balanceStr = getCellValueAsString(row.getCell(4))
+                            
+                            // Get amount and balance - handle both numeric and string cells
+                            val amount = getNumericValue(row.getCell(3))
+                            val balance = getNumericValue(row.getCell(4))
                             
                             if (date.isBlank() || receiptNo.isBlank()) {
                                 errors.add("Satır $rowIndex: Tarih ve Fiş No boş olamaz")
                                 continue
                             }
-                            
-                            // Parse amount
-                            val amount = parseAmount(amountStr)
-                            val balance = parseAmount(balanceStr)
                             
                             val transaction = BankTransaction(
                                 date = date,
@@ -489,14 +487,65 @@ object ExcelImportUtil {
         }
     }
     
+    /**
+     * Get numeric value from cell, handling both numeric and string cells
+     * For string cells, parses Turkish number format (comma as decimal separator)
+     */
+    private fun getNumericValue(cell: Cell?): Double {
+        if (cell == null) return 0.0
+        
+        return when (cell.cellType) {
+            CellType.NUMERIC -> cell.numericCellValue
+            CellType.STRING -> {
+                // Parse string value (may contain comma as decimal separator)
+                val str = cell.stringCellValue.trim()
+                parseAmount(str)
+            }
+            CellType.FORMULA -> {
+                when (cell.cachedFormulaResultType) {
+                    CellType.NUMERIC -> cell.numericCellValue
+                    CellType.STRING -> {
+                        val str = cell.stringCellValue.trim()
+                        parseAmount(str)
+                    }
+                    else -> 0.0
+                }
+            }
+            else -> 0.0
+        }
+    }
+    
     private fun parseAmount(amountStr: String): Double {
         if (amountStr.isBlank()) return 0.0
         
-        // Remove thousand separators and handle decimal
-        val cleaned = amountStr
-            .replace(".", "") // Remove thousand separators
-            .replace(",", ".") // Replace comma with dot for decimal
-            .trim()
+        var cleaned = amountStr.trim()
+        
+        // Handle Turkish number format:
+        // - If both dot and comma exist: dot is thousand separator, comma is decimal (e.g., 28.342,37)
+        // - If only comma exists: comma is decimal separator (e.g., 28342,37)
+        // - If only dot exists: dot is decimal separator (e.g., 28342.37)
+        
+        val hasComma = cleaned.contains(',')
+        val hasDot = cleaned.contains('.')
+        
+        when {
+            hasComma && hasDot -> {
+                // Both exist: dot is thousand separator, comma is decimal
+                // Example: 28.342,37 -> 28342.37
+                cleaned = cleaned.replace(".", "") // Remove thousand separators
+                cleaned = cleaned.replace(",", ".") // Replace comma with dot for decimal
+            }
+            hasComma && !hasDot -> {
+                // Only comma: it's decimal separator
+                // Example: 28342,37 -> 28342.37
+                cleaned = cleaned.replace(",", ".")
+            }
+            !hasComma && hasDot -> {
+                // Only dot: it's decimal separator (already correct)
+                // Example: 28342.37 -> 28342.37
+                // No change needed
+            }
+        }
         
         return cleaned.toDoubleOrNull() ?: 0.0
     }
@@ -517,7 +566,7 @@ object ExcelImportUtil {
         if (result == null) {
             result = uri.path
             val cut = result?.lastIndexOf('/')
-            if (cut != -1) {
+            if (cut != null && cut != -1) {
                 result = result?.substring(cut + 1)
             }
         }

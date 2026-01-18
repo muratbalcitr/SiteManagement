@@ -80,16 +80,16 @@
         "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/xml/backup_rules.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-merged_res-58:/layout_item_bank_transaction.xml.flat",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/item_bank_transaction.xml"
-    },
-    {
         "merged": "com.balancetech.sitemanagement.app-merged_res-58:/layout_fragment_bank_transactions.xml.flat",
         "source": "com.balancetech.sitemanagement.app-main-60:/layout/fragment_bank_transactions.xml"
     },
     {
         "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/layout_activity_main.xml.flat",
         "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.balancetech.sitemanagement.app-merged_res-58:/menu_bank_transactions_toolbar_menu.xml.flat",
+        "source": "com.balancetech.sitemanagement.app-main-60:/menu/bank_transactions_toolbar_menu.xml"
     },
     {
         "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/layout_dialog_payment_entry.xml.flat",
@@ -104,20 +104,16 @@
         "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_payments.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-merged_res-58:/layout_fragment_dashboard.xml.flat",
-        "source": "com.balancetech.sitemanagement.app-main-60:/layout/fragment_dashboard.xml"
-    },
-    {
         "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/drawable_ic_launcher.xml.flat",
         "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/drawable/ic_launcher.xml"
     },
     {
-        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/layout_fragment_reports.xml.flat",
-        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_reports.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/layout_item_bank_transaction.xml.flat",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/item_bank_transaction.xml"
     },
     {
-        "merged": "com.balancetech.sitemanagement.app-merged_res-58:/navigation_nav_graph.xml.flat",
-        "source": "com.balancetech.sitemanagement.app-main-60:/navigation/nav_graph.xml"
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/layout_fragment_reports.xml.flat",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_reports.xml"
     },
     {
         "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/layout_item_payment.xml.flat",
@@ -152,6 +148,10 @@
         "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/dialog_add_user.xml"
     },
     {
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/layout_fragment_bank_transactions.xml.flat",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_bank_transactions.xml"
+    },
+    {
         "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/layout_fragment_dashboard.xml.flat",
         "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/fragment_dashboard.xml"
     },
@@ -164,12 +164,12 @@
         "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/item_extra_payment.xml"
     },
     {
-        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/drawable_outline_arrow_back_ios_24.xml.flat",
-        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/drawable/outline_arrow_back_ios_24.xml"
-    },
-    {
         "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/layout_item_user.xml.flat",
         "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/layout/item_user.xml"
+    },
+    {
+        "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/drawable_outline_arrow_back_ios_24.xml.flat",
+        "source": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-main-60:/drawable/outline_arrow_back_ios_24.xml"
     },
     {
         "merged": "/Users/muratbalci/.gradle/daemon/8.5/com.balancetech.sitemanagement.app-merged_res-58:/xml_file_paths.xml.flat",

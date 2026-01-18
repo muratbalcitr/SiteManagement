@@ -124,7 +124,7 @@ public final class BlockDao_Impl implements BlockDao {
   }
 
   @Override
-  public Object insertBlock(final Block block, final Continuation<? super Unit> arg1) {
+  public Object insertBlock(final Block block, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -138,11 +138,11 @@ public final class BlockDao_Impl implements BlockDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object deleteBlock(final Block block, final Continuation<? super Unit> arg1) {
+  public Object deleteBlock(final Block block, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -156,11 +156,11 @@ public final class BlockDao_Impl implements BlockDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object updateBlock(final Block block, final Continuation<? super Unit> arg1) {
+  public Object updateBlock(final Block block, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -174,11 +174,11 @@ public final class BlockDao_Impl implements BlockDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object getBlockById(final String id, final Continuation<? super Block> arg1) {
+  public Object getBlockById(final String id, final Continuation<? super Block> $completion) {
     final String _sql = "SELECT * FROM blocks WHERE id = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -233,7 +233,7 @@ public final class BlockDao_Impl implements BlockDao {
           _statement.release();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
