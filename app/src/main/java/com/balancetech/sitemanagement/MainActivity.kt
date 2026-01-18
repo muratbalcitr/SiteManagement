@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.NavOptions
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.balancetech.sitemanagement.data.repository.AuthRepository
 import com.balancetech.sitemanagement.ui.viewmodel.AuthViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -32,6 +35,22 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         setupActionBarWithNavController(navController)
+        
+        // Setup bottom navigation
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        bottomNavigationView.setupWithNavController(navController)
+        
+        // Hide bottom navigation on login/register screens
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.loginFragment, R.id.registerFragment -> {
+                    bottomNavigationView.visibility = android.view.View.GONE
+                }
+                else -> {
+                    bottomNavigationView.visibility = android.view.View.VISIBLE
+                }
+            }
+        }
         
         // Check if user is already logged in
         checkAuthState(navController)
@@ -70,9 +89,10 @@ class MainActivity : AppCompatActivity() {
                     // User is signed in, initialize and navigate if needed
                     authRepository.initializeCurrentUser()
                     val currentDestination = navController.currentDestination?.id
-                    if (currentDestination == com.balancetech.sitemanagement.R.id.loginFragment) {
+                    // Only navigate if we're on login fragment and not already on dashboard
+                    if (currentDestination == R.id.loginFragment) {
                         try {
-                            navController.navigate(com.balancetech.sitemanagement.R.id.action_loginFragment_to_dashboardFragment)
+                            navController.navigate(R.id.action_loginFragment_to_dashboardFragment)
                         } catch (e: Exception) {
                             android.util.Log.d("MainActivity", "Navigation skipped: ${e.message}")
                         }
@@ -81,10 +101,14 @@ class MainActivity : AppCompatActivity() {
                     // User is signed out, navigate to login if needed
                     val currentDestination = navController.currentDestination?.id
                     if (currentDestination != null && 
-                        currentDestination != com.balancetech.sitemanagement.R.id.loginFragment &&
-                        currentDestination != com.balancetech.sitemanagement.R.id.registerFragment) {
+                        currentDestination != R.id.loginFragment &&
+                        currentDestination != R.id.registerFragment) {
                         try {
-                            navController.navigate(com.balancetech.sitemanagement.R.id.loginFragment)
+                            // Use popUpTo to clear back stack and navigate to login
+                            val navOptions = NavOptions.Builder()
+                                .setPopUpTo(R.id.nav_graph, true)
+                                .build()
+                            navController.navigate(R.id.loginFragment,null, navOptions)
                         } catch (e: Exception) {
                             android.util.Log.d("MainActivity", "Navigation skipped: ${e.message}")
                         }

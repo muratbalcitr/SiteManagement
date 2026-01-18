@@ -42,6 +42,7 @@ id bankTransactionsFragment
 id baseAmountEditText
 id billMonthYear
 id blockSpinner
+id bottomNavigationView
 id cancelButton
 id constraint
 id consumptionText
@@ -205,6 +206,7 @@ layout item_user
 layout item_water_bill
 layout item_water_meter
 menu bank_transactions_toolbar_menu
+menu bottom_navigation_menu
 menu fees_toolbar_menu
 menu users_menu
 menu water_meter_toolbar_menu

@@ -12,6 +12,7 @@ import com.balancetech.sitemanagement.data.entity.Payment
 import com.balancetech.sitemanagement.databinding.FragmentPaymentsBinding
 import com.balancetech.sitemanagement.ui.adapter.PaymentAdapter
 import com.balancetech.sitemanagement.ui.viewmodel.PaymentViewModel
+import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,6 +42,7 @@ class PaymentsFragment : Fragment() {
         
         setupRecyclerView()
         setupFilterButtons()
+        updateFilterButtons() // Initialize filter button states
         observeViewModel()
     }
 
@@ -90,11 +92,40 @@ class PaymentsFragment : Fragment() {
     }
 
     private fun updateFilterButtons() {
-        binding.filterAllButton.isSelected = currentFilter == PaymentFilter.ALL
-        binding.filterFeeButton.isSelected = currentFilter == PaymentFilter.FEE
-        binding.filterExtraPaymentButton.isSelected = currentFilter == PaymentFilter.EXTRA_PAYMENT
-        binding.filterWaterBillButton.isSelected = currentFilter == PaymentFilter.WATER_BILL
-        binding.filterGeneralButton.isSelected = currentFilter == PaymentFilter.GENERAL
+        // Update selected state for all buttons
+        val allButtons = listOf(
+            binding.filterAllButton to PaymentFilter.ALL,
+            binding.filterFeeButton to PaymentFilter.FEE,
+            binding.filterExtraPaymentButton to PaymentFilter.EXTRA_PAYMENT,
+            binding.filterWaterBillButton to PaymentFilter.WATER_BILL,
+            binding.filterGeneralButton to PaymentFilter.GENERAL
+        )
+        
+        val primaryColor = com.google.android.material.color.MaterialColors.getColor(
+            requireContext(),
+            com.google.android.material.R.attr.colorPrimary,
+            "PaymentsFragment"
+        )
+        val onSurfaceColor = com.google.android.material.color.MaterialColors.getColor(
+            requireContext(),
+            com.google.android.material.R.attr.colorOnSurface,
+            "PaymentsFragment"
+        )
+        
+        allButtons.forEach { (button, filter) ->
+            val isSelected = currentFilter == filter
+            button.isSelected = isSelected
+            button.isChecked = isSelected
+            
+            // Update button appearance based on selection
+            if (isSelected) {
+                button.setBackgroundColor(primaryColor)
+                button.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
+            } else {
+                button.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                button.setTextColor(onSurfaceColor)
+            }
+        }
     }
 
     private fun observeViewModel() {

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/dashboardFragment"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="Ana Sayfa" />
+    
+    <item
+        android:id="@+id/feesFragment"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Aidatlar" />
+    
+    <item
+        android:id="@+id/paymentsFragment"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        android:title="Ödemeler" />
+    
+    <item
+        android:id="@+id/waterMeterFragment"
+        android:icon="@android:drawable/ic_menu_compass"
+        android:title="Su Sayaç" />
+    
+    <item
+        android:id="@+id/usersFragment"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="Daireler" />
+</menu>

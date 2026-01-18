@@ -3303,6 +3303,7 @@ id billMonthYear
 id blockSpinner
 id blocking
 id bottom
+id bottomNavigationView
 id bounce
 id bounceBoth
 id bounceEnd
@@ -4082,6 +4083,7 @@ layout select_dialog_multichoice_material
 layout select_dialog_singlechoice_material
 layout support_simple_spinner_dropdown_item
 menu bank_transactions_toolbar_menu
+menu bottom_navigation_menu
 menu fees_toolbar_menu
 menu users_menu
 menu water_meter_toolbar_menu

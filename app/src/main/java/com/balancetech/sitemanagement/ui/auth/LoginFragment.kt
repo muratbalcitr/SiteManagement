@@ -62,7 +62,16 @@ class LoginFragment : Fragment() {
                     is com.balancetech.sitemanagement.ui.viewmodel.AuthUiState.Success -> {
                         binding.progressBar.visibility = View.GONE
                         binding.loginButton.isEnabled = true
-                        findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
+                        // Only navigate if we're still on login fragment
+                        val currentDestination = findNavController().currentDestination?.id
+                        if (currentDestination == R.id.loginFragment) {
+                            try {
+                                findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
+                            } catch (e: Exception) {
+                                // Navigation might fail if already navigated, ignore
+                                android.util.Log.d("LoginFragment", "Navigation skipped: ${e.message}")
+                            }
+                        }
                     }
                     is com.balancetech.sitemanagement.ui.viewmodel.AuthUiState.Error -> {
                         binding.progressBar.visibility = View.GONE
@@ -80,9 +89,15 @@ class LoginFragment : Fragment() {
         // Observe current user to auto-navigate if logged in
         lifecycleScope.launch {
             viewModel.currentUser.collect { user ->
-                if (user != null && findNavController().currentDestination?.id == R.id.loginFragment) {
-                    // User is logged in, navigate to dashboard
-                    findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
+                val currentDestination = findNavController().currentDestination?.id
+                if (user != null && currentDestination == R.id.loginFragment) {
+                    // User is logged in and we're on login fragment, navigate to dashboard
+                    try {
+                        findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
+                    } catch (e: Exception) {
+                        // Navigation might fail if already navigated, ignore
+                        android.util.Log.d("LoginFragment", "Navigation skipped: ${e.message}")
+                    }
                 }
             }
         }
@@ -92,8 +107,16 @@ class LoginFragment : Fragment() {
         lifecycleScope.launch {
             // Check if user is already logged in via Firebase Auth persistence
             if (viewModel.isLoggedIn()) {
-                // User is already logged in, navigate to dashboard
-                findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
+                // User is already logged in, navigate to dashboard only if we're on login fragment
+                val currentDestination = findNavController().currentDestination?.id
+                if (currentDestination == R.id.loginFragment) {
+                    try {
+                        findNavController().navigate(R.id.action_loginFragment_to_dashboardFragment)
+                    } catch (e: Exception) {
+                        // Navigation might fail if already navigated, ignore
+                        android.util.Log.d("LoginFragment", "Navigation skipped: ${e.message}")
+                    }
+                }
             }
         }
     }
